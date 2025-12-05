@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+:root {
+  /* Clean Light Theme with Red Accents */
+  --background: #FFFFFF; /* white */
+  --foreground: #111827; /* dark gray */
+  --primary: #DC2626; /* deep crimson red */
+  --primary-foreground: #ffffff;
+  --accent: #EF4444; /* bright red */
+  --surface: #F9FAFB; /* light gray */
+  --border: #E5E7EB; /* light border */
+  --text-secondary: #6B7280; /* medium gray */
+  --text-muted: #6B7280; /* muted gray - darker for visibility */
+  --muted-foreground: #6B7280; /* muted foreground */
+  --card: #FFFFFF; /* card background */
+  --card-foreground: #111827; /* card text */
+  --secondary: #F9FAFB; /* secondary background */
+  --secondary-foreground: #111827; /* secondary text */
+  --success: #10B981; /* emerald-500 */
+  --warning: #F59E0B; /* amber-500 */
+  --error: #EF4444; /* red-500 */
+  --gradient-start: #DC2626; /* deep crimson */
+  --gradient-mid: #991B1B; /* burgundy */
+  --gradient-end: #F43F5E; /* warm rose */
+  --bg-gradient-start: #FFFFFF; /* white */
+  --bg-gradient-end: #F9FAFB; /* light gray */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-gradient-start: var(--gradient-start);
+  --color-gradient-end: var(--gradient-end);
+  --color-bg-gradient-start: var(--bg-gradient-start);
+  --color-bg-gradient-end: var(--bg-gradient-end);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #FFFFFF;
+    --foreground: #111827;
+    --card: #FFFFFF;
+    --card-foreground: #111827;
+    --muted-foreground: #6B7280;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 200% auto;
+  animation: gradient 3s ease infinite;
+}
+
+.animate-glow {
+  animation: glow 3s ease-in-out infinite;
+}
+
+/* Red glow effect */
+.red-glow {
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.3), 0 0 40px rgba(220, 38, 38, 0.1);
+}
+
+.red-glow-strong {
+  box-shadow: 0 0 30px rgba(220, 38, 38, 0.5), 0 0 60px rgba(220, 38, 38, 0.2);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}

@@ -1,0 +1,257 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { ArrowLeft, Mail, Phone, Building2, Calendar, Trash2, Edit } from 'lucide-react';
+import Link from 'next/link';
+import apiClient from '@/lib/api/client';
+
+interface Contact {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string | null;
+  phone: string | null;
+  mobile: string | null;
+  job_title: string | null;
+  department: string | null;
+  lifecycle_stage: string;
+  notes: string | null;
+  account_id: string | null;
+  created_at: string;
+}
+
+interface Activity {
+  id: string;
+  type: string;
+  subject: string | null;
+  description: string | null;
+  performed_by_name: string | null;
+  created_at: string;
+}
+
+export default function ContactDetailPage() {
+  const params = useParams();
+  const router = useRouter();
+  const [contact, setContact] = useState<Contact | null>(null);
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [contactRes, activitiesRes] = await Promise.all([
+          apiClient.get(`/contacts/${params.id}`),
+          apiClient.get(`/activities/timeline/contact/${params.id}`),
+        ]);
+        setContact(contactRes.data.data);
+        setActivities(activitiesRes.data.data);
+      } catch (error) {
+        console.error('Failed to fetch contact:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [params.id]);
+
+  const handleDelete = async () => {
+    if (!contact) return;
+    
+    setDeleting(true);
+    try {
+      await apiClient.delete(`/contacts/${contact.id}`);
+      router.push('/portal/contacts');
+    } catch (error) {
+      console.error('Failed to delete contact:', error);
+      alert('Failed to delete contact. Please try again.');
+      setDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-gray-600">Loading customer...</div>
+      </div>
+    );
+  }
+
+  if (!contact) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-gray-600">Customer not found</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        <button
+          onClick={() => router.back()}
+          className="rounded-lg border border-gray-200 bg-white p-2 hover:bg-gray-50"
+        >
+          <ArrowLeft className="h-4 w-4 text-gray-900" />
+        </button>
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
+            {contact.first_name} {contact.last_name}
+          </h1>
+          <p className="text-gray-600">Customer Details</p>
+        </div>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold mb-4 text-gray-900">Customer Information</h2>
+            <div className="space-y-4">
+              {contact.email && (
+                <div className="flex items-center gap-3">
+                  <Mail className="h-5 w-5 text-muted-foreground" />
+                  <span>{contact.email}</span>
+                </div>
+              )}
+              {contact.phone && (
+                <div className="flex items-center gap-3">
+                  <Phone className="h-5 w-5 text-muted-foreground" />
+                  <span>{contact.phone}</span>
+                </div>
+              )}
+              {contact.mobile && (
+                <div className="flex items-center gap-3">
+                  <Phone className="h-5 w-5 text-muted-foreground" />
+                  <span>{contact.mobile} (Mobile)</span>
+                </div>
+              )}
+              {contact.job_title && (
+                <div className="flex items-center gap-3">
+                  <Building2 className="h-5 w-5 text-muted-foreground" />
+                  <span>{contact.job_title}</span>
+                  {contact.department && <span className="text-muted-foreground">- {contact.department}</span>}
+                </div>
+              )}
+              <div className="flex items-center gap-3">
+                <Calendar className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">
+                  Created {new Date(contact.created_at).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {contact.notes && (
+            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+              <h2 className="text-lg font-semibold mb-4 text-gray-900">Notes</h2>
+              <p className="text-muted-foreground whitespace-pre-wrap">{contact.notes}</p>
+            </div>
+          )}
+
+          <div className="rounded-xl border bg-card p-6 shadow-sm">
+            <h2 className="text-lg font-semibold mb-4">Activity Timeline</h2>
+            {activities.length === 0 ? (
+              <p className="text-muted-foreground">No activities yet</p>
+            ) : (
+              <div className="space-y-4">
+                {activities.map((activity) => (
+                  <div key={activity.id} className="border-l-2 border-primary pl-4 pb-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-medium capitalize">{activity.type}</span>
+                      {activity.subject && (
+                        <span className="text-muted-foreground">- {activity.subject}</span>
+                      )}
+                    </div>
+                    {activity.description && (
+                      <p className="text-sm text-muted-foreground mb-2">{activity.description}</p>
+                    )}
+                    <div className="text-xs text-muted-foreground">
+                      {activity.performed_by_name && <span>By {activity.performed_by_name} • </span>}
+                      {new Date(activity.created_at).toLocaleString()}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <div className="rounded-xl border bg-card p-6 shadow-sm">
+            <h2 className="text-lg font-semibold mb-4">Details</h2>
+            <div className="space-y-3">
+              <div>
+                <div className="text-sm text-muted-foreground">Lifecycle Stage</div>
+                <div className="mt-1">
+                  <span className="rounded-full bg-secondary px-2 py-1 text-xs font-medium capitalize">
+                    {contact.lifecycle_stage}
+                  </span>
+                </div>
+              </div>
+              {contact.account_id && (
+                <div>
+                  <div className="text-sm text-muted-foreground">Company</div>
+                  <Link
+                    href={`/portal/accounts/${contact.account_id}`}
+                    className="mt-1 text-sm font-medium text-primary hover:underline"
+                  >
+                    View Company
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-xl border bg-card p-6 shadow-sm space-y-3">
+            <Link
+              href={`/portal/contacts/${contact.id}/edit`}
+              className="flex items-center justify-center gap-2 w-full rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              <Edit className="h-4 w-4" />
+              Edit Customer
+            </Link>
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="flex items-center justify-center gap-2 w-full rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-2 font-medium text-destructive hover:bg-destructive/20 transition-colors"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete Customer
+            </button>
+          </div>
+
+          {showDeleteConfirm && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+              <div className="rounded-xl border bg-card p-6 shadow-xl max-w-md w-full mx-4">
+                <h3 className="text-lg font-semibold mb-2">Delete Customer</h3>
+                <p className="text-muted-foreground mb-6">
+                  Are you sure you want to delete {contact?.first_name} {contact?.last_name}? This action cannot be undone.
+                </p>
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    className="rounded-lg border px-4 py-2 font-medium hover:bg-secondary transition-colors"
+                    disabled={deleting}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="rounded-lg bg-destructive px-4 py-2 font-medium text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50 transition-colors"
+                  >
+                    {deleting ? 'Deleting...' : 'Delete'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
