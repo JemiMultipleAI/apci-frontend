@@ -206,7 +206,7 @@ export default function NewEmployeePage() {
               <select
                 id="account_id"
                 name="account_id"
-                required={formData.role !== 'super_admin'}
+                required={true}
                 value={formData.account_id || ''}
                 onChange={(e) => {
                   setFormData({
