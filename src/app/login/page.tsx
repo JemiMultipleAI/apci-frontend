@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import apiClient from '@/lib/api/client';
 import { setAccessToken, setRefreshToken, setCompanyId } from '@/lib/cookies';
 
@@ -118,10 +117,7 @@ export default function LoginPage() {
           </div>
 
           <div className="text-center text-sm">
-            <span className="text-gray-600">Don't have an account? </span>
-            <Link href="/signup" className="font-medium text-[#DC2626] hover:text-[#F43F5E] transition-colors">
-              Sign up
-            </Link>
+            <span className="text-gray-600">Don't have an account? Please contact us for more details.</span>
           </div>
         </form>
       </div>

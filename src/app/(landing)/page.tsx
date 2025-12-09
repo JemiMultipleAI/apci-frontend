@@ -173,12 +173,6 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg font-medium text-sm transition-colors"
-            >
-              Sign in
-            </Link>
-            <Link
-              href="/signup"
               className="bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] text-white px-5 py-2 rounded-lg font-semibold hover:opacity-90 transition-all"
             >
               Get Started
@@ -214,10 +208,10 @@ export default function LandingPage() {
             
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-sm">
+              <Link href="/login" className="bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-sm">
                 Start Free Trial
                 <ArrowRight className="h-5 w-5" />
-              </button>
+              </Link>
               <button className="bg-white text-gray-700 px-6 py-3 rounded-lg font-semibold border-2 border-gray-300 hover:border-gray-400 transition-all flex items-center justify-center gap-2">
                 Watch Demo
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
@@ -513,10 +507,10 @@ export default function LandingPage() {
               Join 10,000+ sales teams already using CRMatIQ to hit their targets consistently.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <button className="bg-white text-[#DC2626] px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all flex items-center justify-center gap-2 shadow-lg">
+              <Link href="/login" className="bg-white text-[#DC2626] px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all flex items-center justify-center gap-2 shadow-lg">
                 Start Free Trial
                 <ArrowRight className="h-5 w-5" />
-              </button>
+              </Link>
               <button className="bg-transparent text-white px-8 py-4 rounded-lg font-semibold border-2 border-white hover:bg-white/10 transition-all">
                 Schedule Demo
               </button>

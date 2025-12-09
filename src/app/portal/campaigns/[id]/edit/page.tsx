@@ -41,13 +41,19 @@ export default function EditCampaignPage() {
     name: '',
     description: '',
     type: 'marketing',
-    channel: 'email',
+    channel: 'multi',
     status: 'draft',
     start_date: '',
     end_date: '',
     template_id: '',
     survey_id: '',
     days_inactive: '90',
+    // Channel checkboxes and schedules
+    channels: {
+      email: { enabled: true, delay: 0, unit: 'minutes' },
+      sms: { enabled: false, delay: 60, unit: 'minutes' },
+      call: { enabled: false, delay: 120, unit: 'minutes' },
+    },
   });
 
   useEffect(() => {
@@ -69,17 +75,49 @@ export default function EditCampaignPage() {
           ? new Date(campaign.end_date).toISOString().slice(0, 16)
           : '';
 
+        // Load channel configuration from metadata or infer from channel field
+        let channels = {
+          email: { enabled: true, delay: 0, unit: 'minutes' as 'minutes' | 'hours' | 'days' },
+          sms: { enabled: false, delay: 60, unit: 'minutes' as 'minutes' | 'hours' | 'days' },
+          call: { enabled: false, delay: 120, unit: 'minutes' as 'minutes' | 'hours' | 'days' },
+        };
+
+        if (campaign.metadata?.channels) {
+          channels = {
+            email: campaign.metadata.channels.email || channels.email,
+            sms: campaign.metadata.channels.sms || channels.sms,
+            call: campaign.metadata.channels.call || channels.call,
+          };
+        } else {
+          // Backward compatibility: infer from channel field
+          const channel = campaign.channel || 'email';
+          if (channel === 'email') {
+            channels = { ...channels, email: { enabled: true, delay: 0, unit: 'minutes' } };
+          } else if (channel === 'sms') {
+            channels = { ...channels, sms: { enabled: true, delay: 0, unit: 'minutes' } };
+          } else if (channel === 'call') {
+            channels = { ...channels, call: { enabled: true, delay: 0, unit: 'minutes' } };
+          } else if (channel === 'multi') {
+            channels = {
+              email: { enabled: true, delay: 0, unit: 'minutes' },
+              sms: { enabled: true, delay: 60, unit: 'minutes' },
+              call: { enabled: false, delay: 120, unit: 'minutes' },
+            };
+          }
+        }
+
         setFormData({
           name: campaign.name || '',
           description: campaign.description || '',
           type: campaign.type || 'marketing',
-          channel: campaign.channel || 'email',
+          channel: campaign.channel || 'multi',
           status: campaign.status || 'draft',
           start_date: startDate,
           end_date: endDate,
           template_id: campaign.metadata?.template_id || '',
           survey_id: campaign.metadata?.survey_id || '',
           days_inactive: campaign.metadata?.days_inactive?.toString() || '90',
+          channels,
         });
 
         // Pre-select contacts from metadata
@@ -172,6 +210,15 @@ export default function EditCampaignPage() {
     setError('');
 
     // Validation
+    const enabledChannels = Object.entries(formData.channels)
+      .filter(([_, config]) => config.enabled)
+      .map(([channel]) => channel);
+    
+    if (enabledChannels.length === 0) {
+      setError('Please select at least one channel (Email, SMS, or Voice Call)');
+      return;
+    }
+
     if (formData.type !== 'reactivation' && selectedContactIds.size === 0) {
       setError('Please select at least one contact or use reactivation campaign type');
       return;
@@ -212,11 +259,20 @@ export default function EditCampaignPage() {
         metadata.days_inactive = parseInt(formData.days_inactive) || 90;
       }
 
+      // Add channel configuration with schedules
+      metadata.channels = formData.channels;
+
+      // Determine channel value for backward compatibility
+      let channelValue = 'multi';
+      if (enabledChannels.length === 1) {
+        channelValue = enabledChannels[0] === 'call' ? 'call' : enabledChannels[0];
+      }
+
       const payload = {
         name: formData.name,
         description: formData.description || null,
         type: formData.type,
-        channel: formData.channel,
+        channel: channelValue,
         status: formData.status,
         start_date: formData.start_date || null,
         end_date: formData.end_date || null,
@@ -233,15 +289,49 @@ export default function EditCampaignPage() {
   };
 
   const filteredTemplates = templates.filter(t => {
-    if (formData.channel === 'email' || formData.channel === 'multi') {
+    // Show email templates if email is enabled, SMS templates if SMS or call is enabled
+    const emailEnabled = formData.channels.email.enabled;
+    const smsOrCallEnabled = formData.channels.sms.enabled || formData.channels.call.enabled;
+    
+    if (emailEnabled && smsOrCallEnabled) {
+      return true; // Show all templates
+    } else if (emailEnabled) {
       return t.type === 'email';
-    } else if (formData.channel === 'sms') {
+    } else if (smsOrCallEnabled) {
       return t.type === 'sms';
-    } else if (formData.channel === 'call') {
-      return t.type === 'sms'; // Use SMS template for voice calls
     }
     return true;
   });
+
+  const handleChannelToggle = (channel: 'email' | 'sms' | 'call') => {
+    setFormData({
+      ...formData,
+      channels: {
+        ...formData.channels,
+        [channel]: {
+          ...formData.channels[channel],
+          enabled: !formData.channels[channel].enabled,
+        },
+      },
+    });
+  };
+
+  const handleChannelScheduleChange = (
+    channel: 'email' | 'sms' | 'call',
+    field: 'delay' | 'unit',
+    value: string | number
+  ) => {
+    setFormData({
+      ...formData,
+      channels: {
+        ...formData.channels,
+        [channel]: {
+          ...formData.channels[channel],
+          [field]: value,
+        },
+      },
+    });
+  };
 
   if (loading) {
     return (
@@ -317,23 +407,119 @@ export default function EditCampaignPage() {
             </select>
           </div>
 
-          <div>
-            <label htmlFor="channel" className="block text-sm font-medium mb-2 text-gray-900">
-              Channel *
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium mb-3 text-gray-900">
+              Communication Channels *
             </label>
-            <select
-              id="channel"
-              name="channel"
-              required
-              value={formData.channel}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
-            >
-              <option value="email">Email</option>
-              <option value="sms">SMS</option>
-              <option value="call">Voice Call</option>
-              <option value="multi">Multi-channel</option>
-            </select>
+            <div className="space-y-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
+              {/* Email Channel */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.channels.email.enabled}
+                    onChange={() => handleChannelToggle('email')}
+                    className="h-4 w-4 rounded border-gray-300 bg-white text-[#DC2626] focus:ring-[#DC2626]/50"
+                  />
+                  <span className="text-sm font-medium text-gray-900">Email</span>
+                </label>
+                {formData.channels.email.enabled && (
+                  <div className="ml-7 flex items-center gap-2">
+                    <span className="text-sm text-gray-600">Send</span>
+                    <input
+                      type="number"
+                      min="0"
+                      value={formData.channels.email.delay}
+                      onChange={(e) => handleChannelScheduleChange('email', 'delay', parseInt(e.target.value) || 0)}
+                      className="w-20 rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50"
+                    />
+                    <select
+                      value={formData.channels.email.unit}
+                      onChange={(e) => handleChannelScheduleChange('email', 'unit', e.target.value)}
+                      className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50"
+                    >
+                      <option value="minutes">minutes</option>
+                      <option value="hours">hours</option>
+                      <option value="days">days</option>
+                    </select>
+                    <span className="text-sm text-gray-600">after campaign start</span>
+                  </div>
+                )}
+              </div>
+
+              {/* SMS Channel */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.channels.sms.enabled}
+                    onChange={() => handleChannelToggle('sms')}
+                    className="h-4 w-4 rounded border-gray-300 bg-white text-[#DC2626] focus:ring-[#DC2626]/50"
+                  />
+                  <span className="text-sm font-medium text-gray-900">SMS</span>
+                </label>
+                {formData.channels.sms.enabled && (
+                  <div className="ml-7 flex items-center gap-2">
+                    <span className="text-sm text-gray-600">Send</span>
+                    <input
+                      type="number"
+                      min="0"
+                      value={formData.channels.sms.delay}
+                      onChange={(e) => handleChannelScheduleChange('sms', 'delay', parseInt(e.target.value) || 0)}
+                      className="w-20 rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50"
+                    />
+                    <select
+                      value={formData.channels.sms.unit}
+                      onChange={(e) => handleChannelScheduleChange('sms', 'unit', e.target.value)}
+                      className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50"
+                    >
+                      <option value="minutes">minutes</option>
+                      <option value="hours">hours</option>
+                      <option value="days">days</option>
+                    </select>
+                    <span className="text-sm text-gray-600">after campaign start</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Voice Call Channel */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.channels.call.enabled}
+                    onChange={() => handleChannelToggle('call')}
+                    className="h-4 w-4 rounded border-gray-300 bg-white text-[#DC2626] focus:ring-[#DC2626]/50"
+                  />
+                  <span className="text-sm font-medium text-gray-900">Voice Call</span>
+                </label>
+                {formData.channels.call.enabled && (
+                  <div className="ml-7 flex items-center gap-2">
+                    <span className="text-sm text-gray-600">Send</span>
+                    <input
+                      type="number"
+                      min="0"
+                      value={formData.channels.call.delay}
+                      onChange={(e) => handleChannelScheduleChange('call', 'delay', parseInt(e.target.value) || 0)}
+                      className="w-20 rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50"
+                    />
+                    <select
+                      value={formData.channels.call.unit}
+                      onChange={(e) => handleChannelScheduleChange('call', 'unit', e.target.value)}
+                      className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50"
+                    >
+                      <option value="minutes">minutes</option>
+                      <option value="hours">hours</option>
+                      <option value="days">days</option>
+                    </select>
+                    <span className="text-sm text-gray-600">after campaign start</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            <p className="mt-2 text-xs text-gray-500">
+              Select one or more channels. Each channel will be sent at its scheduled time relative to when the campaign is executed.
+            </p>
           </div>
 
           <div>
@@ -413,7 +599,7 @@ export default function EditCampaignPage() {
             </select>
             {filteredTemplates.length === 0 && !loadingTemplates && (
               <p className="mt-1 text-xs text-gray-600">
-                No {formData.channel === 'email' || formData.channel === 'multi' ? 'email' : 'SMS'} templates found. 
+                No templates found for selected channels. 
                 <Link href="/portal/templates/new" className="underline ml-1 text-[#DC2626]">Create one</Link>
               </p>
             )}
