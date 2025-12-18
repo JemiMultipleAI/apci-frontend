@@ -10,6 +10,7 @@ export default function EditContactPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [mobileError, setMobileError] = useState('');
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -20,6 +21,44 @@ export default function EditContactPage() {
     lifecycle_stage: 'lead',
     notes: '',
   });
+
+  // Helper function to normalize mobile numbers
+  const normalizeMobile = (value: string): string => {
+    // Remove all non-digit characters
+    const digitsOnly = value.replace(/\D/g, '');
+    
+    // If it starts with 0, replace with 61
+    if (digitsOnly.startsWith('0')) {
+      return '61' + digitsOnly.substring(1);
+    }
+    
+    // If it starts with +61 (becomes 6161 after removing +), fix it
+    if (digitsOnly.startsWith('6161') && digitsOnly.length === 13) {
+      return '61' + digitsOnly.substring(2);
+    }
+    
+    // If it already starts with 61, return as is
+    if (digitsOnly.startsWith('61')) {
+      return digitsOnly;
+    }
+    
+    // If it's 9 digits (local number), add 61 prefix
+    if (digitsOnly.length === 9) {
+      return '61' + digitsOnly;
+    }
+    
+    return digitsOnly;
+  };
+
+  // Validate mobile number
+  const validateMobile = (mobile: string): string | null => {
+    if (!mobile || mobile.trim() === '') return null; // Optional field
+    const normalized = normalizeMobile(mobile);
+    if (!/^61\d{9}$/.test(normalized)) {
+      return 'Mobile must start with 61 followed by 9 digits (e.g., 61412345678). Do not use 0 or +61.';
+    }
+    return null;
+  };
 
   useEffect(() => {
     const fetchContact = async () => {
@@ -62,10 +101,16 @@ export default function EditContactPage() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    
+    if (name === 'mobile') {
+      const normalized = normalizeMobile(value);
+      setFormData({ ...formData, [name]: normalized });
+      const error = validateMobile(normalized);
+      setMobileError(error || '');
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   if (loading) {
@@ -145,8 +190,16 @@ export default function EditContactPage() {
               type="tel"
               value={formData.mobile}
               onChange={handleChange}
+              placeholder="61412345678"
+              maxLength={11}
               className="w-full rounded-lg border bg-background px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
             />
+            {mobileError && (
+              <p className="mt-1 text-sm text-red-600">{mobileError}</p>
+            )}
+            <p className="mt-1 text-xs text-gray-500">
+              Format: 61 followed by 9 digits (e.g., 61412345678). Do not use 0 or +61.
+            </p>
           </div>
 
           <div>

@@ -36,13 +36,13 @@ export const navigation: NavigationItem[] = [
     href: '/portal',
     icon: LayoutDashboard,
   },
-  // CRM Section
+  // Contact Management Section
   {
     title: 'Customers',
     description: 'Manage customer contacts and track lifecycle',
     href: '/portal/contacts',
     icon: Users,
-    category: 'CRM',
+    category: 'Contact Management',
   },
   {
     title: 'Companies',
@@ -50,21 +50,36 @@ export const navigation: NavigationItem[] = [
     href: '/portal/accounts',
     icon: Building2,
     requiredRole: 'super_admin',
-    category: 'CRM',
+    category: 'Contact Management',
+  },
+  // Temporarily hidden
+  // {
+  //   title: 'Deals',
+  //   description: 'Sales pipeline and deal tracking',
+  //   href: '/portal/deals',
+  //   icon: TrendingUp,
+  //   category: 'Contact Management',
+  // },
+  // {
+  //   title: 'Tasks',
+  //   description: 'Manage tasks and follow-ups',
+  //   href: '/portal/tasks',
+  //   icon: CheckSquare,
+  //   category: 'Contact Management',
+  // },
+  {
+    title: 'Contact Groups',
+    description: 'Organize contacts into groups for campaigns',
+    href: '/portal/contact-groups',
+    icon: Users,
+    category: 'Contact Management',
   },
   {
-    title: 'Deals',
-    description: 'Sales pipeline and deal tracking',
-    href: '/portal/deals',
-    icon: TrendingUp,
-    category: 'CRM',
-  },
-  {
-    title: 'Tasks',
-    description: 'Manage tasks and follow-ups',
-    href: '/portal/tasks',
-    icon: CheckSquare,
-    category: 'CRM',
+    title: 'Dormant Contacts',
+    description: 'Find and reactivate dormant customers',
+    href: '/portal/dormant-contacts',
+    icon: Zap,
+    category: 'Contact Management',
   },
   // Marketing Section
   {
@@ -72,20 +87,6 @@ export const navigation: NavigationItem[] = [
     description: 'Create and manage marketing campaigns',
     href: '/portal/campaigns',
     icon: MessageSquare,
-    category: 'Marketing',
-  },
-  {
-    title: 'Contact Groups',
-    description: 'Organize contacts into groups for campaigns',
-    href: '/portal/contact-groups',
-    icon: Users,
-    category: 'Marketing',
-  },
-  {
-    title: 'Dormant Contacts',
-    description: 'Find and reactivate dormant customers',
-    href: '/portal/dormant-contacts',
-    icon: Zap,
     category: 'Marketing',
   },
   {
@@ -163,9 +164,9 @@ export function getGroupedNavigation(userRole?: string): (NavigationItem | Navig
   }
 
   // Add categories in order
-  const categoryOrder = ['CRM', 'Marketing', 'Tools', 'Settings'];
+  const categoryOrder = ['Contact Management', 'Marketing', 'Tools', 'Settings'];
   const categoryIcons: Record<string, ComponentType<{ className?: string }>> = {
-    'CRM': Users,
+    'Contact Management': Users,
     'Marketing': MessageSquare,
     'Tools': BarChart3,
     'Settings': UserCog,
