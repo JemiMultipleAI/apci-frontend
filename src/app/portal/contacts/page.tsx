@@ -12,7 +12,7 @@ interface Contact {
   first_name: string;
   last_name: string;
   email: string | null;
-  phone: string | null;
+  mobile: string | null;
   lifecycle_stage: string;
   created_at: string;
 }
@@ -335,7 +335,7 @@ export default function ContactsPage() {
                       {contact.email || '-'}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">
-                      {contact.phone || '-'}
+                      {contact.mobile || '-'}
                     </td>
                     <td className="px-4 py-3">
                       <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-800">

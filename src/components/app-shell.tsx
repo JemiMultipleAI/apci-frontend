@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
-import { Menu, X, LogOut } from 'lucide-react';
-import { navigation } from '@/config/navigation';
+import { Menu, X, LogOut, ChevronDown, ChevronRight } from 'lucide-react';
+import { getGroupedNavigation, type NavigationCategory } from '@/config/navigation';
 import { cn } from '@/lib/utils';
 import apiClient from '@/lib/api/client';
 import { clearTokens, setCompanyId, getCompanyId } from '@/lib/cookies';
@@ -24,9 +24,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [user, setUser] = useState<UserInfo | null>(null);
   const [loading, setLoading] = useState(true);
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['CRM', 'Marketing'])); // Default expanded
   const userMenuRef = useRef<HTMLDivElement>(null);
-
-  const activeNav = navigation.find((item) => pathname === item.href) || navigation[0];
 
   // Fetch user info and sync company_id with retry logic
   useEffect(() => {
@@ -195,16 +194,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           )}
         >
           <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4">
-            {navigation
-              .filter((item) => {
-                // Filter navigation items based on required role
-                if (item.requiredRole) {
-                  return user?.role === item.requiredRole;
-                }
-                return true;
-              })
-              .map((item) => {
-                const isActive = activeNav.href === item.href;
+            {getGroupedNavigation(user?.role).map((item, index) => {
+              // Regular navigation item (Dashboard)
+              if ('href' in item) {
+                const isActive = pathname === item.href;
                 return (
                   <Link
                     key={item.href}
@@ -228,7 +221,74 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     </div>
                   </Link>
                 );
-              })}
+              }
+
+              // Category section
+              const category = item as NavigationCategory;
+              const isExpanded = expandedSections.has(category.title);
+              const hasActiveItem = category.items.some(subItem => pathname === subItem.href);
+
+              return (
+                <div key={category.title} className="space-y-1">
+                  <button
+                    onClick={() => {
+                      setExpandedSections(prev => {
+                        const next = new Set(prev);
+                        if (next.has(category.title)) {
+                          next.delete(category.title);
+                        } else {
+                          next.add(category.title);
+                        }
+                        return next;
+                      });
+                    }}
+                    className={cn(
+                      'w-full flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold transition-all hover:bg-gray-100',
+                      hasActiveItem ? 'text-gray-900' : 'text-gray-700'
+                    )}
+                  >
+                    {isExpanded ? (
+                      <ChevronDown className="h-4 w-4 shrink-0" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4 shrink-0" />
+                    )}
+                    <category.icon className="h-4 w-4 shrink-0" />
+                    <span>{category.title}</span>
+                  </button>
+                  
+                  {isExpanded && (
+                    <div className="ml-7 space-y-1">
+                      {category.items.map((subItem) => {
+                        const isActive = pathname === subItem.href;
+                        return (
+                          <Link
+                            key={subItem.href}
+                            href={subItem.href}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className={cn(
+                              'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:bg-gray-100 hover:text-gray-900',
+                              isActive
+                                ? 'bg-gradient-to-r from-[#DC2626]/10 via-[#991B1B]/10 to-[#F43F5E]/10 text-gray-900 shadow-sm border border-[#DC2626]/30'
+                                : 'text-gray-600'
+                            )}
+                          >
+                            <subItem.icon className="h-4 w-4 shrink-0" />
+                            <div className="flex flex-col gap-0.5">
+                              <span>{subItem.title}</span>
+                              {subItem.description ? (
+                                <span className="text-xs font-normal text-gray-500">
+                                  {subItem.description}
+                                </span>
+                              ) : null}
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </nav>
         </aside>
 

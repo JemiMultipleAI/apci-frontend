@@ -183,7 +183,7 @@ export default function NewTemplatePage() {
             ))}
           </div>
           <p className="text-xs text-gray-600">
-            Common variables: first_name, last_name, email, phone, full_name
+            Common variables: first_name, last_name, email, mobile, full_name
           </p>
         </div>
 

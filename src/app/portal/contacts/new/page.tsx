@@ -12,7 +12,6 @@ export default function NewContactPage() {
     first_name: '',
     last_name: '',
     email: '',
-    phone: '',
     mobile: '',
     job_title: '',
     department: '',
@@ -96,20 +95,6 @@ export default function NewContactPage() {
               name="email"
               type="email"
               value={formData.email}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="phone" className="block text-sm font-medium mb-2 text-gray-900">
-              Phone
-            </label>
-            <input
-              id="phone"
-              name="phone"
-              type="tel"
-              value={formData.phone}
               onChange={handleChange}
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
             />

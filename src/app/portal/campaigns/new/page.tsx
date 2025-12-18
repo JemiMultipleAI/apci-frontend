@@ -24,27 +24,33 @@ interface Survey {
   is_active: boolean;
 }
 
+interface ContactGroup {
+  id: string;
+  name: string;
+  member_count: number;
+}
+
 export default function NewCampaignPage() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [contactGroups, setContactGroups] = useState<ContactGroup[]>([]);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [surveys, setSurveys] = useState<Survey[]>([]);
-  const [loadingContacts, setLoadingContacts] = useState(false);
+  const [loadingGroups, setLoadingGroups] = useState(false);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
   const [loadingSurveys, setLoadingSurveys] = useState(false);
-  const [selectedContactIds, setSelectedContactIds] = useState<Set<string>>(new Set());
+  const [selectedGroupIds, setSelectedGroupIds] = useState<Set<string>>(new Set());
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    type: 'marketing',
-    channel: 'multi', // Default to multi for backward compatibility
+    channel: 'multi',
     status: 'draft',
     start_date: '',
     end_date: '',
     template_id: '',
     survey_id: '',
+    filter_dormant: false,
     days_inactive: '90',
     // Channel checkboxes and schedules
     channels: {
@@ -68,18 +74,13 @@ export default function NewCampaignPage() {
       return;
     }
 
-    if (formData.type !== 'reactivation' && selectedContactIds.size === 0) {
-      setError('Please select at least one contact or use reactivation campaign type');
+    if (selectedGroupIds.size === 0) {
+      setError('Please select at least one contact group');
       return;
     }
 
-    if (formData.type !== 'survey' && !formData.template_id) {
-      setError('Please select a template');
-      return;
-    }
-
-    if (formData.type === 'survey' && !formData.survey_id) {
-      setError('Please select a survey');
+    if (!formData.survey_id && !formData.template_id) {
+      setError('Please select either a template or a survey');
       return;
     }
 
@@ -88,9 +89,9 @@ export default function NewCampaignPage() {
     try {
       const metadata: any = {};
 
-      // Add contact IDs if manually selected
-      if (selectedContactIds.size > 0) {
-        metadata.contact_ids = Array.from(selectedContactIds);
+      // Add contact group IDs (primary method)
+      if (selectedGroupIds.size > 0) {
+        metadata.contact_group_ids = Array.from(selectedGroupIds);
       }
 
       // Add template ID
@@ -98,13 +99,13 @@ export default function NewCampaignPage() {
         metadata.template_id = formData.template_id;
       }
 
-      // Add survey ID for survey campaigns
-      if (formData.type === 'survey' && formData.survey_id) {
+      // Add survey ID
+      if (formData.survey_id) {
         metadata.survey_id = formData.survey_id;
       }
 
-      // Add days_inactive for reactivation campaigns
-      if (formData.type === 'reactivation') {
+      // Add days_inactive if filtering by dormant contacts
+      if (formData.filter_dormant) {
         metadata.days_inactive = parseInt(formData.days_inactive) || 90;
       }
 
@@ -121,7 +122,6 @@ export default function NewCampaignPage() {
       const payload = {
         name: formData.name,
         description: formData.description || null,
-        type: formData.type,
         channel: channelValue,
         status: formData.status,
         start_date: formData.start_date || null,
@@ -155,36 +155,34 @@ export default function NewCampaignPage() {
   }, []);
 
   useEffect(() => {
-    if (formData.type === 'survey') {
-      const fetchSurveys = async () => {
-        setLoadingSurveys(true);
-        try {
-          const response = await apiClient.get('/surveys', { params: { page: 1, limit: 100, is_active: true } });
-          setSurveys(response.data.data);
-        } catch (error) {
-          console.error('Failed to fetch surveys:', error);
-        } finally {
-          setLoadingSurveys(false);
-        }
-      };
-      fetchSurveys();
-    }
-  }, [formData.type]);
+    const fetchSurveys = async () => {
+      setLoadingSurveys(true);
+      try {
+        const response = await apiClient.get('/surveys', { params: { page: 1, limit: 100, is_active: true } });
+        setSurveys(response.data.data);
+      } catch (error) {
+        console.error('Failed to fetch surveys:', error);
+      } finally {
+        setLoadingSurveys(false);
+      }
+    };
+    fetchSurveys();
+  }, []);
 
   useEffect(() => {
-    const fetchContacts = async () => {
-      setLoadingContacts(true);
+    const fetchContactGroups = async () => {
+      setLoadingGroups(true);
       try {
-        const response = await apiClient.get('/contacts', { params: { page: 1, limit: 100 } });
-        setContacts(response.data.data);
+        const response = await apiClient.get('/contact-groups', { params: { page: 1, limit: 100 } });
+        setContactGroups(response.data.data);
       } catch (error) {
-        console.error('Failed to fetch contacts:', error);
+        console.error('Failed to fetch contact groups:', error);
       } finally {
-        setLoadingContacts(false);
+        setLoadingGroups(false);
       }
     };
 
-    fetchContacts();
+    fetchContactGroups();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -194,21 +192,21 @@ export default function NewCampaignPage() {
     });
   };
 
-  const handleContactToggle = (contactId: string) => {
-    const newSelected = new Set(selectedContactIds);
-    if (newSelected.has(contactId)) {
-      newSelected.delete(contactId);
+  const handleGroupToggle = (groupId: string) => {
+    const newSelected = new Set(selectedGroupIds);
+    if (newSelected.has(groupId)) {
+      newSelected.delete(groupId);
     } else {
-      newSelected.add(contactId);
+      newSelected.add(groupId);
     }
-    setSelectedContactIds(newSelected);
+    setSelectedGroupIds(newSelected);
   };
 
-  const handleSelectAllContacts = () => {
-    if (selectedContactIds.size === contacts.length) {
-      setSelectedContactIds(new Set());
+  const handleSelectAllGroups = () => {
+    if (selectedGroupIds.size === contactGroups.length) {
+      setSelectedGroupIds(new Set());
     } else {
-      setSelectedContactIds(new Set(contacts.map(c => c.id)));
+      setSelectedGroupIds(new Set(contactGroups.map(g => g.id)));
     }
   };
 
@@ -305,23 +303,6 @@ export default function NewCampaignPage() {
             </p>
           </div>
 
-          <div>
-            <label htmlFor="type" className="block text-sm font-medium mb-2 text-gray-900">
-              Campaign Type *
-            </label>
-            <select
-              id="type"
-              name="type"
-              required
-              value={formData.type}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
-            >
-              <option value="marketing">Marketing</option>
-              <option value="reactivation">Subscription Reactivation</option>
-              <option value="survey">Survey</option>
-            </select>
-          </div>
 
           <div className="md:col-span-2">
             <label className="block text-sm font-medium mb-3 text-gray-900">
@@ -486,16 +467,15 @@ export default function NewCampaignPage() {
           </div>
         </div>
 
-        {/* Template Selection */}
-        {formData.type !== 'survey' && (
+        {/* Content Selection: Template or Survey */}
+        <div className="grid gap-6 md:grid-cols-2">
           <div>
             <label htmlFor="template_id" className="block text-sm font-medium mb-2 text-gray-900">
-              Template *
+              Template
             </label>
             <select
               id="template_id"
               name="template_id"
-              required={formData.type !== 'survey'}
               value={formData.template_id}
               onChange={handleChange}
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
@@ -504,7 +484,7 @@ export default function NewCampaignPage() {
               {loadingTemplates ? (
                 <option disabled>Loading templates...</option>
               ) : filteredTemplates.length === 0 ? (
-                <option disabled>No templates available for {formData.channel} channel</option>
+                <option disabled>No templates available</option>
               ) : (
                 filteredTemplates.map((template) => (
                   <option key={template.id} value={template.id}>
@@ -515,23 +495,18 @@ export default function NewCampaignPage() {
             </select>
             {filteredTemplates.length === 0 && !loadingTemplates && (
               <p className="mt-1 text-xs text-gray-500">
-                No templates found for selected channels. 
-                <Link href="/portal/templates/new" className="underline ml-1">Create one</Link>
+                <Link href="/portal/templates/new" className="underline">Create a template</Link>
               </p>
             )}
           </div>
-        )}
 
-        {/* Survey Selection */}
-        {formData.type === 'survey' && (
           <div>
             <label htmlFor="survey_id" className="block text-sm font-medium mb-2 text-gray-900">
-              Survey *
+              Survey
             </label>
             <select
               id="survey_id"
               name="survey_id"
-              required
               value={formData.survey_id}
               onChange={handleChange}
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
@@ -551,72 +526,52 @@ export default function NewCampaignPage() {
             </select>
             {surveys.length === 0 && !loadingSurveys && (
               <p className="mt-1 text-xs text-gray-500">
-                No active surveys found. 
-                <Link href="/portal/surveys/new" className="underline ml-1">Create one</Link>
+                <Link href="/portal/surveys/new" className="underline">Create a survey</Link>
               </p>
             )}
           </div>
-        )}
+        </div>
+        <p className="text-xs text-gray-500 -mt-4">
+          Select either a template or a survey (or both). If both are selected, template will be used.
+        </p>
 
-        {/* Reactivation Options */}
-        {formData.type === 'reactivation' && (
-          <div>
-            <label htmlFor="days_inactive" className="block text-sm font-medium mb-2 text-gray-900">
-              Days Inactive *
+        {/* Contact Group Selection */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-900">
+              Target Contact Groups *
             </label>
-            <input
-              id="days_inactive"
-              name="days_inactive"
-              type="number"
-              min="1"
-              required
-              value={formData.days_inactive}
-              onChange={handleChange}
-              placeholder="90"
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
-            />
-            <p className="mt-1 text-xs text-gray-500">
-              Contacts with no activity in the last N days will be automatically selected
-            </p>
+            <button
+              type="button"
+              onClick={handleSelectAllGroups}
+              className="text-xs text-gray-600 hover:text-gray-900 underline"
+            >
+              {selectedGroupIds.size === contactGroups.length ? 'Deselect All' : 'Select All'}
+            </button>
           </div>
-        )}
-
-        {/* Contact Selection */}
-        {formData.type !== 'reactivation' && (
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-900">
-                Target Contacts *
-              </label>
-              <button
-                type="button"
-                onClick={handleSelectAllContacts}
-                className="text-xs text-gray-600 hover:text-gray-900 underline"
-              >
-                {selectedContactIds.size === contacts.length ? 'Deselect All' : 'Select All'}
-              </button>
-            </div>
-            <div className="rounded-lg border border-gray-200 bg-gray-50 max-h-60 overflow-y-auto p-3">
-              {loadingContacts ? (
-                <div className="text-center text-gray-600 py-4">Loading contacts...</div>
-              ) : contacts.length === 0 ? (
-                <div className="text-center text-gray-600 py-4">No contacts found</div>
+          <div className="rounded-lg border border-gray-200 bg-gray-50 max-h-60 overflow-y-auto p-3">
+              {loadingGroups ? (
+                <div className="text-center text-gray-600 py-4">Loading contact groups...</div>
+              ) : contactGroups.length === 0 ? (
+                <div className="text-center text-gray-600 py-4">
+                  No contact groups found. <Link href="/portal/contact-groups/new" className="text-[#DC2626] underline">Create one</Link>
+                </div>
               ) : (
                 <div className="space-y-2">
-                  {contacts.map((contact) => (
+                  {contactGroups.map((group) => (
                     <label
-                      key={contact.id}
+                      key={group.id}
                       className="flex items-center gap-2 p-2 rounded hover:bg-gray-100 cursor-pointer"
                     >
                       <input
                         type="checkbox"
-                        checked={selectedContactIds.has(contact.id)}
-                        onChange={() => handleContactToggle(contact.id)}
+                        checked={selectedGroupIds.has(group.id)}
+                        onChange={() => handleGroupToggle(group.id)}
                         className="rounded border-gray-300 bg-white text-[#DC2626] focus:ring-[#DC2626]/50"
                       />
-                      <span className="text-sm text-gray-900">
-                        {contact.first_name} {contact.last_name}
-                        {contact.email && <span className="text-gray-500 ml-2">({contact.email})</span>}
+                      <span className="text-sm text-gray-900 flex-1">
+                        {group.name}
+                        <span className="text-gray-500 ml-2">({group.member_count} {group.member_count === 1 ? 'contact' : 'contacts'})</span>
                       </span>
                     </label>
                   ))}
@@ -624,10 +579,42 @@ export default function NewCampaignPage() {
               )}
             </div>
             <p className="mt-1 text-xs text-gray-500">
-              {selectedContactIds.size} contact{selectedContactIds.size !== 1 ? 's' : ''} selected
+              {selectedGroupIds.size} group{selectedGroupIds.size !== 1 ? 's' : ''} selected
             </p>
           </div>
-        )}
+
+        {/* Dormant Filter Option */}
+        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={formData.filter_dormant}
+              onChange={(e) => setFormData({ ...formData, filter_dormant: e.target.checked })}
+              className="h-4 w-4 rounded border-gray-300 bg-white text-[#DC2626] focus:ring-[#DC2626]/50"
+            />
+            <span className="text-sm font-medium text-gray-900">Filter by dormant contacts</span>
+          </label>
+          {formData.filter_dormant && (
+            <div className="mt-3 ml-7">
+              <label htmlFor="days_inactive" className="block text-sm font-medium mb-2 text-gray-900">
+                Days Inactive
+              </label>
+              <input
+                id="days_inactive"
+                name="days_inactive"
+                type="number"
+                min="1"
+                value={formData.days_inactive}
+                onChange={handleChange}
+                placeholder="90"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                Only include contacts from selected groups that have been inactive for this many days
+              </p>
+            </div>
+          )}
+        </div>
 
         <div className="flex justify-end gap-3">
           <button

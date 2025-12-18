@@ -11,6 +11,8 @@ interface ImportResult {
   success: number;
   failed: number;
   errors: string[];
+  groupId?: string;
+  groupName?: string;
 }
 
 export default function ImportContactsPage() {
@@ -22,6 +24,7 @@ export default function ImportContactsPage() {
   const [importing, setImporting] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [contactGroupName, setContactGroupName] = useState('');
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -35,6 +38,10 @@ export default function ImportContactsPage() {
     setFile(selectedFile);
     setError(null);
     setResult(null);
+
+    // Extract filename without .csv extension for default group name
+    const filename = selectedFile.name.replace(/\.csv$/i, '');
+    setContactGroupName(filename);
 
     // Preview CSV file
     const reader = new FileReader();
@@ -69,6 +76,9 @@ export default function ImportContactsPage() {
     try {
       const formData = new FormData();
       formData.append('file', file);
+      if (contactGroupName.trim()) {
+        formData.append('contact_group_name', contactGroupName.trim());
+      }
 
       const response = await apiClient.post('/import-export/contacts/import', formData, {
         headers: {
@@ -78,10 +88,14 @@ export default function ImportContactsPage() {
 
       setResult(response.data.data);
       
-      // Redirect to contacts page after successful import
+      // Redirect to contact group if created, otherwise to contacts page
       if (response.data.data.success > 0) {
         setTimeout(() => {
-          router.push('/portal/contacts');
+          if (response.data.data.groupId) {
+            router.push(`/portal/contact-groups/${response.data.data.groupId}`);
+          } else {
+            router.push('/portal/contacts');
+          }
         }, 2000);
       }
     } catch (err: any) {
@@ -138,7 +152,7 @@ export default function ImportContactsPage() {
               <h2 className="text-lg font-semibold mb-2">CSV File Requirements</h2>
               <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
                 <li>Required columns: <code className="bg-secondary px-1 rounded">first_name</code>, <code className="bg-secondary px-1 rounded">last_name</code></li>
-                <li>Optional columns: <code className="bg-secondary px-1 rounded">email</code>, <code className="bg-secondary px-1 rounded">phone</code>, <code className="bg-secondary px-1 rounded">mobile</code>, <code className="bg-secondary px-1 rounded">job_title</code>, <code className="bg-secondary px-1 rounded">department</code>, <code className="bg-secondary px-1 rounded">lifecycle_stage</code>, <code className="bg-secondary px-1 rounded">notes</code></li>
+                <li>Optional columns: <code className="bg-secondary px-1 rounded">email</code>, <code className="bg-secondary px-1 rounded">mobile</code>, <code className="bg-secondary px-1 rounded">job_title</code>, <code className="bg-secondary px-1 rounded">department</code>, <code className="bg-secondary px-1 rounded">lifecycle_stage</code>, <code className="bg-secondary px-1 rounded">notes</code></li>
                 <li>File size limit: 10MB</li>
               </ul>
             </div>
@@ -186,6 +200,7 @@ export default function ImportContactsPage() {
                       onClick={() => {
                         setFile(null);
                         setPreview([]);
+                        setContactGroupName('');
                         if (fileInputRef.current) {
                           fileInputRef.current.value = '';
                         }
@@ -198,6 +213,26 @@ export default function ImportContactsPage() {
                 </div>
               )}
             </div>
+
+            {file && (
+              <div>
+                <label htmlFor="contact_group_name" className="block text-sm font-medium mb-2">
+                  Contact Group Name
+                </label>
+                <input
+                  id="contact_group_name"
+                  type="text"
+                  value={contactGroupName}
+                  onChange={(e) => setContactGroupName(e.target.value)}
+                  placeholder="Enter group name (defaults to filename)"
+                  className="w-full rounded-lg border bg-background px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Imported contacts will be added to this group. A new group will be created if it doesn't exist. 
+                  You can edit the name or leave it empty to skip group assignment.
+                </p>
+              </div>
+            )}
 
             {error && (
               <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-4 flex items-start gap-3">
@@ -277,9 +312,21 @@ export default function ImportContactsPage() {
                   </ul>
                 </div>
               )}
-              <p className="text-sm text-muted-foreground mt-4">
-                Redirecting to contacts page...
-              </p>
+              {result.groupId && result.groupName && (
+                <div className="mt-4 rounded-lg bg-primary/10 border border-primary/20 p-4">
+                  <p className="text-sm font-medium text-primary mb-1">
+                    Contacts added to group: {result.groupName}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Redirecting to group page...
+                  </p>
+                </div>
+              )}
+              {!result.groupId && (
+                <p className="text-sm text-muted-foreground mt-4">
+                  Redirecting to contacts page...
+                </p>
+              )}
             </div>
           </div>
         )}

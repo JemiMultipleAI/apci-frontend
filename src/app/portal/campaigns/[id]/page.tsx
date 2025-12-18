@@ -148,9 +148,21 @@ export default function CampaignDetailPage() {
   const handleExecute = async () => {
     if (!campaign) return;
 
-    // For reactivation campaigns, execute directly
-    if (campaign.type === 'reactivation') {
-      if (!confirm('Are you sure you want to execute this reactivation campaign? This will automatically find dormant contacts and send messages.')) {
+    // Check if campaign has contact groups in metadata - execute directly
+    const hasContactGroups = campaign.metadata?.contact_group_ids && 
+                             Array.isArray(campaign.metadata.contact_group_ids) && 
+                             campaign.metadata.contact_group_ids.length > 0;
+    
+    // For reactivation campaigns or campaigns with contact groups, execute directly
+    if (campaign.type === 'reactivation' || hasContactGroups) {
+      let confirmMessage = 'Are you sure you want to execute this campaign?';
+      if (campaign.type === 'reactivation') {
+        confirmMessage = 'Are you sure you want to execute this reactivation campaign? This will automatically find dormant contacts and send messages.';
+      } else if (hasContactGroups) {
+        confirmMessage = 'Are you sure you want to execute this campaign? This will send messages to all contacts in the selected contact groups.';
+      }
+      
+      if (!confirm(confirmMessage)) {
         return;
       }
       
@@ -169,7 +181,7 @@ export default function CampaignDetailPage() {
       return;
     }
 
-    // For other campaigns, show contact selection modal
+    // For campaigns without contact groups, show contact selection modal for manual selection
     setShowExecuteModal(true);
   };
 

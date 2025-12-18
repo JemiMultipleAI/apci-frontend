@@ -14,7 +14,6 @@ export default function EditContactPage() {
     first_name: '',
     last_name: '',
     email: '',
-    phone: '',
     mobile: '',
     job_title: '',
     department: '',
@@ -31,7 +30,6 @@ export default function EditContactPage() {
           first_name: contact.first_name || '',
           last_name: contact.last_name || '',
           email: contact.email || '',
-          phone: contact.phone || '',
           mobile: contact.mobile || '',
           job_title: contact.job_title || '',
           department: contact.department || '',
@@ -132,20 +130,6 @@ export default function EditContactPage() {
               name="email"
               type="email"
               value={formData.email}
-              onChange={handleChange}
-              className="w-full rounded-lg border bg-background px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="phone" className="block text-sm font-medium mb-2">
-              Phone
-            </label>
-            <input
-              id="phone"
-              name="phone"
-              type="tel"
-              value={formData.phone}
               onChange={handleChange}
               className="w-full rounded-lg border bg-background px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
             />

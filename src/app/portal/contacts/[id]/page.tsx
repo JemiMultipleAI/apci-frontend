@@ -11,7 +11,6 @@ interface Contact {
   first_name: string;
   last_name: string;
   email: string | null;
-  phone: string | null;
   mobile: string | null;
   job_title: string | null;
   department: string | null;
@@ -30,11 +29,18 @@ interface Activity {
   created_at: string;
 }
 
+interface ContactGroup {
+  id: string;
+  name: string;
+  description: string | null;
+}
+
 export default function ContactDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [contact, setContact] = useState<Contact | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
+  const [groups, setGroups] = useState<ContactGroup[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -42,12 +48,14 @@ export default function ContactDetailPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [contactRes, activitiesRes] = await Promise.all([
-          apiClient.get(`/contacts/${params.id}`),
-          apiClient.get(`/activities/timeline/contact/${params.id}`),
-        ]);
-        setContact(contactRes.data.data);
-        setActivities(activitiesRes.data.data);
+      const [contactRes, activitiesRes, groupsRes] = await Promise.all([
+        apiClient.get(`/contacts/${params.id}`),
+        apiClient.get(`/activities/timeline/contact/${params.id}`),
+        apiClient.get(`/contact-groups/contacts/${params.id}/groups`),
+      ]);
+      setContact(contactRes.data.data);
+      setActivities(activitiesRes.data.data);
+      setGroups(groupsRes.data.data || []);
       } catch (error) {
         console.error('Failed to fetch contact:', error);
       } finally {
@@ -117,16 +125,10 @@ export default function ContactDetailPage() {
                   <span>{contact.email}</span>
                 </div>
               )}
-              {contact.phone && (
-                <div className="flex items-center gap-3">
-                  <Phone className="h-5 w-5 text-muted-foreground" />
-                  <span>{contact.phone}</span>
-                </div>
-              )}
               {contact.mobile && (
                 <div className="flex items-center gap-3">
                   <Phone className="h-5 w-5 text-muted-foreground" />
-                  <span>{contact.mobile} (Mobile)</span>
+                  <span>{contact.mobile}</span>
                 </div>
               )}
               {contact.job_title && (
@@ -203,6 +205,24 @@ export default function ContactDetailPage() {
                   </Link>
                 </div>
               )}
+              <div>
+                <div className="text-sm text-muted-foreground mb-2">Contact Groups</div>
+                {groups.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No groups assigned</p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {groups.map((group) => (
+                      <Link
+                        key={group.id}
+                        href={`/portal/contact-groups/${group.id}`}
+                        className="inline-flex items-center rounded-full bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground hover:bg-secondary/80"
+                      >
+                        {group.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
