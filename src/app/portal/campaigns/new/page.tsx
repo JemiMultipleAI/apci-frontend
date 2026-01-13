@@ -12,22 +12,35 @@ interface Contact {
   email: string | null;
 }
 
-interface Template {
-  id: string;
-  name: string;
-  type: 'email' | 'sms';
-}
-
-interface Survey {
-  id: string;
-  name: string;
-  is_active: boolean;
-}
-
 interface ContactGroup {
   id: string;
   name: string;
   member_count: number;
+}
+
+/**
+ * Convert local datetime to UTC ISO string
+ */
+function localToUTC(localDateTime: string): string | null {
+  if (!localDateTime) return null;
+  // datetime-local input format: "YYYY-MM-DDTHH:mm"
+  const date = new Date(localDateTime);
+  return date.toISOString();
+}
+
+/**
+ * Convert UTC ISO string to local datetime for input
+ */
+function utcToLocal(utcString: string | null): string {
+  if (!utcString) return '';
+  const date = new Date(utcString);
+  // Get local datetime in YYYY-MM-DDTHH:mm format
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
 export default function NewCampaignPage() {
@@ -35,11 +48,7 @@ export default function NewCampaignPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [contactGroups, setContactGroups] = useState<ContactGroup[]>([]);
-  const [templates, setTemplates] = useState<Template[]>([]);
-  const [surveys, setSurveys] = useState<Survey[]>([]);
   const [loadingGroups, setLoadingGroups] = useState(false);
-  const [loadingTemplates, setLoadingTemplates] = useState(false);
-  const [loadingSurveys, setLoadingSurveys] = useState(false);
   const [selectedGroupIds, setSelectedGroupIds] = useState<Set<string>>(new Set());
   const [formData, setFormData] = useState({
     name: '',
@@ -48,15 +57,16 @@ export default function NewCampaignPage() {
     status: 'draft',
     start_date: '',
     end_date: '',
-    template_id: '',
-    survey_id: '',
+    instructions: '',
+    custom_introduction: '',
+    use_custom_introduction: false,
     filter_dormant: false,
     days_inactive: '90',
-    // Channel checkboxes and schedules
+    // Channel checkboxes and schedules (absolute date/time)
     channels: {
-      email: { enabled: true, delay: 0, unit: 'minutes' },
-      sms: { enabled: false, delay: 60, unit: 'minutes' },
-      call: { enabled: false, delay: 120, unit: 'minutes' },
+      email: { enabled: true, send_now: true, scheduled_time: '' },
+      sms: { enabled: false, send_now: true, scheduled_time: '' },
+      call: { enabled: false, send_now: true, scheduled_time: '' },
     },
   });
 
@@ -79,8 +89,9 @@ export default function NewCampaignPage() {
       return;
     }
 
-    if (!formData.survey_id && !formData.template_id) {
-      setError('Please select either a template or a survey');
+    // Require instructions (surveys are under development)
+    if (!formData.instructions.trim()) {
+      setError('Please provide campaign instructions');
       return;
     }
 
@@ -94,23 +105,25 @@ export default function NewCampaignPage() {
         metadata.contact_group_ids = Array.from(selectedGroupIds);
       }
 
-      // Add template ID
-      if (formData.template_id) {
-        metadata.template_id = formData.template_id;
-      }
-
-      // Add survey ID
-      if (formData.survey_id) {
-        metadata.survey_id = formData.survey_id;
-      }
-
       // Add days_inactive if filtering by dormant contacts
       if (formData.filter_dormant) {
         metadata.days_inactive = parseInt(formData.days_inactive) || 90;
       }
 
-      // Add channel configuration with schedules
-      metadata.channels = formData.channels;
+      // Add channel configuration with absolute scheduled times (convert to UTC)
+      const channelsWithUTC: any = {};
+      for (const [channel, config] of Object.entries(formData.channels)) {
+        if (config.enabled) {
+          channelsWithUTC[channel] = {
+            enabled: true,
+            send_now: config.send_now || false,
+            scheduled_time: config.send_now ? null : (config.scheduled_time ? localToUTC(config.scheduled_time) : null),
+          };
+        } else {
+          channelsWithUTC[channel] = { enabled: false };
+        }
+      }
+      metadata.channels = channelsWithUTC;
 
       // Determine channel value for backward compatibility
       // If all 3 enabled, use 'multi', otherwise use the single channel or 'multi'
@@ -124,8 +137,11 @@ export default function NewCampaignPage() {
         description: formData.description || null,
         channel: channelValue,
         status: formData.status,
-        start_date: formData.start_date || null,
-        end_date: formData.end_date || null,
+        instructions: formData.instructions.trim() || null,
+        custom_introduction: formData.use_custom_introduction ? formData.custom_introduction.trim() || null : null,
+        use_custom_introduction: formData.use_custom_introduction,
+        start_date: localToUTC(formData.start_date),
+        end_date: localToUTC(formData.end_date),
         metadata,
       };
       
@@ -138,36 +154,7 @@ export default function NewCampaignPage() {
     }
   };
 
-  useEffect(() => {
-    const fetchTemplates = async () => {
-      setLoadingTemplates(true);
-      try {
-        const response = await apiClient.get('/templates');
-        setTemplates(response.data.data);
-      } catch (error) {
-        console.error('Failed to fetch templates:', error);
-      } finally {
-        setLoadingTemplates(false);
-      }
-    };
-
-    fetchTemplates();
-  }, []);
-
-  useEffect(() => {
-    const fetchSurveys = async () => {
-      setLoadingSurveys(true);
-      try {
-        const response = await apiClient.get('/surveys', { params: { page: 1, limit: 100, is_active: true } });
-        setSurveys(response.data.data);
-      } catch (error) {
-        console.error('Failed to fetch surveys:', error);
-      } finally {
-        setLoadingSurveys(false);
-      }
-    };
-    fetchSurveys();
-  }, []);
+  // Survey fetching removed - surveys are under development
 
   useEffect(() => {
     const fetchContactGroups = async () => {
@@ -210,21 +197,6 @@ export default function NewCampaignPage() {
     }
   };
 
-  const filteredTemplates = templates.filter(t => {
-    // Show email templates if email is enabled, SMS templates if SMS or call is enabled
-    const emailEnabled = formData.channels.email.enabled;
-    const smsOrCallEnabled = formData.channels.sms.enabled || formData.channels.call.enabled;
-    
-    if (emailEnabled && smsOrCallEnabled) {
-      return true; // Show all templates
-    } else if (emailEnabled) {
-      return t.type === 'email';
-    } else if (smsOrCallEnabled) {
-      return t.type === 'sms';
-    }
-    return true;
-  });
-
   const handleChannelToggle = (channel: 'email' | 'sms' | 'call') => {
     setFormData({
       ...formData,
@@ -240,8 +212,7 @@ export default function NewCampaignPage() {
 
   const handleChannelScheduleChange = (
     channel: 'email' | 'sms' | 'call',
-    field: 'delay' | 'unit',
-    value: string | number
+    value: string
   ) => {
     setFormData({
       ...formData,
@@ -249,7 +220,21 @@ export default function NewCampaignPage() {
         ...formData.channels,
         [channel]: {
           ...formData.channels[channel],
-          [field]: value,
+          scheduled_time: value,
+        },
+      },
+    });
+  };
+
+  const handleChannelSendNowToggle = (channel: 'email' | 'sms' | 'call', sendNow: boolean) => {
+    setFormData({
+      ...formData,
+      channels: {
+        ...formData.channels,
+        [channel]: {
+          ...formData.channels[channel],
+          send_now: sendNow,
+          scheduled_time: sendNow ? '' : formData.channels[channel].scheduled_time,
         },
       },
     });
@@ -292,17 +277,13 @@ export default function NewCampaignPage() {
             <textarea
               id="description"
               name="description"
-              rows={4}
+              rows={3}
               value={formData.description}
               onChange={handleChange}
-              placeholder="Provide context about this campaign. This will be used as a knowledge base for AI-powered features like ElevenLabs voice calls."
+              placeholder="Optional description for this campaign"
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
             />
-            <p className="mt-1 text-xs text-gray-600">
-              This description will be used as context for AI-powered features, including ElevenLabs voice calls.
-            </p>
           </div>
-
 
           <div className="md:col-span-2">
             <label className="block text-sm font-medium mb-3 text-gray-900">
@@ -321,25 +302,28 @@ export default function NewCampaignPage() {
                   <span className="text-sm font-medium text-gray-900">Email</span>
                 </label>
                 {formData.channels.email.enabled && (
-                  <div className="ml-7 flex items-center gap-2">
-                    <span className="text-sm text-gray-600">Send</span>
-                    <input
-                      type="number"
-                      min="0"
-                      value={formData.channels.email.delay}
-                      onChange={(e) => handleChannelScheduleChange('email', 'delay', parseInt(e.target.value) || 0)}
-                      className="w-20 rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50"
-                    />
-                    <select
-                      value={formData.channels.email.unit}
-                      onChange={(e) => handleChannelScheduleChange('email', 'unit', e.target.value)}
-                      className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50"
-                    >
-                      <option value="minutes">minutes</option>
-                      <option value="hours">hours</option>
-                      <option value="days">days</option>
-                    </select>
-                    <span className="text-sm text-gray-600">after campaign start</span>
+                  <div className="ml-7 space-y-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.channels.email.send_now}
+                        onChange={(e) => handleChannelSendNowToggle('email', e.target.checked)}
+                        className="h-4 w-4 rounded border-gray-300 bg-white text-[#DC2626] focus:ring-[#DC2626]/50"
+                      />
+                      <span className="text-sm text-gray-700">Send Now</span>
+                    </label>
+                    {!formData.channels.email.send_now && (
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">Scheduled Time (UTC)</label>
+                        <input
+                          type="datetime-local"
+                          value={formData.channels.email.scheduled_time}
+                          onChange={(e) => handleChannelScheduleChange('email', e.target.value)}
+                          className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50"
+                        />
+                        <p className="mt-1 text-xs text-gray-500">Time is stored in UTC and converted from your local timezone</p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -356,25 +340,28 @@ export default function NewCampaignPage() {
                   <span className="text-sm font-medium text-gray-900">SMS</span>
                 </label>
                 {formData.channels.sms.enabled && (
-                  <div className="ml-7 flex items-center gap-2">
-                    <span className="text-sm text-gray-600">Send</span>
-                    <input
-                      type="number"
-                      min="0"
-                      value={formData.channels.sms.delay}
-                      onChange={(e) => handleChannelScheduleChange('sms', 'delay', parseInt(e.target.value) || 0)}
-                      className="w-20 rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50"
-                    />
-                    <select
-                      value={formData.channels.sms.unit}
-                      onChange={(e) => handleChannelScheduleChange('sms', 'unit', e.target.value)}
-                      className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50"
-                    >
-                      <option value="minutes">minutes</option>
-                      <option value="hours">hours</option>
-                      <option value="days">days</option>
-                    </select>
-                    <span className="text-sm text-gray-600">after campaign start</span>
+                  <div className="ml-7 space-y-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.channels.sms.send_now}
+                        onChange={(e) => handleChannelSendNowToggle('sms', e.target.checked)}
+                        className="h-4 w-4 rounded border-gray-300 bg-white text-[#DC2626] focus:ring-[#DC2626]/50"
+                      />
+                      <span className="text-sm text-gray-700">Send Now</span>
+                    </label>
+                    {!formData.channels.sms.send_now && (
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">Scheduled Time (UTC)</label>
+                        <input
+                          type="datetime-local"
+                          value={formData.channels.sms.scheduled_time}
+                          onChange={(e) => handleChannelScheduleChange('sms', e.target.value)}
+                          className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50"
+                        />
+                        <p className="mt-1 text-xs text-gray-500">Time is stored in UTC and converted from your local timezone</p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -391,31 +378,34 @@ export default function NewCampaignPage() {
                   <span className="text-sm font-medium text-gray-900">Voice Call</span>
                 </label>
                 {formData.channels.call.enabled && (
-                  <div className="ml-7 flex items-center gap-2">
-                    <span className="text-sm text-gray-600">Send</span>
-                    <input
-                      type="number"
-                      min="0"
-                      value={formData.channels.call.delay}
-                      onChange={(e) => handleChannelScheduleChange('call', 'delay', parseInt(e.target.value) || 0)}
-                      className="w-20 rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50"
-                    />
-                    <select
-                      value={formData.channels.call.unit}
-                      onChange={(e) => handleChannelScheduleChange('call', 'unit', e.target.value)}
-                      className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50"
-                    >
-                      <option value="minutes">minutes</option>
-                      <option value="hours">hours</option>
-                      <option value="days">days</option>
-                    </select>
-                    <span className="text-sm text-gray-600">after campaign start</span>
+                  <div className="ml-7 space-y-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.channels.call.send_now}
+                        onChange={(e) => handleChannelSendNowToggle('call', e.target.checked)}
+                        className="h-4 w-4 rounded border-gray-300 bg-white text-[#DC2626] focus:ring-[#DC2626]/50"
+                      />
+                      <span className="text-sm text-gray-700">Send Now</span>
+                    </label>
+                    {!formData.channels.call.send_now && (
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">Scheduled Time (UTC)</label>
+                        <input
+                          type="datetime-local"
+                          value={formData.channels.call.scheduled_time}
+                          onChange={(e) => handleChannelScheduleChange('call', e.target.value)}
+                          className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50"
+                        />
+                        <p className="mt-1 text-xs text-gray-500">Time is stored in UTC and converted from your local timezone</p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
             </div>
             <p className="mt-2 text-xs text-gray-500">
-              Select one or more channels. Each channel will be sent at its scheduled time relative to when the campaign is executed.
+              Select one or more channels. Enable "Send Now" for immediate execution, or schedule for a specific date and time (UTC).
             </p>
           </div>
 
@@ -440,7 +430,7 @@ export default function NewCampaignPage() {
 
           <div>
             <label htmlFor="start_date" className="block text-sm font-medium mb-2 text-gray-900">
-              Start Date
+              Start Date (UTC)
             </label>
             <input
               id="start_date"
@@ -450,11 +440,12 @@ export default function NewCampaignPage() {
               onChange={handleChange}
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
             />
+            <p className="mt-1 text-xs text-gray-500">Dates are stored in UTC and converted from your local timezone</p>
           </div>
 
           <div>
             <label htmlFor="end_date" className="block text-sm font-medium mb-2 text-gray-900">
-              End Date
+              End Date (UTC)
             </label>
             <input
               id="end_date"
@@ -464,76 +455,63 @@ export default function NewCampaignPage() {
               onChange={handleChange}
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
             />
+            <p className="mt-1 text-xs text-gray-500">Dates are stored in UTC and converted from your local timezone</p>
           </div>
         </div>
 
-        {/* Content Selection: Template or Survey */}
-        <div className="grid gap-6 md:grid-cols-2">
-          <div>
-            <label htmlFor="template_id" className="block text-sm font-medium mb-2 text-gray-900">
-              Template
-            </label>
-            <select
-              id="template_id"
-              name="template_id"
-              value={formData.template_id}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
-            >
-              <option value="">Select a template...</option>
-              {loadingTemplates ? (
-                <option disabled>Loading templates...</option>
-              ) : filteredTemplates.length === 0 ? (
-                <option disabled>No templates available</option>
-              ) : (
-                filteredTemplates.map((template) => (
-                  <option key={template.id} value={template.id}>
-                    {template.name} ({template.type.toUpperCase()})
-                  </option>
-                ))
-              )}
-            </select>
-            {filteredTemplates.length === 0 && !loadingTemplates && (
-              <p className="mt-1 text-xs text-gray-500">
-                <Link href="/portal/templates/new" className="underline">Create a template</Link>
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="survey_id" className="block text-sm font-medium mb-2 text-gray-900">
-              Survey
-            </label>
-            <select
-              id="survey_id"
-              name="survey_id"
-              value={formData.survey_id}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
-            >
-              <option value="">Select a survey...</option>
-              {loadingSurveys ? (
-                <option disabled>Loading surveys...</option>
-              ) : surveys.length === 0 ? (
-                <option disabled>No active surveys found</option>
-              ) : (
-                surveys.map((survey) => (
-                  <option key={survey.id} value={survey.id}>
-                    {survey.name}
-                  </option>
-                ))
-              )}
-            </select>
-            {surveys.length === 0 && !loadingSurveys && (
-              <p className="mt-1 text-xs text-gray-500">
-                <Link href="/portal/surveys/new" className="underline">Create a survey</Link>
-              </p>
-            )}
-          </div>
+        {/* Campaign Instructions */}
+        <div>
+          <label htmlFor="instructions" className="block text-sm font-medium mb-2 text-gray-900">
+            Campaign Instructions *
+          </label>
+          <textarea
+            id="instructions"
+            name="instructions"
+            rows={6}
+            required
+            value={formData.instructions}
+            onChange={handleChange}
+            placeholder="Provide instructions for the AI to generate personalized messages. For example: 'Send a friendly email introducing our new product line, mention any recent deals or interactions, and invite them to learn more.'"
+            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            The AI will use these instructions to generate personalized messages for each contact based on their CRM data (campaigns, deals, contact info).
+          </p>
         </div>
-        <p className="text-xs text-gray-500 -mt-4">
-          Select either a template or a survey (or both). If both are selected, template will be used.
-        </p>
+
+        {/* Survey Selection - Hidden (Under Development) */}
+
+        {/* Custom Introduction */}
+        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+          <label className="flex items-center gap-3 cursor-pointer mb-3">
+            <input
+              type="checkbox"
+              checked={formData.use_custom_introduction}
+              onChange={(e) => setFormData({ ...formData, use_custom_introduction: e.target.checked })}
+              className="h-4 w-4 rounded border-gray-300 bg-white text-[#DC2626] focus:ring-[#DC2626]/50"
+            />
+            <span className="text-sm font-medium text-gray-900">Use Custom Introduction</span>
+          </label>
+          {formData.use_custom_introduction && (
+            <div className="mt-3">
+              <label htmlFor="custom_introduction" className="block text-sm font-medium mb-2 text-gray-900">
+                Custom Introduction
+              </label>
+              <textarea
+                id="custom_introduction"
+                name="custom_introduction"
+                rows={4}
+                value={formData.custom_introduction}
+                onChange={handleChange}
+                placeholder="Enter a custom introduction or greeting. For voice calls, this will be used as the initial greeting. For email/SMS, this will be prepended to the AI-generated content."
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                This introduction will be used in voice calls as the initial greeting, or prepended to email/SMS content.
+              </p>
+            </div>
+          )}
+        </div>
 
         {/* Contact Group Selection */}
         <div>
@@ -636,4 +614,3 @@ export default function NewCampaignPage() {
     </div>
   );
 }
-

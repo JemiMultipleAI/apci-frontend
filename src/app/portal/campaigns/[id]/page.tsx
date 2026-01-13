@@ -368,28 +368,8 @@ export default function CampaignDetailPage() {
                   </div>
                 </div>
               )}
-              {campaign.metadata?.template_id && (
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Template</div>
-                  <div className="text-gray-900">
-                    <Link href={`/portal/templates/${campaign.metadata.template_id}`} className="hover:underline flex items-center gap-2 text-[#DC2626]">
-                      <FileText className="h-4 w-4" />
-                      View Template
-                    </Link>
-                  </div>
-                </div>
-              )}
-              {campaign.metadata?.survey_id && (
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Survey</div>
-                  <div className="text-gray-900">
-                    <Link href={`/portal/surveys/${campaign.metadata.survey_id}`} className="hover:underline flex items-center gap-2 text-[#DC2626]">
-                      <FileText className="h-4 w-4" />
-                      View Survey
-                    </Link>
-                  </div>
-                </div>
-              )}
+              {/* Template section hidden - templates are deprecated */}
+              {/* Survey section hidden - under development */}
               {campaign.metadata?.days_inactive && (
                 <div>
                   <div className="text-sm text-gray-600 mb-1">Days Inactive</div>
