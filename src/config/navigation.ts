@@ -11,7 +11,8 @@ import {
   Zap,
   Activity,
   UserCog,
-  Bot
+  Bot,
+  MessageCircle
 } from 'lucide-react';
 
 export type NavigationItem = {
@@ -116,6 +117,13 @@ export const navigation: NavigationItem[] = [
     description: 'View all customer interactions',
     href: '/portal/activity',
     icon: Activity,
+    category: 'Tools',
+  },
+  {
+    title: 'AI Chat',
+    description: 'Test and interact with the AI agent',
+    href: '/portal/chat',
+    icon: MessageCircle,
     category: 'Tools',
   },
   // Settings Section
