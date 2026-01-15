@@ -12,7 +12,7 @@ export default function NewDealPage() {
   const [contacts, setContacts] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     name: '',
-    account_id: '',
+    customer_company_id: '', // Updated: account_id → customer_company_id
     contact_id: '',
     stage: 'lead',
     value: '',
@@ -49,7 +49,7 @@ export default function NewDealPage() {
         ...formData,
         value: parseFloat(formData.value) || 0,
         probability: parseInt(formData.probability) || 0,
-        account_id: formData.account_id || null,
+        customer_company_id: formData.customer_company_id || null, // Updated: account_id → customer_company_id
         contact_id: formData.contact_id || null,
         expected_close_date: formData.expected_close_date || null,
       };
@@ -100,13 +100,13 @@ export default function NewDealPage() {
           </div>
 
           <div>
-            <label htmlFor="account_id" className="block text-sm font-medium mb-2 text-gray-900">
-              Account
+            <label htmlFor="customer_company_id" className="block text-sm font-medium mb-2 text-gray-900">
+              Customer Company
             </label>
             <select
-              id="account_id"
-              name="account_id"
-              value={formData.account_id}
+              id="customer_company_id"
+              name="customer_company_id"
+              value={formData.customer_company_id}
               onChange={handleChange}
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
             >

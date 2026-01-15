@@ -5,7 +5,8 @@ import { Filter, X, Calendar } from 'lucide-react';
 
 export interface FilterState {
   lifecycle_stage?: string[];
-  account_id?: string;
+  account_id?: string; // Kept for backward compatibility, maps to customer_company_id in backend
+  customer_company_id?: string; // New: use this for filtering by customer company
   date_from?: string;
   date_to?: string;
   search?: string;
