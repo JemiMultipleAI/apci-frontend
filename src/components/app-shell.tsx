@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { Menu, X, LogOut, ChevronDown, ChevronRight } from 'lucide-react';
-import { getGroupedNavigation, type NavigationCategory } from '@/config/navigation';
+import { getGroupedNavigation, type NavigationCategory, navigation } from '@/config/navigation';
 import { cn } from '@/lib/utils';
 import apiClient from '@/lib/api/client';
 import { clearTokens, setCompanyId, getCompanyId } from '@/lib/cookies';
@@ -97,14 +97,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/80">
+      <header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur-md supports-[backdrop-filter]:bg-surface/80">
         <div className="w-full flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-6">
             <button
               type="button"
-              className="lg:hidden text-gray-900"
+              className="lg:hidden text-foreground"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -115,11 +115,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               )}
             </button>
             <Link href="/portal" className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#DC2626] via-[#991B1B] to-[#F43F5E] flex items-center justify-center shadow-lg">
+              <div className="w-8 h-8 rounded-lg bg-gradient-tech flex items-center justify-center shadow-lg glow-cyan">
                 <span className="text-white font-bold text-sm">C</span>
               </div>
-              <span className="text-xl font-bold text-gray-900">CRMatIQ</span>
-              <span className="text-xs text-gray-500">CRM</span>
+              <span className="text-xl font-bold text-foreground">CRMatIQ</span>
+              <span className="text-xs text-muted-foreground">CRM</span>
             </Link>
           </div>
           <div className="flex items-center gap-4">
@@ -128,18 +128,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <button
                 type="button"
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 hover:bg-gray-100 transition-colors"
+                className="flex items-center gap-2 rounded-lg border border-border bg-surface-elevated px-3 py-1.5 hover:bg-secondary transition-colors"
                 aria-label="User menu"
               >
-                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#DC2626] via-[#991B1B] to-[#F43F5E] flex items-center justify-center text-white font-semibold text-sm">
+                <div className="h-8 w-8 rounded-full bg-gradient-tech flex items-center justify-center text-white font-semibold text-sm">
                   {loading ? '...' : getUserInitials()}
                 </div>
                 {!loading && user && (
                   <div className="hidden md:flex flex-col items-start">
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-sm font-medium text-foreground">
                       {getUserDisplayName()}
                     </span>
-                    <span className="text-xs text-gray-500 capitalize">
+                    <span className="text-xs text-muted-foreground capitalize">
                       {user.role}
                     </span>
                   </div>
@@ -148,21 +148,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
               {/* User dropdown menu */}
               {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-xl border border-gray-200 bg-white backdrop-blur-md shadow-2xl z-50 overflow-hidden">
+                <div className="absolute right-0 mt-2 w-56 rounded-xl border border-border bg-card backdrop-blur-md shadow-2xl z-50 overflow-hidden glass">
                   {user && (
-                    <div className="px-4 py-3 border-b border-gray-200">
+                    <div className="px-4 py-3 border-b border-border">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#DC2626] via-[#991B1B] to-[#F43F5E] flex items-center justify-center text-white font-semibold">
+                        <div className="h-10 w-10 rounded-full bg-gradient-tech flex items-center justify-center text-white font-semibold">
                           {getUserInitials()}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">
+                          <p className="text-sm font-medium text-foreground truncate">
                             {getUserDisplayName()}
                           </p>
-                          <p className="text-xs text-gray-500 truncate">
+                          <p className="text-xs text-muted-foreground truncate">
                             {user.email}
                           </p>
-                          <p className="text-xs text-gray-400 capitalize mt-0.5">
+                          <p className="text-xs text-muted-foreground capitalize mt-0.5">
                             {user.role}
                           </p>
                         </div>
@@ -172,7 +172,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <div className="py-1">
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-text-secondary hover:bg-surface-elevated transition-colors"
                     >
                       <LogOut className="h-4 w-4" />
                       <span>Sign out</span>
@@ -189,7 +189,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* Sidebar */}
         <aside
           className={cn(
-            'fixed inset-y-0 left-0 z-30 w-64 border-r border-gray-200 bg-white pt-16 transition-transform lg:translate-x-0',
+            'fixed inset-y-0 left-0 z-30 w-64 border-r border-border bg-surface pt-16 transition-transform lg:translate-x-0',
             mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
           )}
         >
@@ -204,17 +204,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
                     className={cn(
-                      'flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all hover:bg-gray-100 hover:text-gray-900 hover:shadow-sm',
+                      'flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all hover:bg-surface-elevated hover:text-foreground hover:shadow-sm',
                       isActive
-                        ? 'bg-gradient-to-r from-[#DC2626]/10 via-[#991B1B]/10 to-[#F43F5E]/10 text-gray-900 shadow-sm border border-[#DC2626]/30'
-                        : 'text-gray-700'
+                        ? 'bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 text-foreground shadow-sm border border-primary/30 glow-cyan'
+                        : 'text-text-secondary'
                     )}
                   >
                     <item.icon className="h-4 w-4 shrink-0" />
                     <div className="flex flex-col gap-0.5">
                       <span>{item.title}</span>
                       {item.description ? (
-                        <span className="text-xs font-normal text-gray-500">
+                        <span className="text-xs font-normal text-muted-foreground">
                           {item.description}
                         </span>
                       ) : null}
@@ -243,8 +243,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       });
                     }}
                     className={cn(
-                      'w-full flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold transition-all hover:bg-gray-100',
-                      hasActiveItem ? 'text-gray-900' : 'text-gray-700'
+                      'w-full flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold transition-all hover:bg-surface-elevated',
+                      hasActiveItem ? 'text-foreground' : 'text-text-secondary'
                     )}
                   >
                     {isExpanded ? (
@@ -266,17 +266,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                             href={subItem.href}
                             onClick={() => setMobileMenuOpen(false)}
                             className={cn(
-                              'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:bg-gray-100 hover:text-gray-900',
+                              'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:bg-surface-elevated hover:text-foreground',
                               isActive
-                                ? 'bg-gradient-to-r from-[#DC2626]/10 via-[#991B1B]/10 to-[#F43F5E]/10 text-gray-900 shadow-sm border border-[#DC2626]/30'
-                                : 'text-gray-600'
+                                ? 'bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 text-foreground shadow-sm border border-primary/30 glow-cyan'
+                                : 'text-text-muted'
                             )}
                           >
                             <subItem.icon className="h-4 w-4 shrink-0" />
                             <div className="flex flex-col gap-0.5">
                               <span>{subItem.title}</span>
                               {subItem.description ? (
-                                <span className="text-xs font-normal text-gray-500">
+                                <span className="text-xs font-normal text-muted-foreground">
                                   {subItem.description}
                                 </span>
                               ) : null}

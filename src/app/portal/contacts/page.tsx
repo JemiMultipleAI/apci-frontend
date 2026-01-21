@@ -184,8 +184,8 @@ export default function ContactsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Customers</h1>
-          <p className="text-gray-600">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">Customers</h1>
+          <p className="text-muted-foreground">
             Manage customer contacts and track lifecycle
           </p>
         </div>
@@ -193,21 +193,21 @@ export default function ContactsPage() {
           <button
             onClick={handleExport}
             disabled={exporting || contacts.length === 0}
-            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2 text-text-secondary hover:bg-surface-elevated disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <Download className="h-4 w-4" />
             {exporting ? 'Exporting...' : 'Export'}
           </button>
           <Link
             href="/portal/contacts/import"
-            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2 text-text-secondary hover:bg-surface-elevated transition-colors"
           >
             <Upload className="h-4 w-4" />
             Import
           </Link>
           <Link
             href="/portal/contacts/new"
-            className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl"
+            className="flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"
           >
             <Plus className="h-4 w-4" />
             Add Customer
@@ -216,28 +216,28 @@ export default function ContactsPage() {
       </div>
 
       {selectedIds.size > 0 && (
-        <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 shadow-sm flex items-center justify-between">
-          <span className="text-sm font-medium text-gray-900">
+        <div className="rounded-xl border border-border bg-surface-elevated p-4 shadow-sm flex items-center justify-between">
+          <span className="text-sm font-medium text-foreground">
             {selectedIds.size} customer{selectedIds.size !== 1 ? 's' : ''} selected
           </span>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowBulkEdit(true)}
-              className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-text-secondary hover:bg-surface-elevated transition-colors"
             >
               <Edit className="h-4 w-4" />
               Edit
             </button>
             <button
               onClick={() => setShowDeleteConfirm(true)}
-              className="flex items-center gap-2 rounded-lg border border-red-300 bg-red-50 px-3 py-1.5 text-sm text-red-700 hover:bg-red-100 transition-colors"
+              className="flex items-center gap-2 rounded-lg border border-error/50 bg-error/20 px-3 py-1.5 text-sm text-error hover:bg-error/30 transition-colors"
             >
               <Trash2 className="h-4 w-4" />
               Delete
             </button>
             <button
               onClick={() => setSelectedIds(new Set())}
-              className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-text-secondary hover:bg-surface-elevated transition-colors"
             >
               <X className="h-4 w-4" />
               Clear
@@ -246,16 +246,16 @@ export default function ContactsPage() {
         </div>
       )}
 
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <div className="mb-4 flex items-center gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
               placeholder="Quick search..."
               value={filters.search || ''}
               onChange={(e) => setFilters({ ...filters, search: e.target.value || undefined })}
-              className="w-full rounded-lg border border-gray-300 bg-white pl-10 pr-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
+              className="w-full rounded-lg border border-border bg-background pl-10 pr-4 py-2 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
             />
           </div>
           <AdvancedFilters
@@ -270,19 +270,19 @@ export default function ContactsPage() {
         </div>
 
         {loading ? (
-          <div className="py-8 text-center text-gray-600">
+          <div className="py-8 text-center text-muted-foreground">
             Loading customers...
           </div>
         ) : contacts.length === 0 ? (
           <div className="py-12 text-center">
-            <Users className="mx-auto h-12 w-12 text-gray-300 mb-4" />
-            <h3 className="text-lg font-semibold mb-2 text-gray-900">No customers found</h3>
-            <p className="text-gray-600 mb-4">
+            <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold mb-2 text-foreground">No customers found</h3>
+            <p className="text-muted-foreground mb-4">
               Get started by adding your first customer
             </p>
             <Link
               href="/portal/contacts/new"
-              className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl"
+              className="inline-flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"
             >
               <Plus className="h-4 w-4" />
               Add Customer
@@ -292,27 +292,27 @@ export default function ContactsPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="px-4 py-3 text-left text-sm font-medium w-12 text-gray-900">
+                <tr className="border-b border-border">
+                  <th className="px-4 py-3 text-left text-sm font-medium w-12 text-foreground">
                     <input
                       type="checkbox"
                       checked={selectedIds.size === contacts.length && contacts.length > 0}
                       onChange={toggleSelectAll}
-                      className="rounded border-gray-300 bg-white"
+                      className="rounded border-border bg-background"
                     />
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Name</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Email</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Phone</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Stage</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Created</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-foreground">Name</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-foreground">Email</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-foreground">Phone</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-foreground">Stage</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-foreground">Created</th>
                 </tr>
               </thead>
               <tbody>
                 {contacts.map((contact) => (
                   <tr
                     key={contact.id}
-                    className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                    className="border-b border-border hover:bg-surface-elevated transition-colors"
                   >
                     <td className="px-4 py-3">
                       <input
@@ -320,29 +320,29 @@ export default function ContactsPage() {
                         checked={selectedIds.has(contact.id)}
                         onChange={() => toggleSelect(contact.id)}
                         onClick={(e) => e.stopPropagation()}
-                        className="rounded border-gray-300 bg-white"
+                        className="rounded border-border bg-background"
                       />
                     </td>
                     <td className="px-4 py-3">
                       <Link
                         href={`/portal/contacts/${contact.id}`}
-                        className="font-medium hover:underline text-gray-900"
+                        className="font-medium hover:underline text-foreground"
                       >
                         {contact.first_name} {contact.last_name}
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                    <td className="px-4 py-3 text-sm text-muted-foreground">
                       {contact.email || '-'}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                    <td className="px-4 py-3 text-sm text-muted-foreground">
                       {contact.mobile || '-'}
                     </td>
                     <td className="px-4 py-3">
-                      <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-800">
+                      <span className="rounded-full bg-surface-elevated px-2 py-1 text-xs font-medium text-text-secondary">
                         {contact.lifecycle_stage}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                    <td className="px-4 py-3 text-sm text-muted-foreground">
                       {new Date(contact.created_at).toLocaleDateString()}
                     </td>
                   </tr>
@@ -355,15 +355,15 @@ export default function ContactsPage() {
 
       {showBulkEdit && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 max-w-md w-full mx-4 shadow-xl">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900">Bulk Edit Customers</h2>
+          <div className="bg-card rounded-2xl border border-border p-6 max-w-md w-full mx-4 shadow-xl glass">
+            <h2 className="text-xl font-semibold mb-4 text-foreground">Bulk Edit Customers</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-900">Lifecycle Stage</label>
+                <label className="block text-sm font-medium mb-2 text-foreground">Lifecycle Stage</label>
                 <select
                   value={bulkEditData.lifecycle_stage}
                   onChange={(e) => setBulkEditData({ ...bulkEditData, lifecycle_stage: e.target.value })}
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
                 >
                   <option value="">No change</option>
                   <option value="lead">Lead</option>
@@ -378,14 +378,14 @@ export default function ContactsPage() {
                     setShowBulkEdit(false);
                     setBulkEditData({ lifecycle_stage: '' });
                   }}
-                  className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 rounded-lg border border-border bg-surface text-text-secondary hover:bg-surface-elevated transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleBulkUpdate}
                   disabled={bulkUpdating}
-                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] text-white font-semibold hover:opacity-90 transition-all disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg bg-gradient-tech text-white font-semibold hover:opacity-90 transition-all disabled:opacity-50 btn-tech"
                 >
                   {bulkUpdating ? 'Updating...' : 'Update'}
                 </button>
@@ -397,22 +397,22 @@ export default function ContactsPage() {
 
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 max-w-md w-full mx-4 shadow-xl">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900">Delete Customers</h2>
-            <p className="text-gray-600 mb-6">
+          <div className="bg-card rounded-2xl border border-border p-6 max-w-md w-full mx-4 shadow-xl glass">
+            <h2 className="text-xl font-semibold mb-4 text-foreground">Delete Customers</h2>
+            <p className="text-muted-foreground mb-6">
               Are you sure you want to delete {selectedIds.size} customer{selectedIds.size !== 1 ? 's' : ''}? This action cannot be undone.
             </p>
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 rounded-lg border border-border bg-surface text-text-secondary hover:bg-surface-elevated transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleBulkDelete}
                 disabled={bulkUpdating}
-                className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700 transition-all disabled:opacity-50"
+                className="px-4 py-2 rounded-lg bg-error text-white font-semibold hover:bg-error/80 transition-all disabled:opacity-50"
               >
                 {bulkUpdating ? 'Deleting...' : 'Delete'}
               </button>
