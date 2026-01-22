@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import apiClient from '@/lib/api/client';
+import { Button, Card, Input, Select, Label, Textarea, PageHeader, Alert } from '@/components/ui';
 
 export default function NewDealPage() {
   const router = useRouter();
@@ -12,7 +13,7 @@ export default function NewDealPage() {
   const [contacts, setContacts] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     name: '',
-    customer_company_id: '', // Updated: account_id → customer_company_id
+    customer_company_id: '',
     contact_id: '',
     stage: 'lead',
     value: '',
@@ -49,7 +50,7 @@ export default function NewDealPage() {
         ...formData,
         value: parseFloat(formData.value) || 0,
         probability: parseInt(formData.probability) || 0,
-        customer_company_id: formData.customer_company_id || null, // Updated: account_id → customer_company_id
+        customer_company_id: formData.customer_company_id || null,
         contact_id: formData.contact_id || null,
         expected_close_date: formData.expected_close_date || null,
       };
@@ -71,185 +72,158 @@ export default function NewDealPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Create New Deal</h1>
-        <p className="text-gray-600">Add a new deal to your pipeline</p>
-      </div>
+      <PageHeader
+        title="Create New Deal"
+        description="Add a new deal to your pipeline"
+      />
 
-      <form onSubmit={handleSubmit} className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-6">
-        {error && (
-          <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-800">
-            {error}
-          </div>
-        )}
+      <Card>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {error && <Alert variant="error">{error}</Alert>}
 
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="md:col-span-2">
-            <label htmlFor="name" className="block text-sm font-medium mb-2 text-gray-900">
-              Deal Name *
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              required
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="customer_company_id" className="block text-sm font-medium mb-2 text-gray-900">
-              Customer Company
-            </label>
-            <select
-              id="customer_company_id"
-              name="customer_company_id"
-              value={formData.customer_company_id}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
-            >
-              <option value="">Select an account</option>
-              {accounts.map((account) => (
-                <option key={account.id} value={account.id}>
-                  {account.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="contact_id" className="block text-sm font-medium mb-2 text-gray-900">
-              Contact
-            </label>
-            <select
-              id="contact_id"
-              name="contact_id"
-              value={formData.contact_id}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
-            >
-              <option value="">Select a contact</option>
-              {contacts.map((contact) => (
-                <option key={contact.id} value={contact.id}>
-                  {contact.first_name} {contact.last_name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="stage" className="block text-sm font-medium mb-2 text-gray-900">
-              Stage
-            </label>
-            <select
-              id="stage"
-              name="stage"
-              value={formData.stage}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
-            >
-              <option value="lead">Lead</option>
-              <option value="qualified">Qualified</option>
-              <option value="proposal">Proposal</option>
-              <option value="negotiation">Negotiation</option>
-              <option value="closed_won">Closed Won</option>
-              <option value="closed_lost">Closed Lost</option>
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="value" className="block text-sm font-medium mb-2 text-gray-900">
-              Deal Value
-            </label>
-            <div className="flex gap-2">
-              <select
-                name="currency"
-                value={formData.currency}
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="md:col-span-2">
+              <Label htmlFor="name" required>Deal Name</Label>
+              <Input
+                id="name"
+                name="name"
+                type="text"
+                required
+                value={formData.name}
                 onChange={handleChange}
-                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="customer_company_id">Customer Company</Label>
+              <Select
+                id="customer_company_id"
+                name="customer_company_id"
+                value={formData.customer_company_id}
+                onChange={handleChange}
               >
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-                <option value="GBP">GBP</option>
-              </select>
-              <input
-                id="value"
-                name="value"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.value}
+                <option value="">Select an account</option>
+                {accounts.map((account) => (
+                  <option key={account.id} value={account.id}>
+                    {account.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="contact_id">Contact</Label>
+              <Select
+                id="contact_id"
+                name="contact_id"
+                value={formData.contact_id}
                 onChange={handleChange}
-                className="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
+              >
+                <option value="">Select a contact</option>
+                {contacts.map((contact) => (
+                  <option key={contact.id} value={contact.id}>
+                    {contact.first_name} {contact.last_name}
+                  </option>
+                ))}
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="stage">Stage</Label>
+              <Select
+                id="stage"
+                name="stage"
+                value={formData.stage}
+                onChange={handleChange}
+              >
+                <option value="lead">Lead</option>
+                <option value="qualified">Qualified</option>
+                <option value="proposal">Proposal</option>
+                <option value="negotiation">Negotiation</option>
+                <option value="closed_won">Closed Won</option>
+                <option value="closed_lost">Closed Lost</option>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="value">Deal Value</Label>
+              <div className="flex gap-2">
+                <Select
+                  name="currency"
+                  value={formData.currency}
+                  onChange={handleChange}
+                  className="w-auto"
+                >
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                </Select>
+                <Input
+                  id="value"
+                  name="value"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.value}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="probability">Probability (%)</Label>
+              <Input
+                id="probability"
+                name="probability"
+                type="number"
+                min="0"
+                max="100"
+                value={formData.probability}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="expected_close_date">Expected Close Date</Label>
+              <Input
+                id="expected_close_date"
+                name="expected_close_date"
+                type="date"
+                value={formData.expected_close_date}
+                onChange={handleChange}
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="probability" className="block text-sm font-medium mb-2 text-gray-900">
-              Probability (%)
-            </label>
-            <input
-              id="probability"
-              name="probability"
-              type="number"
-              min="0"
-              max="100"
-              value={formData.probability}
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              name="description"
+              rows={4}
+              value={formData.description}
               onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
             />
           </div>
 
-          <div>
-            <label htmlFor="expected_close_date" className="block text-sm font-medium mb-2 text-gray-900">
-              Expected Close Date
-            </label>
-            <input
-              id="expected_close_date"
-              name="expected_close_date"
-              type="date"
-              value={formData.expected_close_date}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
-            />
+          <div className="flex justify-end gap-3">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => router.back()}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={saving}
+            >
+              {saving ? 'Creating...' : 'Create Deal'}
+            </Button>
           </div>
-        </div>
-
-        <div>
-          <label htmlFor="description" className="block text-sm font-medium mb-2 text-gray-900">
-            Description
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            rows={4}
-            value={formData.description}
-            onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
-          />
-        </div>
-
-        <div className="flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="rounded-lg border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={saving}
-            className="rounded-lg bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl disabled:opacity-50"
-          >
-            {saving ? 'Creating...' : 'Create Deal'}
-          </button>
-        </div>
-      </form>
+        </form>
+      </Card>
     </div>
   );
 }
-

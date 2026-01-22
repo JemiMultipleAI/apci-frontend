@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import apiClient from '@/lib/api/client';
+import { Button, Card, Input, Select, Label, Textarea, PageHeader, Alert } from '@/components/ui';
 
 export default function NewContactPage() {
   const router = useRouter();
@@ -88,163 +89,138 @@ export default function NewContactPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Create New Customer</h1>
-        <p className="text-gray-600">Add a new customer to your CRM</p>
-      </div>
+      <PageHeader
+        title="Create New Customer"
+        description="Add a new customer to your CRM"
+      />
 
-      <form onSubmit={handleSubmit} className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-6">
-        {error && (
-          <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-800">
-            {error}
+      <Card>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {error && <Alert variant="error">{error}</Alert>}
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <div>
+              <Label htmlFor="first_name" required>First Name</Label>
+              <Input
+                id="first_name"
+                name="first_name"
+                type="text"
+                required
+                value={formData.first_name}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="last_name" required>Last Name</Label>
+              <Input
+                id="last_name"
+                name="last_name"
+                type="text"
+                required
+                value={formData.last_name}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="mobile">Mobile</Label>
+              <Input
+                id="mobile"
+                name="mobile"
+                type="tel"
+                value={formData.mobile}
+                onChange={handleChange}
+                placeholder="61412345678"
+                maxLength={11}
+                error={!!mobileError}
+              />
+              {mobileError && (
+                <p className="mt-1 text-sm text-error">{mobileError}</p>
+              )}
+              <p className="mt-1 text-xs text-muted-foreground">
+                Format: 61 followed by 9 digits (e.g., 61412345678). Do not use 0 or +61.
+              </p>
+            </div>
+
+            <div>
+              <Label htmlFor="job_title">Job Title</Label>
+              <Input
+                id="job_title"
+                name="job_title"
+                type="text"
+                value={formData.job_title}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="department">Department</Label>
+              <Input
+                id="department"
+                name="department"
+                type="text"
+                value={formData.department}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="lifecycle_stage">Lifecycle Stage</Label>
+              <Select
+                id="lifecycle_stage"
+                name="lifecycle_stage"
+                value={formData.lifecycle_stage}
+                onChange={handleChange}
+              >
+                <option value="lead">Lead</option>
+                <option value="qualified">Qualified</option>
+                <option value="customer">Customer</option>
+                <option value="churned">Churned</option>
+              </Select>
+            </div>
           </div>
-        )}
 
-        <div className="grid gap-6 md:grid-cols-2">
           <div>
-            <label htmlFor="first_name" className="block text-sm font-medium mb-2 text-gray-900">
-              First Name *
-            </label>
-            <input
-              id="first_name"
-              name="first_name"
-              type="text"
-              required
-              value={formData.first_name}
+            <Label htmlFor="notes">Notes</Label>
+            <Textarea
+              id="notes"
+              name="notes"
+              rows={4}
+              value={formData.notes}
               onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
             />
           </div>
 
-          <div>
-            <label htmlFor="last_name" className="block text-sm font-medium mb-2 text-gray-900">
-              Last Name *
-            </label>
-            <input
-              id="last_name"
-              name="last_name"
-              type="text"
-              required
-              value={formData.last_name}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-2 text-gray-900">
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="mobile" className="block text-sm font-medium mb-2 text-gray-900">
-              Mobile
-            </label>
-            <input
-              id="mobile"
-              name="mobile"
-              type="tel"
-              value={formData.mobile}
-              onChange={handleChange}
-              placeholder="61412345678"
-              maxLength={11}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
-            />
-            {mobileError && (
-              <p className="mt-1 text-sm text-red-600">{mobileError}</p>
-            )}
-            <p className="mt-1 text-xs text-gray-500">
-              Format: 61 followed by 9 digits (e.g., 61412345678). Do not use 0 or +61.
-            </p>
-          </div>
-
-          <div>
-            <label htmlFor="job_title" className="block text-sm font-medium mb-2 text-gray-900">
-              Job Title
-            </label>
-            <input
-              id="job_title"
-              name="job_title"
-              type="text"
-              value={formData.job_title}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="department" className="block text-sm font-medium mb-2 text-gray-900">
-              Department
-            </label>
-            <input
-              id="department"
-              name="department"
-              type="text"
-              value={formData.department}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="lifecycle_stage" className="block text-sm font-medium mb-2 text-gray-900">
-              Lifecycle Stage
-            </label>
-            <select
-              id="lifecycle_stage"
-              name="lifecycle_stage"
-              value={formData.lifecycle_stage}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
+          <div className="flex justify-end gap-3">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => router.back()}
             >
-              <option value="lead">Lead</option>
-              <option value="qualified">Qualified</option>
-              <option value="customer">Customer</option>
-              <option value="churned">Churned</option>
-            </select>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={saving}
+            >
+              {saving ? 'Creating...' : 'Create Contact'}
+            </Button>
           </div>
-        </div>
-
-        <div>
-          <label htmlFor="notes" className="block text-sm font-medium mb-2 text-gray-900">
-            Notes
-          </label>
-          <textarea
-            id="notes"
-            name="notes"
-            rows={4}
-            value={formData.notes}
-            onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
-          />
-        </div>
-
-        <div className="flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="rounded-lg border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={saving}
-            className="rounded-lg bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl disabled:opacity-50"
-          >
-            {saving ? 'Creating...' : 'Create Contact'}
-          </button>
-        </div>
-      </form>
+        </form>
+      </Card>
     </div>
   );
 }

@@ -189,11 +189,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* Sidebar */}
         <aside
           className={cn(
-            'fixed inset-y-0 left-0 z-30 w-64 border-r border-border bg-surface pt-16 transition-transform lg:translate-x-0',
+            'fixed top-16 bottom-0 left-0 z-30 w-64 border-r border-border bg-surface transition-transform lg:translate-x-0 flex flex-col',
             mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
           )}
         >
-          <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4">
+          <nav className="flex-1 flex flex-col gap-1 overflow-y-auto overflow-x-hidden px-3 py-4 scroll-smooth">
             {getGroupedNavigation(user?.role).map((item, index) => {
               // Regular navigation item (Dashboard)
               if ('href' in item) {

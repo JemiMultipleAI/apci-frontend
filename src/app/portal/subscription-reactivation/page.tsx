@@ -352,7 +352,7 @@ export default function SubscriptionReactivationPage() {
                 </select>
                 {templates.length === 0 && (
                   <p className="text-xs text-gray-500 mt-1">
-                    No templates available. <a href="/portal/templates/new" className="text-[#DC2626] hover:underline">Create one</a>
+                    No templates available.
                   </p>
                 )}
               </div>

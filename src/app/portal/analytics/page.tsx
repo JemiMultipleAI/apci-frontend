@@ -51,7 +51,7 @@ export default function AnalyticsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-600">Loading analytics...</div>
+        <div className="text-muted-foreground">Loading analytics...</div>
       </div>
     );
   }
@@ -61,46 +61,46 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Analytics</h1>
-        <p className="text-gray-600">
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">Analytics</h1>
+        <p className="text-muted-foreground">
           Reports and insights for your CRM
         </p>
       </div>
 
       {metrics && (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-2">
-              <Users className="h-5 w-5 text-blue-500" />
-              <h3 className="font-semibold text-gray-900">Total Contacts</h3>
+              <Users className="h-5 w-5 text-primary" />
+              <h3 className="font-semibold text-foreground">Total Contacts</h3>
             </div>
-            <div className="text-3xl font-bold text-gray-900">{metrics.totalContacts}</div>
+            <div className="text-3xl font-bold text-foreground">{metrics.totalContacts}</div>
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-2">
-              <TrendingUp className="h-5 w-5 text-green-500" />
-              <h3 className="font-semibold text-gray-900">Active Deals</h3>
+              <TrendingUp className="h-5 w-5 text-success" />
+              <h3 className="font-semibold text-foreground">Active Deals</h3>
             </div>
-            <div className="text-3xl font-bold text-gray-900">{metrics.activeDeals}</div>
+            <div className="text-3xl font-bold text-foreground">{metrics.activeDeals}</div>
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-2">
-              <DollarSign className="h-5 w-5 text-orange-500" />
-              <h3 className="font-semibold text-gray-900">Total Revenue</h3>
+              <DollarSign className="h-5 w-5 text-warning" />
+              <h3 className="font-semibold text-foreground">Total Revenue</h3>
             </div>
-            <div className="text-3xl font-bold text-gray-900">
+            <div className="text-3xl font-bold text-foreground">
               ${(metrics.totalRevenue / 1000).toFixed(1)}k
             </div>
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-2">
-              <BarChart3 className="h-5 w-5 text-purple-500" />
-              <h3 className="font-semibold text-gray-900">Pipeline Value</h3>
+              <BarChart3 className="h-5 w-5 text-accent" />
+              <h3 className="font-semibold text-foreground">Pipeline Value</h3>
             </div>
-            <div className="text-3xl font-bold text-gray-900">
+            <div className="text-3xl font-bold text-foreground">
               ${(metrics.pipelineValue / 1000).toFixed(1)}k
             </div>
           </div>
@@ -108,8 +108,8 @@ export default function AnalyticsPage() {
       )}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4 text-gray-900">Pipeline by Stage</h2>
+        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+          <h2 className="text-lg font-semibold mb-4 text-foreground">Pipeline by Stage</h2>
           <div className="space-y-4">
             {stages.map((stage) => {
               const stageData = pipeline.find((p) => p.stage === stage);
@@ -122,17 +122,17 @@ export default function AnalyticsPage() {
               return (
                 <div key={stage}>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-900 capitalize">{stage}</span>
+                    <span className="text-sm font-medium text-foreground capitalize">{stage}</span>
                     <div className="text-right">
-                      <div className="text-sm font-semibold text-gray-900">{count} deals</div>
-                      <div className="text-xs text-gray-600">
+                      <div className="text-sm font-semibold text-foreground">{count} deals</div>
+                      <div className="text-xs text-muted-foreground">
                         ${(value / 1000).toFixed(1)}k
                       </div>
                     </div>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-gray-200">
+                  <div className="h-2 w-full rounded-full bg-surface-elevated">
                     <div
-                      className="h-2 rounded-full bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E]"
+                      className="h-2 rounded-full bg-gradient-tech"
                       style={{
                         width: maxValue > 0 ? `${(value / maxValue) * 100}%` : '0%',
                       }}
@@ -144,10 +144,10 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4 text-gray-900">Revenue Trend (Last 30 Days)</h2>
+        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+          <h2 className="text-lg font-semibold mb-4 text-foreground">Revenue Trend (Last 30 Days)</h2>
           {revenueData.length === 0 ? (
-            <div className="py-8 text-center text-gray-600">
+            <div className="py-8 text-center text-muted-foreground">
               No revenue data available
             </div>
           ) : (
@@ -161,16 +161,16 @@ export default function AnalyticsPage() {
                 return (
                   <div key={index}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs text-gray-600">
+                      <span className="text-xs text-muted-foreground">
                         {new Date(item.date).toLocaleDateString()}
                       </span>
-                      <span className="text-sm font-semibold text-gray-900">
+                      <span className="text-sm font-semibold text-foreground">
                         ${(revenue / 1000).toFixed(1)}k
                       </span>
                     </div>
-                    <div className="h-2 w-full rounded-full bg-gray-200">
+                    <div className="h-2 w-full rounded-full bg-surface-elevated">
                       <div
-                        className="h-2 rounded-full bg-green-500"
+                        className="h-2 rounded-full bg-success"
                         style={{
                           width: maxRevenue > 0 ? `${(revenue / maxRevenue) * 100}%` : '0%',
                         }}

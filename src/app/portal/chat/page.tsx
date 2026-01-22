@@ -98,17 +98,17 @@ export default function ChatPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
             AI Chat
           </h1>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Test and interact with the AI agent
           </p>
         </div>
         {messages.length > 0 && (
           <button
             onClick={clearConversation}
-            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-text-secondary hover:bg-surface-elevated transition-colors"
           >
             <Trash2 className="h-4 w-4" />
             Clear Chat
@@ -116,18 +116,18 @@ export default function ChatPage() {
         )}
       </div>
 
-      <div className="flex flex-col rounded-2xl border border-gray-200 bg-white shadow-sm" style={{ height: 'calc(100vh - 280px)', minHeight: '600px' }}>
+      <div className="flex flex-col rounded-2xl border border-border bg-card shadow-sm" style={{ height: 'calc(100vh - 280px)', minHeight: '600px' }}>
         {/* Messages Area */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
-              <div className="rounded-full bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] p-4 mb-4">
+              <div className="rounded-full bg-gradient-tech p-4 mb-4">
                 <Bot className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 Start a conversation
               </h3>
-              <p className="text-gray-600 max-w-md">
+              <p className="text-muted-foreground max-w-md">
                 Ask questions, test responses, and interact with the AI agent. This is a testing interface to check how the AI responds.
               </p>
             </div>
@@ -140,21 +140,21 @@ export default function ChatPage() {
                 }`}
               >
                 {message.role === 'assistant' && (
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] flex items-center justify-center">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-tech flex items-center justify-center">
                     <Bot className="h-4 w-4 text-white" />
                   </div>
                 )}
                 <div
                   className={`max-w-[70%] rounded-2xl px-4 py-3 ${
                     message.role === 'user'
-                      ? 'bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] text-white'
-                      : 'bg-gray-100 text-gray-900 border border-gray-200'
+                      ? 'bg-gradient-tech text-white'
+                      : 'bg-surface-elevated text-foreground border border-border'
                   }`}
                 >
                   <p className="whitespace-pre-wrap break-words">{message.content}</p>
                   <p
                     className={`text-xs mt-2 ${
-                      message.role === 'user' ? 'text-white/70' : 'text-gray-500'
+                      message.role === 'user' ? 'text-white/70' : 'text-muted-foreground'
                     }`}
                   >
                     {message.timestamp.toLocaleTimeString([], {
@@ -164,8 +164,8 @@ export default function ChatPage() {
                   </p>
                 </div>
                 {message.role === 'user' && (
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                    <User className="h-4 w-4 text-gray-600" />
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-surface-elevated flex items-center justify-center">
+                    <User className="h-4 w-4 text-muted-foreground" />
                   </div>
                 )}
               </div>
@@ -173,10 +173,10 @@ export default function ChatPage() {
           )}
           {loading && (
             <div className="flex gap-4 justify-start">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] flex items-center justify-center">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-tech flex items-center justify-center">
                 <Bot className="h-4 w-4 text-white" />
               </div>
-              <div className="bg-gray-100 text-gray-900 border border-gray-200 rounded-2xl px-4 py-3">
+              <div className="bg-surface-elevated text-foreground border border-border rounded-2xl px-4 py-3">
                 <div className="flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   <span className="text-sm">Thinking...</span>
@@ -190,15 +190,15 @@ export default function ChatPage() {
         {/* Error Message */}
         {error && (
           <div className="px-6 pb-4">
-            <div className="rounded-lg bg-red-50 border border-red-200 p-3 flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0" />
-              <p className="text-sm text-red-800">{error}</p>
+            <div className="rounded-lg bg-error/10 border border-error/30 p-3 flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-error flex-shrink-0" />
+              <p className="text-sm text-error">{error}</p>
             </div>
           </div>
         )}
 
         {/* Input Area */}
-        <div className="border-t border-gray-200 p-4">
+        <div className="border-t border-border p-4">
           <form onSubmit={sendMessage} className="flex gap-3">
             <input
               type="text"
@@ -206,12 +206,12 @@ export default function ChatPage() {
               onChange={(e) => setInputMessage(e.target.value)}
               placeholder="Type your message..."
               disabled={loading}
-              className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626] disabled:bg-gray-50 disabled:cursor-not-allowed"
+              className="flex-1 rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:bg-surface disabled:cursor-not-allowed"
             />
             <button
               type="submit"
               disabled={!inputMessage.trim() || loading}
-              className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] text-white hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+              className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-tech text-white hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl btn-tech"
             >
               {loading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
