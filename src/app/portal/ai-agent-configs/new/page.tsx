@@ -18,6 +18,7 @@ export default function NewAgentConfigPage() {
   const [formData, setFormData] = useState({
     account_id: null as string | null,
     agent_id: '',
+    agent_phone_number_id: '',
     name: '',
     description: '',
     is_active: true,
@@ -66,6 +67,7 @@ export default function NewAgentConfigPage() {
         ...formData,
         account_id: formData.account_id || null,
         description: formData.description || null,
+        agent_phone_number_id: formData.agent_phone_number_id || null,
         kb_campaigns_document_id: formData.kb_campaigns_document_id || null,
         kb_deals_document_id: formData.kb_deals_document_id || null,
       };
@@ -134,6 +136,25 @@ export default function NewAgentConfigPage() {
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 font-mono text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
             />
             <p className="text-xs text-gray-500 mt-1">The agent ID from your ElevenLabs dashboard</p>
+          </div>
+
+          <div className="md:col-span-2">
+            <label htmlFor="agent_phone_number_id" className="block text-sm font-medium mb-2 text-gray-900">
+              ElevenLabs Phone Number ID
+            </label>
+            <input
+              id="agent_phone_number_id"
+              name="agent_phone_number_id"
+              type="text"
+              value={formData.agent_phone_number_id}
+              onChange={handleChange}
+              placeholder="Enter the phone number ID from ElevenLabs"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 font-mono text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Required for native Twilio calls (better latency and interruption support). 
+              Get this from your ElevenLabs dashboard → Phone Numbers.
+            </p>
           </div>
 
           <div>

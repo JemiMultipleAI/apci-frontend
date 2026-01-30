@@ -20,6 +20,7 @@ export default function EditAgentConfigPage() {
   const [formData, setFormData] = useState({
     account_id: null as string | null,
     agent_id: '',
+    agent_phone_number_id: '',
     name: '',
     description: '',
     is_active: true,
@@ -44,6 +45,7 @@ export default function EditAgentConfigPage() {
         setFormData({
           account_id: config.account_id || null,
           agent_id: config.agent_id,
+          agent_phone_number_id: config.agent_phone_number_id || '',
           name: config.name,
           description: config.description || '',
           is_active: config.is_active,
@@ -81,6 +83,7 @@ export default function EditAgentConfigPage() {
     try {
       const submitData = {
         agent_id: formData.agent_id,
+        agent_phone_number_id: formData.agent_phone_number_id || null,
         name: formData.name,
         description: formData.description || null,
         is_active: formData.is_active,
@@ -155,6 +158,25 @@ export default function EditAgentConfigPage() {
               onChange={handleChange}
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 font-mono text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
             />
+          </div>
+
+          <div className="md:col-span-2">
+            <label htmlFor="agent_phone_number_id" className="block text-sm font-medium mb-2 text-gray-900">
+              ElevenLabs Phone Number ID
+            </label>
+            <input
+              id="agent_phone_number_id"
+              name="agent_phone_number_id"
+              type="text"
+              value={formData.agent_phone_number_id}
+              onChange={handleChange}
+              placeholder="Enter the phone number ID from ElevenLabs"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 font-mono text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Required for native Twilio calls (better latency and interruption support). 
+              Get this from your ElevenLabs dashboard → Phone Numbers.
+            </p>
           </div>
 
           <div className="md:col-span-2">
