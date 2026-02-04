@@ -5,7 +5,8 @@ import { Filter, X, Calendar } from 'lucide-react';
 
 export interface FilterState {
   lifecycle_stage?: string[];
-  account_id?: string;
+  account_id?: string; // Kept for backward compatibility, maps to customer_company_id in backend
+  customer_company_id?: string; // New: use this for filtering by customer company
   date_from?: string;
   date_to?: string;
   search?: string;
@@ -76,14 +77,14 @@ export default function AdvancedFilters({
         onClick={() => setShowFilters(!showFilters)}
         className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${
           hasActiveFilters 
-            ? 'border-red-600 bg-red-900/50 text-white' 
-            : 'border-red-800/30 bg-red-900/30 text-white hover:bg-red-900/50'
+            ? 'border-primary bg-primary/20 text-foreground glow-cyan' 
+            : 'border-border bg-surface text-text-secondary hover:bg-surface-elevated'
         }`}
       >
         <Filter className="h-4 w-4" />
         Filters
         {activeFilterCount > 0 && (
-          <span className="rounded-full bg-white text-red-700 px-1.5 py-0.5 text-xs font-semibold">
+          <span className="rounded-full bg-primary text-primary-foreground px-1.5 py-0.5 text-xs font-semibold">
             {activeFilterCount}
           </span>
         )}
@@ -95,12 +96,12 @@ export default function AdvancedFilters({
             className="fixed inset-0 z-40"
             onClick={() => setShowFilters(false)}
           />
-          <div className="absolute top-full left-0 mt-2 w-80 rounded-2xl border border-red-800/50 bg-gradient-to-br from-red-900/95 to-rose-900/95 backdrop-blur-md shadow-2xl z-50 p-4 space-y-4">
+          <div className="absolute top-full left-0 mt-2 w-80 rounded-2xl border border-border bg-card backdrop-blur-md shadow-2xl z-50 p-4 space-y-4 glass">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-white">Filters</h3>
+              <h3 className="font-semibold text-foreground">Filters</h3>
               <button
                 onClick={() => setShowFilters(false)}
-                className="text-red-200 hover:text-white transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -108,7 +109,7 @@ export default function AdvancedFilters({
 
             {/* Search */}
             <div>
-              <label className="block text-sm font-medium mb-2 text-white">Search</label>
+              <label className="block text-sm font-medium mb-2 text-foreground">Search</label>
               <input
                 type="text"
                 value={localFilters.search || ''}
@@ -116,26 +117,26 @@ export default function AdvancedFilters({
                   setLocalFilters({ ...localFilters, search: e.target.value || undefined })
                 }
                 placeholder="Search by name, email..."
-                className="w-full rounded-lg border border-red-800/50 bg-white/10 backdrop-blur-sm px-3 py-2 text-sm text-white placeholder-red-300/60 focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                className="w-full rounded-lg border border-border bg-background backdrop-blur-sm px-3 py-2 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
             </div>
 
             {/* Lifecycle Stage Multi-select */}
             <div>
-              <label className="block text-sm font-medium mb-2 text-white">Lifecycle Stage</label>
+              <label className="block text-sm font-medium mb-2 text-foreground">Lifecycle Stage</label>
               <div className="space-y-2">
                 {lifecycleStages.map((stage) => (
                   <label
                     key={stage}
-                    className="flex items-center gap-2 cursor-pointer hover:bg-red-900/50 p-2 rounded transition-colors"
+                    className="flex items-center gap-2 cursor-pointer hover:bg-surface-elevated p-2 rounded transition-colors"
                   >
                     <input
                       type="checkbox"
                       checked={localFilters.lifecycle_stage?.includes(stage) || false}
                       onChange={() => toggleLifecycleStage(stage)}
-                      className="rounded border-red-700/50 bg-white/10"
+                      className="rounded border-border bg-background"
                     />
-                    <span className="text-sm capitalize text-white">{stage}</span>
+                    <span className="text-sm capitalize text-foreground">{stage}</span>
                   </label>
                 ))}
               </div>
@@ -144,7 +145,7 @@ export default function AdvancedFilters({
             {/* Account Filter */}
             {filterOptions.accounts && filterOptions.accounts.length > 0 && (
               <div>
-                <label className="block text-sm font-medium mb-2 text-white">Account</label>
+                <label className="block text-sm font-medium mb-2 text-foreground">Account</label>
                 <select
                   value={localFilters.account_id || ''}
                   onChange={(e) =>
@@ -153,11 +154,11 @@ export default function AdvancedFilters({
                       account_id: e.target.value || undefined,
                     })
                   }
-                  className="w-full rounded-lg border border-red-800/50 bg-white/10 backdrop-blur-sm px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                  className="w-full rounded-lg border border-border bg-background backdrop-blur-sm px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
                 >
-                  <option value="" className="bg-red-900">All Accounts</option>
+                  <option value="" className="bg-card">All Accounts</option>
                   {filterOptions.accounts.map((account) => (
-                    <option key={account.id} value={account.id} className="bg-red-900">
+                    <option key={account.id} value={account.id} className="bg-card">
                       {account.name}
                     </option>
                   ))}
@@ -167,10 +168,10 @@ export default function AdvancedFilters({
 
             {/* Date Range */}
             <div>
-              <label className="block text-sm font-medium mb-2 text-white">Created Date</label>
+              <label className="block text-sm font-medium mb-2 text-foreground">Created Date</label>
               <div className="space-y-2">
                 <div>
-                  <label className="block text-xs text-red-200/70 mb-1">From</label>
+                  <label className="block text-xs text-muted-foreground mb-1">From</label>
                   <input
                     type="date"
                     value={localFilters.date_from || ''}
@@ -180,11 +181,11 @@ export default function AdvancedFilters({
                         date_from: e.target.value || undefined,
                       })
                     }
-                    className="w-full rounded-lg border border-red-800/50 bg-white/10 backdrop-blur-sm px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                    className="w-full rounded-lg border border-border bg-background backdrop-blur-sm px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-red-200/70 mb-1">To</label>
+                  <label className="block text-xs text-muted-foreground mb-1">To</label>
                   <input
                     type="date"
                     value={localFilters.date_to || ''}
@@ -194,7 +195,7 @@ export default function AdvancedFilters({
                         date_to: e.target.value || undefined,
                       })
                     }
-                    className="w-full rounded-lg border border-red-800/50 bg-white/10 backdrop-blur-sm px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                    className="w-full rounded-lg border border-border bg-background backdrop-blur-sm px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
               </div>
@@ -202,56 +203,56 @@ export default function AdvancedFilters({
 
             {/* Active Filters Display */}
             {hasActiveFilters && (
-              <div className="pt-2 border-t border-red-800/30">
+              <div className="pt-2 border-t border-border">
                 <div className="flex flex-wrap gap-2 mb-3">
                   {localFilters.lifecycle_stage?.map((stage) => (
                     <span
                       key={stage}
-                      className="inline-flex items-center gap-1 rounded-full bg-red-800/50 px-2 py-1 text-xs text-white"
+                      className="inline-flex items-center gap-1 rounded-full bg-surface-elevated px-2 py-1 text-xs text-foreground"
                     >
                       Stage: {stage}
                       <button
                         onClick={() => toggleLifecycleStage(stage)}
-                        className="hover:text-red-300 transition-colors"
+                        className="hover:text-primary transition-colors"
                       >
                         <X className="h-3 w-3" />
                       </button>
                     </span>
                   ))}
                   {localFilters.account_id && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-red-800/50 px-2 py-1 text-xs text-white">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-surface-elevated px-2 py-1 text-xs text-foreground">
                       Account
                       <button
                         onClick={() =>
                           setLocalFilters({ ...localFilters, account_id: undefined })
                         }
-                        className="hover:text-red-300 transition-colors"
+                        className="hover:text-primary transition-colors"
                       >
                         <X className="h-3 w-3" />
                       </button>
                     </span>
                   )}
                   {localFilters.date_from && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-red-800/50 px-2 py-1 text-xs text-white">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-surface-elevated px-2 py-1 text-xs text-foreground">
                       From: {localFilters.date_from}
                       <button
                         onClick={() =>
                           setLocalFilters({ ...localFilters, date_from: undefined })
                         }
-                        className="hover:text-red-300 transition-colors"
+                        className="hover:text-primary transition-colors"
                       >
                         <X className="h-3 w-3" />
                       </button>
                     </span>
                   )}
                   {localFilters.date_to && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-red-800/50 px-2 py-1 text-xs text-white">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-surface-elevated px-2 py-1 text-xs text-foreground">
                       To: {localFilters.date_to}
                       <button
                         onClick={() =>
                           setLocalFilters({ ...localFilters, date_to: undefined })
                         }
-                        className="hover:text-red-300 transition-colors"
+                        className="hover:text-primary transition-colors"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -262,16 +263,16 @@ export default function AdvancedFilters({
             )}
 
             {/* Actions */}
-            <div className="flex gap-2 pt-2 border-t border-red-800/30">
+            <div className="flex gap-2 pt-2 border-t border-border">
               <button
                 onClick={handleClear}
-                className="flex-1 rounded-lg border border-red-800/50 bg-red-900/30 px-3 py-2 text-sm text-white hover:bg-red-900/50 transition-colors"
+                className="flex-1 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text-secondary hover:bg-surface-elevated transition-colors"
               >
                 Clear All
               </button>
               <button
                 onClick={handleApply}
-                className="flex-1 rounded-lg bg-white text-red-700 px-3 py-2 text-sm font-semibold hover:bg-red-50 transition-all"
+                className="flex-1 rounded-lg bg-gradient-tech text-white px-3 py-2 text-sm font-semibold hover:opacity-90 transition-all btn-tech"
               >
                 Apply Filters
               </button>

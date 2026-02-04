@@ -95,12 +95,12 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <section className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+      <section className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
             Dashboard Overview
           </h1>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Welcome to CRMatIQ — Your CRM On Auto-Pilot
           </p>
         </div>
@@ -108,57 +108,57 @@ export default function DashboardPage() {
           {metricCards.map((metric) => (
             <div
               key={metric.label}
-              className="flex flex-col rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 hover:bg-gray-100 transition-colors"
+              className="flex flex-col rounded-xl border border-border bg-surface-elevated px-4 py-3 hover:bg-secondary transition-colors"
             >
               <div className="flex items-center gap-2 mb-2">
                 <metric.icon className={`h-4 w-4 ${metric.color}`} />
-                <span className="text-xs font-medium uppercase text-gray-600">
+                <span className="text-xs font-medium uppercase text-muted-foreground">
                   {metric.label}
                 </span>
               </div>
-              <span className="text-2xl font-semibold text-gray-900">{metric.value}</span>
+              <span className="text-2xl font-semibold text-foreground">{metric.value}</span>
             </div>
           ))}
         </div>
       </section>
 
       <section className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4 text-gray-900">Quick Actions</h2>
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+          <h2 className="text-lg font-semibold mb-4 text-foreground">Quick Actions</h2>
           <div className="space-y-2">
             <a
               href="/portal/contacts/new"
-              className="block rounded-lg border border-gray-200 bg-gray-50 p-3 hover:bg-gray-100 transition-colors"
+              className="block rounded-lg border border-border bg-surface-elevated p-3 hover:bg-secondary transition-colors"
             >
-              <div className="font-medium text-gray-900">Add New Customer</div>
-              <div className="text-sm text-gray-600">
+              <div className="font-medium text-foreground">Add New Customer</div>
+              <div className="text-sm text-muted-foreground">
                 Create a new customer contact
               </div>
             </a>
             <a
               href="/portal/deals/new"
-              className="block rounded-lg border border-gray-200 bg-gray-50 p-3 hover:bg-gray-100 transition-colors"
+              className="block rounded-lg border border-border bg-surface-elevated p-3 hover:bg-secondary transition-colors"
             >
-              <div className="font-medium text-gray-900">Create New Deal</div>
-              <div className="text-sm text-gray-600">
+              <div className="font-medium text-foreground">Create New Deal</div>
+              <div className="text-sm text-muted-foreground">
                 Start tracking a new sales opportunity
               </div>
             </a>
             <a
               href="/portal/campaigns/new"
-              className="block rounded-lg border border-gray-200 bg-gray-50 p-3 hover:bg-gray-100 transition-colors"
+              className="block rounded-lg border border-border bg-surface-elevated p-3 hover:bg-secondary transition-colors"
             >
-              <div className="font-medium text-gray-900">Launch Campaign</div>
-              <div className="text-sm text-gray-600">
+              <div className="font-medium text-foreground">Launch Campaign</div>
+              <div className="text-sm text-muted-foreground">
                 Create a marketing or subscription reactivation campaign
               </div>
             </a>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4 text-gray-900">Recent Activity</h2>
-          <div className="text-sm text-gray-600">
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+          <h2 className="text-lg font-semibold mb-4 text-foreground">Recent Activity</h2>
+          <div className="text-sm text-muted-foreground">
             Activity feed will appear here once you start using the CRM.
           </div>
         </div>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import apiClient from '@/lib/api/client';
+import { Button, Card, Input, Select, Label, Textarea, PageHeader, Alert } from '@/components/ui';
 
 interface Contact {
   id: string;
@@ -242,54 +243,43 @@ export default function NewCampaignPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Create New Campaign</h1>
-        <p className="text-gray-600">Create a new marketing or reactivation campaign</p>
-      </div>
+      <PageHeader
+        title="Create New Campaign"
+        description="Create a new marketing or reactivation campaign"
+      />
 
-      <form onSubmit={handleSubmit} className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-6">
-        {error && (
-          <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-800">
-            {error}
-          </div>
-        )}
+      <Card>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {error && <Alert variant="error">{error}</Alert>}
 
         <div className="grid gap-6 md:grid-cols-2">
           <div className="md:col-span-2">
-            <label htmlFor="name" className="block text-sm font-medium mb-2 text-gray-900">
-              Campaign Name *
-            </label>
-            <input
+              <Label htmlFor="name" required>Campaign Name</Label>
+              <Input
               id="name"
               name="name"
               type="text"
               required
               value={formData.name}
               onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
             />
           </div>
 
           <div className="md:col-span-2">
-            <label htmlFor="description" className="block text-sm font-medium mb-2 text-gray-900">
-              Description
-            </label>
-            <textarea
+              <Label htmlFor="description">Description</Label>
+              <Textarea
               id="description"
               name="description"
               rows={3}
               value={formData.description}
               onChange={handleChange}
               placeholder="Optional description for this campaign"
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
             />
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium mb-3 text-gray-900">
-              Communication Channels *
-            </label>
-            <div className="space-y-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
+              <Label>Communication Channels *</Label>
+              <Card variant="elevated" className="p-4 space-y-4">
               {/* Email Channel */}
               <div className="space-y-2">
                 <label className="flex items-center gap-3 cursor-pointer">
@@ -297,9 +287,9 @@ export default function NewCampaignPage() {
                     type="checkbox"
                     checked={formData.channels.email.enabled}
                     onChange={() => handleChannelToggle('email')}
-                    className="h-4 w-4 rounded border-gray-300 bg-white text-[#DC2626] focus:ring-[#DC2626]/50"
+                    className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary"
                   />
-                  <span className="text-sm font-medium text-gray-900">Email</span>
+                  <span className="text-sm font-medium text-foreground">Email</span>
                 </label>
                 {formData.channels.email.enabled && (
                   <div className="ml-7 space-y-2">
@@ -308,20 +298,20 @@ export default function NewCampaignPage() {
                         type="checkbox"
                         checked={formData.channels.email.send_now}
                         onChange={(e) => handleChannelSendNowToggle('email', e.target.checked)}
-                        className="h-4 w-4 rounded border-gray-300 bg-white text-[#DC2626] focus:ring-[#DC2626]/50"
+                        className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary"
                       />
                       <span className="text-sm text-gray-700">Send Now</span>
                     </label>
                     {!formData.channels.email.send_now && (
                       <div>
-                        <label className="block text-sm text-gray-600 mb-1">Scheduled Time (UTC)</label>
-                        <input
+                        <Label className="text-sm mb-1">Scheduled Time (UTC)</Label>
+                        <Input
                           type="datetime-local"
                           value={formData.channels.email.scheduled_time}
                           onChange={(e) => handleChannelScheduleChange('email', e.target.value)}
-                          className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50"
+                          className="text-sm"
                         />
-                        <p className="mt-1 text-xs text-gray-500">Time is stored in UTC and converted from your local timezone</p>
+                        <p className="mt-1 text-xs text-muted-foreground">Time is stored in UTC and converted from your local timezone</p>
                       </div>
                     )}
                   </div>
@@ -335,9 +325,9 @@ export default function NewCampaignPage() {
                     type="checkbox"
                     checked={formData.channels.sms.enabled}
                     onChange={() => handleChannelToggle('sms')}
-                    className="h-4 w-4 rounded border-gray-300 bg-white text-[#DC2626] focus:ring-[#DC2626]/50"
+                    className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary"
                   />
-                  <span className="text-sm font-medium text-gray-900">SMS</span>
+                  <span className="text-sm font-medium text-foreground">SMS</span>
                 </label>
                 {formData.channels.sms.enabled && (
                   <div className="ml-7 space-y-2">
@@ -346,20 +336,20 @@ export default function NewCampaignPage() {
                         type="checkbox"
                         checked={formData.channels.sms.send_now}
                         onChange={(e) => handleChannelSendNowToggle('sms', e.target.checked)}
-                        className="h-4 w-4 rounded border-gray-300 bg-white text-[#DC2626] focus:ring-[#DC2626]/50"
+                        className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary"
                       />
-                      <span className="text-sm text-gray-700">Send Now</span>
+                      <span className="text-sm text-text-secondary">Send Now</span>
                     </label>
                     {!formData.channels.sms.send_now && (
                       <div>
-                        <label className="block text-sm text-gray-600 mb-1">Scheduled Time (UTC)</label>
-                        <input
+                        <Label className="text-sm mb-1">Scheduled Time (UTC)</Label>
+                        <Input
                           type="datetime-local"
                           value={formData.channels.sms.scheduled_time}
                           onChange={(e) => handleChannelScheduleChange('sms', e.target.value)}
-                          className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50"
+                          className="text-sm"
                         />
-                        <p className="mt-1 text-xs text-gray-500">Time is stored in UTC and converted from your local timezone</p>
+                        <p className="mt-1 text-xs text-muted-foreground">Time is stored in UTC and converted from your local timezone</p>
                       </div>
                     )}
                   </div>
@@ -373,9 +363,9 @@ export default function NewCampaignPage() {
                     type="checkbox"
                     checked={formData.channels.call.enabled}
                     onChange={() => handleChannelToggle('call')}
-                    className="h-4 w-4 rounded border-gray-300 bg-white text-[#DC2626] focus:ring-[#DC2626]/50"
+                    className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary"
                   />
-                  <span className="text-sm font-medium text-gray-900">Voice Call</span>
+                  <span className="text-sm font-medium text-foreground">Voice Call</span>
                 </label>
                 {formData.channels.call.enabled && (
                   <div className="ml-7 space-y-2">
@@ -384,87 +374,76 @@ export default function NewCampaignPage() {
                         type="checkbox"
                         checked={formData.channels.call.send_now}
                         onChange={(e) => handleChannelSendNowToggle('call', e.target.checked)}
-                        className="h-4 w-4 rounded border-gray-300 bg-white text-[#DC2626] focus:ring-[#DC2626]/50"
+                        className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary"
                       />
-                      <span className="text-sm text-gray-700">Send Now</span>
+                      <span className="text-sm text-text-secondary">Send Now</span>
                     </label>
                     {!formData.channels.call.send_now && (
                       <div>
-                        <label className="block text-sm text-gray-600 mb-1">Scheduled Time (UTC)</label>
-                        <input
+                        <Label className="text-sm mb-1">Scheduled Time (UTC)</Label>
+                        <Input
                           type="datetime-local"
                           value={formData.channels.call.scheduled_time}
                           onChange={(e) => handleChannelScheduleChange('call', e.target.value)}
-                          className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50"
+                          className="text-sm"
                         />
-                        <p className="mt-1 text-xs text-gray-500">Time is stored in UTC and converted from your local timezone</p>
+                        <p className="mt-1 text-xs text-muted-foreground">Time is stored in UTC and converted from your local timezone</p>
                       </div>
                     )}
                   </div>
                 )}
               </div>
-            </div>
-            <p className="mt-2 text-xs text-gray-500">
+              </Card>
+              <p className="mt-2 text-xs text-muted-foreground">
               Select one or more channels. Enable "Send Now" for immediate execution, or schedule for a specific date and time (UTC).
             </p>
           </div>
 
           <div>
-            <label htmlFor="status" className="block text-sm font-medium mb-2 text-gray-900">
-              Status
-            </label>
-            <select
+              <Label htmlFor="status">Status</Label>
+              <Select
               id="status"
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
             >
               <option value="draft">Draft</option>
               <option value="scheduled">Scheduled</option>
               <option value="running">Running</option>
               <option value="paused">Paused</option>
               <option value="completed">Completed</option>
-            </select>
+              </Select>
           </div>
 
           <div>
-            <label htmlFor="start_date" className="block text-sm font-medium mb-2 text-gray-900">
-              Start Date (UTC)
-            </label>
-            <input
+              <Label htmlFor="start_date">Start Date (UTC)</Label>
+              <Input
               id="start_date"
               name="start_date"
               type="datetime-local"
               value={formData.start_date}
               onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
             />
-            <p className="mt-1 text-xs text-gray-500">Dates are stored in UTC and converted from your local timezone</p>
+              <p className="mt-1 text-xs text-muted-foreground">Dates are stored in UTC and converted from your local timezone</p>
           </div>
 
           <div>
-            <label htmlFor="end_date" className="block text-sm font-medium mb-2 text-gray-900">
-              End Date (UTC)
-            </label>
-            <input
+              <Label htmlFor="end_date">End Date (UTC)</Label>
+              <Input
               id="end_date"
               name="end_date"
               type="datetime-local"
               value={formData.end_date}
               onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
             />
-            <p className="mt-1 text-xs text-gray-500">Dates are stored in UTC and converted from your local timezone</p>
+              <p className="mt-1 text-xs text-muted-foreground">Dates are stored in UTC and converted from your local timezone</p>
           </div>
         </div>
 
         {/* Campaign Instructions */}
         <div>
-          <label htmlFor="instructions" className="block text-sm font-medium mb-2 text-gray-900">
-            Campaign Instructions *
-          </label>
-          <textarea
+            <Label htmlFor="instructions" required>Campaign Instructions</Label>
+            <Textarea
             id="instructions"
             name="instructions"
             rows={6}
@@ -472,112 +451,103 @@ export default function NewCampaignPage() {
             value={formData.instructions}
             onChange={handleChange}
             placeholder="Provide instructions for the AI to generate personalized messages. For example: 'Send a friendly email introducing our new product line, mention any recent deals or interactions, and invite them to learn more.'"
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
           />
-          <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-muted-foreground">
             The AI will use these instructions to generate personalized messages for each contact based on their CRM data (campaigns, deals, contact info).
           </p>
         </div>
 
-        {/* Survey Selection - Hidden (Under Development) */}
-
         {/* Custom Introduction */}
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+          <Card variant="elevated" className="p-4">
           <label className="flex items-center gap-3 cursor-pointer mb-3">
             <input
               type="checkbox"
               checked={formData.use_custom_introduction}
               onChange={(e) => setFormData({ ...formData, use_custom_introduction: e.target.checked })}
-              className="h-4 w-4 rounded border-gray-300 bg-white text-[#DC2626] focus:ring-[#DC2626]/50"
+                className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary"
             />
-            <span className="text-sm font-medium text-gray-900">Use Custom Introduction</span>
+              <span className="text-sm font-medium text-foreground">Use Custom Introduction</span>
           </label>
           {formData.use_custom_introduction && (
             <div className="mt-3">
-              <label htmlFor="custom_introduction" className="block text-sm font-medium mb-2 text-gray-900">
-                Custom Introduction
-              </label>
-              <textarea
+                <Label htmlFor="custom_introduction">Custom Introduction</Label>
+                <Textarea
                 id="custom_introduction"
                 name="custom_introduction"
                 rows={4}
                 value={formData.custom_introduction}
                 onChange={handleChange}
                 placeholder="Enter a custom introduction or greeting. For voice calls, this will be used as the initial greeting. For email/SMS, this will be prepended to the AI-generated content."
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
               />
-              <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                 This introduction will be used in voice calls as the initial greeting, or prepended to email/SMS content.
               </p>
             </div>
           )}
-        </div>
+          </Card>
 
         {/* Contact Group Selection */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-medium text-gray-900">
-              Target Contact Groups *
-            </label>
-            <button
+              <Label>Target Contact Groups *</Label>
+              <Button
               type="button"
+                variant="ghost"
+                size="sm"
               onClick={handleSelectAllGroups}
-              className="text-xs text-gray-600 hover:text-gray-900 underline"
             >
               {selectedGroupIds.size === contactGroups.length ? 'Deselect All' : 'Select All'}
-            </button>
+              </Button>
           </div>
-          <div className="rounded-lg border border-gray-200 bg-gray-50 max-h-60 overflow-y-auto p-3">
+            <Card variant="elevated" className="max-h-60 overflow-y-auto p-3">
               {loadingGroups ? (
-                <div className="text-center text-gray-600 py-4">Loading contact groups...</div>
+                <div className="text-center text-muted-foreground py-4">Loading contact groups...</div>
               ) : contactGroups.length === 0 ? (
-                <div className="text-center text-gray-600 py-4">
-                  No contact groups found. <Link href="/portal/contact-groups/new" className="text-[#DC2626] underline">Create one</Link>
+                <div className="text-center text-muted-foreground py-4">
+                  No contact groups found. <Link href="/portal/contact-groups/new" className="text-primary hover:underline">Create one</Link>
                 </div>
               ) : (
                 <div className="space-y-2">
                   {contactGroups.map((group) => (
                     <label
                       key={group.id}
-                      className="flex items-center gap-2 p-2 rounded hover:bg-gray-100 cursor-pointer"
+                      className="flex items-center gap-2 p-2 rounded hover:bg-surface cursor-pointer"
                     >
                       <input
                         type="checkbox"
                         checked={selectedGroupIds.has(group.id)}
                         onChange={() => handleGroupToggle(group.id)}
-                        className="rounded border-gray-300 bg-white text-[#DC2626] focus:ring-[#DC2626]/50"
+                        className="rounded border-border bg-background text-primary focus:ring-primary"
                       />
-                      <span className="text-sm text-gray-900 flex-1">
+                      <span className="text-sm text-foreground flex-1">
                         {group.name}
-                        <span className="text-gray-500 ml-2">({group.member_count} {group.member_count === 1 ? 'contact' : 'contacts'})</span>
+                        <span className="text-muted-foreground ml-2">({group.member_count} {group.member_count === 1 ? 'contact' : 'contacts'})</span>
                       </span>
                     </label>
                   ))}
                 </div>
               )}
-            </div>
-            <p className="mt-1 text-xs text-gray-500">
+            </Card>
+            <p className="mt-1 text-xs text-muted-foreground">
               {selectedGroupIds.size} group{selectedGroupIds.size !== 1 ? 's' : ''} selected
             </p>
           </div>
 
         {/* Dormant Filter Option */}
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+          <Card variant="elevated" className="p-4">
           <label className="flex items-center gap-3 cursor-pointer">
             <input
               type="checkbox"
               checked={formData.filter_dormant}
               onChange={(e) => setFormData({ ...formData, filter_dormant: e.target.checked })}
-              className="h-4 w-4 rounded border-gray-300 bg-white text-[#DC2626] focus:ring-[#DC2626]/50"
+                className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary"
             />
-            <span className="text-sm font-medium text-gray-900">Filter by dormant contacts</span>
+              <span className="text-sm font-medium text-foreground">Filter by dormant contacts</span>
           </label>
           {formData.filter_dormant && (
             <div className="mt-3 ml-7">
-              <label htmlFor="days_inactive" className="block text-sm font-medium mb-2 text-gray-900">
-                Days Inactive
-              </label>
-              <input
+                <Label htmlFor="days_inactive">Days Inactive</Label>
+                <Input
                 id="days_inactive"
                 name="days_inactive"
                 type="number"
@@ -585,32 +555,32 @@ export default function NewCampaignPage() {
                 value={formData.days_inactive}
                 onChange={handleChange}
                 placeholder="90"
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
               />
-              <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                 Only include contacts from selected groups that have been inactive for this many days
               </p>
             </div>
           )}
-        </div>
+          </Card>
 
         <div className="flex justify-end gap-3">
-          <button
+            <Button
             type="button"
+              variant="secondary"
             onClick={() => router.back()}
-            className="rounded-lg border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 transition-colors"
           >
             Cancel
-          </button>
-          <button
+            </Button>
+            <Button
             type="submit"
+              variant="primary"
             disabled={saving}
-            className="rounded-lg bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl disabled:opacity-50"
           >
             {saving ? 'Creating...' : 'Create Campaign'}
-          </button>
+            </Button>
         </div>
       </form>
+      </Card>
     </div>
   );
 }

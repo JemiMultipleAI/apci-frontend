@@ -249,41 +249,41 @@ export default function DormantContactsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Dormant Contacts</h1>
-        <p className="text-gray-600">
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">Dormant Contacts</h1>
+        <p className="text-muted-foreground">
           Find and reactivate dormant customers
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <div className="flex items-center gap-3 mb-2">
-            <Users className="h-5 w-5 text-blue-500" />
-            <h3 className="font-semibold text-gray-900">Total Dormant</h3>
+            <Users className="h-5 w-5 text-primary" />
+            <h3 className="font-semibold text-foreground">Total Dormant</h3>
           </div>
-          <div className="text-3xl font-bold text-gray-900">{dormantContacts.length}</div>
-          <p className="text-sm text-gray-600 mt-1">
+          <div className="text-3xl font-bold text-foreground">{dormantContacts.length}</div>
+          <p className="text-sm text-muted-foreground mt-1">
             Contacts inactive for {daysInactive}+ days
           </p>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <div className="flex items-center gap-3 mb-2">
-            <AlertCircle className="h-5 w-5 text-[#F43F5E]" />
-            <h3 className="font-semibold text-gray-900">High Priority</h3>
+            <AlertCircle className="h-5 w-5 text-error" />
+            <h3 className="font-semibold text-foreground">High Priority</h3>
           </div>
-          <div className="text-3xl font-bold text-[#DC2626]">{highPriority.length}</div>
-          <p className="text-sm text-gray-600 mt-1">
+          <div className="text-3xl font-bold text-error">{highPriority.length}</div>
+          <p className="text-sm text-muted-foreground mt-1">
             Score 70+ (urgent reactivation)
           </p>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <div className="flex items-center gap-3 mb-2">
-            <TrendingUp className="h-5 w-5 text-green-500" />
-            <h3 className="font-semibold text-gray-900">Reactivation Score</h3>
+            <TrendingUp className="h-5 w-5 text-success" />
+            <h3 className="font-semibold text-foreground">Reactivation Score</h3>
           </div>
-          <div className="text-3xl font-bold text-gray-900">
+          <div className="text-3xl font-bold text-foreground">
             {dormantContacts.length > 0
               ? Math.round(
                   dormantContacts.reduce((sum, c) => sum + c.reactivation_score, 0) /
@@ -291,19 +291,19 @@ export default function DormantContactsPage() {
                 )
               : 0}
           </div>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Average score (0-100)
           </p>
         </div>
       </div>
 
       {/* Reactivation Settings Panel */}
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Reactivation Settings</h2>
+          <h2 className="text-lg font-semibold text-foreground">Reactivation Settings</h2>
           <button
             onClick={() => setShowBulkOptions(!showBulkOptions)}
-            className="text-sm text-[#DC2626] hover:underline"
+            className="text-sm text-primary hover:underline"
           >
             {showBulkOptions ? 'Hide' : 'Show'} Options
           </button>
@@ -312,14 +312,14 @@ export default function DormantContactsPage() {
         {showBulkOptions && (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-4">
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-900">Channel</label>
+              <label className="block text-sm font-medium mb-2 text-foreground">Channel</label>
               <select
                 value={channel}
                 onChange={(e) => {
                   setChannel(e.target.value as any);
                   setTemplateId(''); // Reset template when channel changes
                 }}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
               >
                 <option value="email">Email</option>
                 <option value="sms">SMS</option>
@@ -330,11 +330,11 @@ export default function DormantContactsPage() {
 
             {channel !== 'call' && (
               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-900">Template</label>
+                <label className="block text-sm font-medium mb-2 text-foreground">Template</label>
                 <select
                   value={templateId}
                   onChange={(e) => setTemplateId(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
                 >
                   <option value="">Select template...</option>
                   {templates.map((template) => (
@@ -344,31 +344,31 @@ export default function DormantContactsPage() {
                   ))}
                 </select>
                 {templates.length === 0 && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    No templates available. <a href="/portal/templates/new" className="text-[#DC2626] hover:underline">Create one</a>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    No templates available.
                   </p>
                 )}
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-900">Schedule Date</label>
+              <label className="block text-sm font-medium mb-2 text-foreground">Schedule Date</label>
               <input
                 type="date"
                 value={scheduledDate}
                 onChange={(e) => setScheduledDate(e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-900">Schedule Time</label>
+              <label className="block text-sm font-medium mb-2 text-foreground">Schedule Time</label>
               <input
                 type="time"
                 value={scheduledTime}
                 onChange={(e) => setScheduledTime(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
               />
             </div>
           </div>
@@ -378,8 +378,8 @@ export default function DormantContactsPage() {
         {reactivationStatus && (
           <div className={`mb-4 p-3 rounded-lg flex items-center gap-2 ${
             reactivationStatus.success 
-              ? 'bg-green-50 text-green-800 border border-green-200' 
-              : 'bg-red-50 text-red-800 border border-red-200'
+              ? 'bg-success/10 text-success border border-success/30' 
+              : 'bg-error/10 text-error border border-error/30'
           }`}>
             {reactivationStatus.success ? (
               <CheckCircle2 className="h-4 w-4" />
@@ -392,14 +392,14 @@ export default function DormantContactsPage() {
 
         {/* Bulk Actions */}
         {selectedContacts.size > 0 && (
-          <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-            <span className="text-sm font-medium text-gray-900">
+          <div className="flex items-center gap-2 p-3 bg-surface-elevated rounded-lg border border-border">
+            <span className="text-sm font-medium text-foreground">
               {selectedContacts.size} contact(s) selected
             </span>
             <button
               onClick={handleBulkReactivate}
               disabled={reactivating || (!templateId && channel !== 'call')}
-              className="ml-auto flex items-center gap-2 rounded-lg bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="ml-auto flex items-center gap-2 rounded-lg bg-gradient-tech px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all btn-tech"
             >
               {reactivating ? (
                 <>
@@ -422,21 +422,21 @@ export default function DormantContactsPage() {
         )}
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Dormant Contacts</h2>
+          <h2 className="text-lg font-semibold text-foreground">Dormant Contacts</h2>
           <div className="flex items-center gap-2">
             <button
               onClick={handleSelectAll}
-              className="text-sm text-[#DC2626] hover:underline"
+              className="text-sm text-primary hover:underline"
             >
               {selectedContacts.size === dormantContacts.length ? 'Deselect All' : 'Select All'}
             </button>
-            <label className="text-sm text-gray-600">Inactive for:</label>
+            <label className="text-sm text-muted-foreground">Inactive for:</label>
             <select
               value={daysInactive}
               onChange={(e) => setDaysInactive(parseInt(e.target.value))}
-              className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#DC2626]/50 focus:border-[#DC2626]"
+              className="rounded-lg border border-border bg-background px-3 py-1 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
             >
               <option value={30}>30+ days</option>
               <option value={60}>60+ days</option>
@@ -447,14 +447,14 @@ export default function DormantContactsPage() {
         </div>
 
         {loading ? (
-          <div className="py-8 text-center text-gray-600">
+          <div className="py-8 text-center text-muted-foreground">
             Loading dormant contacts...
           </div>
         ) : dormantContacts.length === 0 ? (
           <div className="py-12 text-center">
-            <Zap className="mx-auto h-12 w-12 text-gray-300 mb-4" />
-            <h3 className="text-lg font-semibold mb-2 text-gray-900">No dormant contacts found</h3>
-            <p className="text-gray-600">
+            <Zap className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold mb-2 text-foreground">No dormant contacts found</h3>
+            <p className="text-muted-foreground">
               Great! All your contacts are active.
             </p>
           </div>
@@ -469,42 +469,42 @@ export default function DormantContactsPage() {
                   : 'low';
               const priorityColor =
                 priority === 'high'
-                  ? 'border-red-200 bg-red-50'
+                  ? 'border-error/30 bg-error/10'
                   : priority === 'medium'
-                  ? 'border-yellow-200 bg-yellow-50'
-                  : 'border-blue-200 bg-blue-50';
+                  ? 'border-warning/30 bg-warning/10'
+                  : 'border-primary/30 bg-primary/10';
               const isSelected = selectedContacts.has(contact.id);
 
               return (
                 <div
                   key={contact.id}
-                  className={`rounded-lg border p-4 ${priorityColor} ${isSelected ? 'ring-2 ring-[#DC2626]' : ''}`}
+                  className={`rounded-lg border p-4 ${priorityColor} ${isSelected ? 'ring-2 ring-primary' : ''}`}
                 >
                   <div className="flex items-start gap-3">
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => handleSelectContact(contact.id)}
-                      className="mt-1 h-4 w-4 rounded border-gray-300 text-[#DC2626] focus:ring-[#DC2626]"
+                      className="mt-1 h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary"
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-medium text-gray-900">
+                        <h3 className="font-medium text-foreground">
                           {contact.first_name} {contact.last_name}
                         </h3>
                         <span
                           className={`rounded-full px-2 py-1 text-xs font-medium ${
                             priority === 'high'
-                              ? 'bg-red-100 text-red-800'
+                              ? 'bg-error/20 text-error'
                               : priority === 'medium'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-blue-100 text-blue-800'
+                              ? 'bg-warning/20 text-warning'
+                              : 'bg-primary/20 text-primary'
                           }`}
                         >
                           {priority.toUpperCase()} PRIORITY
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
                         {contact.email && (
                           <span className="flex items-center gap-1">
                             <Mail className="h-3 w-3" />
@@ -518,7 +518,7 @@ export default function DormantContactsPage() {
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-4 text-xs text-gray-600">
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <span>
                           Inactive for {contact.days_since_activity} days
                         </span>
@@ -528,7 +528,7 @@ export default function DormantContactsPage() {
                     <button
                       onClick={() => handleSingleReactivate(contact.id)}
                       disabled={reactivating || (!templateId && channel !== 'call')}
-                      className="rounded-lg bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
+                      className="rounded-lg bg-gradient-tech px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all btn-tech"
                     >
                       {reactivating ? (
                         <>

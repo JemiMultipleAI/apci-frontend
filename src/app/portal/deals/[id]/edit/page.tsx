@@ -14,7 +14,7 @@ export default function EditDealPage() {
   const [contacts, setContacts] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     name: '',
-    account_id: '',
+    customer_company_id: '', // Updated: account_id → customer_company_id
     contact_id: '',
     stage: 'lead',
     value: '',
@@ -36,7 +36,7 @@ export default function EditDealPage() {
         const deal = dealRes.data.data;
         setFormData({
           name: deal.name || '',
-          account_id: deal.account_id || '',
+          customer_company_id: deal.customer_company_id || deal.account_id || '', // Support both for backward compat
           contact_id: deal.contact_id || '',
           stage: deal.stage || 'lead',
           value: deal.value?.toString() || '',
@@ -67,7 +67,7 @@ export default function EditDealPage() {
         ...formData,
         value: parseFloat(formData.value) || 0,
         probability: parseInt(formData.probability) || 0,
-        account_id: formData.account_id || null,
+        customer_company_id: formData.customer_company_id || null, // Updated: account_id → customer_company_id
         contact_id: formData.contact_id || null,
         expected_close_date: formData.expected_close_date || null,
       };
@@ -126,13 +126,13 @@ export default function EditDealPage() {
           </div>
 
           <div>
-            <label htmlFor="account_id" className="block text-sm font-medium mb-2">
-              Account
+            <label htmlFor="customer_company_id" className="block text-sm font-medium mb-2">
+              Customer Company
             </label>
             <select
-              id="account_id"
-              name="account_id"
-              value={formData.account_id}
+              id="customer_company_id"
+              name="customer_company_id"
+              value={formData.customer_company_id}
               onChange={handleChange}
               className="w-full rounded-lg border bg-background px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
             >

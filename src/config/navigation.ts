@@ -90,13 +90,6 @@ export const navigation: NavigationItem[] = [
     icon: MessageSquare,
     category: 'Marketing',
   },
-  {
-    title: 'Templates',
-    description: 'Email and SMS templates',
-    href: '/portal/templates',
-    icon: FileText,
-    category: 'Marketing',
-  },
   // Tools Section
   {
     title: 'Surveys',
