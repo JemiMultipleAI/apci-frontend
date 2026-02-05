@@ -103,7 +103,7 @@ export default function EditContactGroupPage() {
             </Button>
             <Link href={`/portal/contact-groups/${params.id}`}>
               <Button type="button" variant="secondary">Cancel</Button>
-            </Button>
+            </Link>
           </div>
         </form>
       </Card>
