@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, FileText, Trash2, Edit, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, FileText, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import apiClient from '@/lib/api/client';
+import { Button, Card } from '@/components/ui';
 
 interface Survey {
   id: string;
@@ -78,7 +79,7 @@ export default function SurveyDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-red-200/80">Loading survey...</div>
+        <div className="text-muted-foreground">Loading survey...</div>
       </div>
     );
   }
@@ -86,7 +87,7 @@ export default function SurveyDetailPage() {
   if (!survey) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-red-200/80">Survey not found</div>
+        <div className="text-muted-foreground">Survey not found</div>
       </div>
     );
   }
@@ -94,15 +95,12 @@ export default function SurveyDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <button
-          onClick={() => router.back()}
-          className="rounded-lg border p-2 hover:bg-secondary"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </button>
+        <Button variant="outline" size="sm" onClick={() => router.back()} className="p-2">
+          <ArrowLeft className="h-4 w-4 text-foreground" />
+        </Button>
         <div className="flex-1">
-          <h1 className="text-3xl font-semibold tracking-tight text-white">{survey.name}</h1>
-          <p className="text-red-200/80 mt-1">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">{survey.name}</h1>
+          <p className="text-muted-foreground mt-1">
             {survey.description || 'No description'}
           </p>
         </div>
@@ -110,81 +108,70 @@ export default function SurveyDetailPage() {
           <span
             className={`rounded-full px-3 py-1 text-sm font-medium ${
               survey.is_active
-                ? 'bg-green-100 text-green-800'
-                : 'bg-gray-100 text-gray-800'
+                ? 'bg-green-500/20 border border-green-500/50 text-green-400'
+                : 'bg-surface-elevated border border-border text-muted-foreground'
             }`}
           >
             {survey.is_active ? 'Active' : 'Inactive'}
           </span>
-          <button
-            onClick={() => setShowDeleteConfirm(true)}
-            className="rounded-lg border border-red-800/50 bg-red-900/30 p-2 text-red-400 hover:bg-red-900/50 transition-colors"
-            disabled={deleting}
-          >
+          <Button variant="danger" size="sm" className="p-2" onClick={() => setShowDeleteConfirm(true)} disabled={deleting}>
             <Trash2 className="h-4 w-4" />
-          </button>
+          </Button>
         </div>
       </div>
 
       {showDeleteConfirm && (
-        <div className="rounded-lg border border-red-800/50 bg-red-900/30 p-4">
-          <p className="text-red-200 mb-4">Are you sure you want to delete this survey? This action cannot be undone.</p>
-          <div className="flex gap-2">
-            <button
-              onClick={handleDelete}
-              disabled={deleting}
-              className="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:opacity-50"
-            >
-              {deleting ? 'Deleting...' : 'Delete'}
-            </button>
-            <button
-              onClick={() => setShowDeleteConfirm(false)}
-              className="rounded-lg border border-red-800/50 bg-red-900/30 px-4 py-2 text-white hover:bg-red-900/50"
-            >
-              Cancel
-            </button>
-          </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <Card className="max-w-md w-full mx-4 shadow-xl">
+            <p className="text-muted-foreground mb-4">Are you sure you want to delete this survey? This action cannot be undone.</p>
+            <div className="flex gap-2 justify-end">
+              <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)}>Cancel</Button>
+              <Button variant="danger" onClick={handleDelete} disabled={deleting}>
+                {deleting ? 'Deleting...' : 'Delete'}
+              </Button>
+            </div>
+          </Card>
         </div>
       )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-2xl border border-red-800/30 bg-gradient-to-br from-red-900/40 to-rose-900/40 backdrop-blur-md p-6 shadow-xl">
-            <h2 className="text-xl font-semibold mb-4 text-white">Questions</h2>
+          <Card>
+            <h2 className="text-xl font-semibold mb-4 text-foreground">Questions</h2>
             {survey.questions && survey.questions.length > 0 ? (
               <div className="space-y-4">
                 {survey.questions.map((question: any, index: number) => (
-                  <div key={index} className="rounded-lg border border-red-800/50 bg-white/5 p-4">
+                  <div key={index} className="rounded-lg border border-border bg-surface-elevated p-4">
                     <div className="flex items-start justify-between mb-2">
-                      <span className="text-sm font-medium text-red-200/70">Question {index + 1}</span>
-                      <span className="rounded-full bg-red-900/30 px-2 py-1 text-xs text-red-200/70 capitalize">
+                      <span className="text-sm font-medium text-muted-foreground">Question {index + 1}</span>
+                      <span className="rounded-full bg-surface-elevated border border-border px-2 py-1 text-xs text-muted-foreground capitalize">
                         {question.type || 'text'}
                       </span>
                     </div>
-                    <p className="text-white">{question.question}</p>
+                    <p className="text-foreground">{question.question}</p>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-red-200/70">No questions defined</p>
+              <p className="text-muted-foreground">No questions defined</p>
             )}
-          </div>
+          </Card>
 
-          <div className="rounded-2xl border border-red-800/30 bg-gradient-to-br from-red-900/40 to-rose-900/40 backdrop-blur-md p-6 shadow-xl">
-            <h2 className="text-xl font-semibold mb-4 text-white">Responses ({responsesTotal})</h2>
+          <Card>
+            <h2 className="text-xl font-semibold mb-4 text-foreground">Responses ({responsesTotal})</h2>
             {responses.length > 0 ? (
               <div className="space-y-4">
                 {responses.map((response) => (
-                  <div key={response.id} className="rounded-lg border border-red-800/50 bg-white/5 p-4">
+                  <div key={response.id} className="rounded-lg border border-border bg-surface-elevated p-4">
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         {response.contact_name && (
-                          <p className="text-white font-medium">{response.contact_name}</p>
+                          <p className="text-foreground font-medium">{response.contact_name}</p>
                         )}
                         {response.account_name && (
-                          <p className="text-sm text-red-200/70">{response.account_name}</p>
+                          <p className="text-sm text-muted-foreground">{response.account_name}</p>
                         )}
-                        <p className="text-xs text-red-200/50 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           {new Date(response.completed_at).toLocaleString()}
                         </p>
                       </div>
@@ -193,9 +180,9 @@ export default function SurveyDetailPage() {
                           {response.sentiment_score >= 0.5 ? (
                             <CheckCircle className="h-5 w-5 text-green-500" />
                           ) : (
-                            <XCircle className="h-5 w-5 text-red-500" />
+                            <XCircle className="h-5 w-5 text-error" />
                           )}
-                          <span className="text-sm text-red-200/70">
+                          <span className="text-sm text-muted-foreground">
                             {(response.sentiment_score * 100).toFixed(0)}%
                           </span>
                         </div>
@@ -204,59 +191,51 @@ export default function SurveyDetailPage() {
                     <div className="space-y-2">
                       {Object.entries(response.responses || {}).map(([key, value]) => (
                         <div key={key} className="text-sm">
-                          <span className="text-red-200/70 font-medium">{key}:</span>{' '}
-                          <span className="text-white">{String(value)}</span>
+                          <span className="text-muted-foreground font-medium">{key}:</span>{' '}
+                          <span className="text-foreground">{String(value)}</span>
                         </div>
                       ))}
                     </div>
                     {response.ai_analysis && (
-                      <div className="mt-3 pt-3 border-t border-red-800/50">
-                        <p className="text-xs text-red-200/70 font-medium mb-1">AI Analysis:</p>
-                        <p className="text-sm text-red-200/80">{response.ai_analysis}</p>
+                      <div className="mt-3 pt-3 border-t border-border">
+                        <p className="text-xs text-muted-foreground font-medium mb-1">AI Analysis:</p>
+                        <p className="text-sm text-muted-foreground">{response.ai_analysis}</p>
                       </div>
                     )}
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-red-200/70">No responses yet</p>
+              <p className="text-muted-foreground">No responses yet</p>
             )}
             {responsesTotal > 20 && (
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-red-800/50">
-                <button
-                  onClick={() => setResponsesPage(p => Math.max(1, p - 1))}
-                  disabled={responsesPage === 1}
-                  className="rounded-lg border border-red-800/50 bg-red-900/30 px-3 py-1 text-sm text-white hover:bg-red-900/50 disabled:opacity-50"
-                >
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
+                <Button variant="secondary" size="sm" onClick={() => setResponsesPage(p => Math.max(1, p - 1))} disabled={responsesPage === 1}>
                   Previous
-                </button>
-                <span className="text-sm text-red-200/70">
+                </Button>
+                <span className="text-sm text-muted-foreground">
                   Page {responsesPage} of {Math.ceil(responsesTotal / 20)}
                 </span>
-                <button
-                  onClick={() => setResponsesPage(p => p + 1)}
-                  disabled={responsesPage >= Math.ceil(responsesTotal / 20)}
-                  className="rounded-lg border border-red-800/50 bg-red-900/30 px-3 py-1 text-sm text-white hover:bg-red-900/50 disabled:opacity-50"
-                >
+                <Button variant="secondary" size="sm" onClick={() => setResponsesPage(p => p + 1)} disabled={responsesPage >= Math.ceil(responsesTotal / 20)}>
                   Next
-                </button>
+                </Button>
               </div>
             )}
-          </div>
+          </Card>
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-2xl border border-red-800/30 bg-gradient-to-br from-red-900/40 to-rose-900/40 backdrop-blur-md p-6 shadow-xl">
-            <h2 className="text-lg font-semibold mb-4 text-white">Details</h2>
+          <Card>
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Details</h2>
             <div className="space-y-3">
               <div>
-                <div className="text-sm text-red-200/70">Status</div>
+                <div className="text-sm text-muted-foreground">Status</div>
                 <div className="mt-1">
                   <span
                     className={`rounded-full px-2 py-1 text-xs font-medium ${
                       survey.is_active
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-800'
+                        ? 'bg-green-500/20 border border-green-500/50 text-green-400'
+                        : 'bg-surface-elevated border border-border text-muted-foreground'
                     }`}
                   >
                     {survey.is_active ? 'Active' : 'Inactive'}
@@ -265,28 +244,28 @@ export default function SurveyDetailPage() {
               </div>
               {survey.created_by_name && (
                 <div>
-                  <div className="text-sm text-red-200/70">Created By</div>
-                  <div className="mt-1 text-white">{survey.created_by_name}</div>
+                  <div className="text-sm text-muted-foreground">Created By</div>
+                  <div className="mt-1 text-foreground">{survey.created_by_name}</div>
                 </div>
               )}
               <div>
-                <div className="text-sm text-red-200/70">Created</div>
-                <div className="mt-1 text-white">
+                <div className="text-sm text-muted-foreground">Created</div>
+                <div className="mt-1 text-foreground">
                   {new Date(survey.created_at).toLocaleDateString()}
                 </div>
               </div>
               <div>
-                <div className="text-sm text-red-200/70">Last Updated</div>
-                <div className="mt-1 text-white">
+                <div className="text-sm text-muted-foreground">Last Updated</div>
+                <div className="mt-1 text-foreground">
                   {new Date(survey.updated_at).toLocaleDateString()}
                 </div>
               </div>
               <div>
-                <div className="text-sm text-red-200/70">Total Responses</div>
-                <div className="mt-1 text-white font-semibold">{responsesTotal}</div>
+                <div className="text-sm text-muted-foreground">Total Responses</div>
+                <div className="mt-1 text-foreground font-semibold">{responsesTotal}</div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
     </div>

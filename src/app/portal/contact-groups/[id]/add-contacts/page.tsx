@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Search, Users, Check, X } from 'lucide-react';
 import Link from 'next/link';
 import apiClient from '@/lib/api/client';
+import { Button, Card, Input } from '@/components/ui';
 
 interface ContactGroup {
   id: string;
@@ -104,7 +105,7 @@ export default function AddContactsToGroupPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-600">Loading...</div>
+        <div className="text-muted-foreground">Loading...</div>
       </div>
     );
   }
@@ -112,7 +113,7 @@ export default function AddContactsToGroupPage() {
   if (!group) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-600">Contact group not found</div>
+        <div className="text-muted-foreground">Contact group not found</div>
       </div>
     );
   }
@@ -122,44 +123,42 @@ export default function AddContactsToGroupPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 flex-wrap">
         <Link
           href={`/portal/contact-groups/${group.id}`}
-          className="rounded-lg border border-gray-200 bg-white p-2 hover:bg-gray-50"
+          className="inline-flex items-center justify-center rounded-lg border border-border bg-transparent p-2 text-foreground hover:bg-surface-elevated transition-all"
         >
-          <ArrowLeft className="h-4 w-4 text-gray-900" />
+          <ArrowLeft className="h-4 w-4" />
         </Link>
-        <div className="flex-1">
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
+        <div className="flex-1 min-w-0">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
             Add Contacts to {group.name}
           </h1>
-          <p className="text-gray-600">Select contacts to add to this group</p>
+          <p className="text-muted-foreground">Select contacts to add to this group</p>
         </div>
-        <button
+        <Button
           onClick={handleAddContacts}
           disabled={adding || selectedIds.size === 0}
-          className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] text-white px-6 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+          variant="primary"
+          className="gap-2"
         >
           {adding ? 'Adding...' : `Add ${selectedIds.size} Contact${selectedIds.size !== 1 ? 's' : ''}`}
-        </button>
+        </Button>
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
+      <Card>
+        <div className="flex items-center gap-4 mb-6 flex-wrap">
+          <div className="flex-1 min-w-[200px] relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
+            <Input
               type="text"
               placeholder="Search contacts by name, email, or phone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#DC2626] focus:border-transparent"
+              className="pl-10"
             />
           </div>
-          <button
-            onClick={toggleSelectAll}
-            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
-          >
+          <Button variant="secondary" onClick={toggleSelectAll} className="gap-2">
             {allFilteredSelected ? (
               <>
                 <X className="h-4 w-4" />
@@ -171,13 +170,13 @@ export default function AddContactsToGroupPage() {
                 Select All
               </>
             )}
-          </button>
+          </Button>
         </div>
 
         {filteredContacts.length === 0 ? (
-          <div className="py-12 text-center text-gray-600">
-            <Users className="mx-auto h-12 w-12 text-gray-300 mb-4" />
-            <p>{searchTerm ? 'No contacts found matching your search' : 'No contacts available'}</p>
+          <div className="py-12 text-center text-muted-foreground">
+            <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+            <p className="text-foreground">{searchTerm ? 'No contacts found matching your search' : 'No contacts available'}</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -189,22 +188,22 @@ export default function AddContactsToGroupPage() {
                   onClick={() => toggleSelect(contact.id)}
                   className={`flex items-center gap-4 p-4 rounded-lg border cursor-pointer transition-all ${
                     isSelected
-                      ? 'border-[#DC2626] bg-red-50'
-                      : 'border-gray-200 hover:bg-gray-50'
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border hover:bg-surface-elevated'
                   }`}
                 >
-                  <div className={`flex items-center justify-center w-5 h-5 rounded border-2 ${
+                  <div className={`flex items-center justify-center w-5 h-5 rounded border-2 shrink-0 ${
                     isSelected
-                      ? 'bg-[#DC2626] border-[#DC2626]'
-                      : 'border-gray-300'
+                      ? 'bg-primary border-primary'
+                      : 'border-border'
                   }`}>
                     {isSelected && <Check className="h-3 w-3 text-white" />}
                   </div>
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-900">
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-foreground">
                       {contact.first_name} {contact.last_name}
                     </div>
-                    <div className="text-sm text-gray-500 space-x-4">
+                    <div className="text-sm text-muted-foreground space-x-4">
                       {contact.email && <span>{contact.email}</span>}
                       {contact.mobile && <span>{contact.mobile}</span>}
                       <span className="capitalize">{contact.lifecycle_stage}</span>
@@ -215,7 +214,7 @@ export default function AddContactsToGroupPage() {
             })}
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

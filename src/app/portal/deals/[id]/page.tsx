@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, DollarSign, TrendingUp, Calendar, Building2, User, Trash2, Edit } from 'lucide-react';
+import { ArrowLeft, Calendar, Building2, User, Trash2, Edit } from 'lucide-react';
 import Link from 'next/link';
 import apiClient from '@/lib/api/client';
+import { Button, Card } from '@/components/ui';
 
 interface Deal {
   id: string;
@@ -83,22 +84,19 @@ export default function DealDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <button
-          onClick={() => router.back()}
-          className="rounded-lg border border-gray-200 bg-white p-2 hover:bg-gray-50"
-        >
-          <ArrowLeft className="h-4 w-4 text-gray-900" />
-        </button>
+        <Button variant="outline" size="sm" onClick={() => router.back()} className="p-2">
+          <ArrowLeft className="h-4 w-4 text-foreground" />
+        </Button>
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">{deal.name}</h1>
-          <p className="text-gray-600">Deal Details</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">{deal.name}</h1>
+          <p className="text-muted-foreground">Deal Details</p>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Deal Information</h2>
+          <Card>
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Deal Information</h2>
             <div className="space-y-4">
               <div>
                 <div className="text-sm text-muted-foreground mb-2">Stage</div>
@@ -109,7 +107,7 @@ export default function DealDetailPage() {
                         className={`h-2 w-16 rounded-full ${
                           index <= currentStageIndex
                             ? 'bg-primary'
-                            : 'bg-secondary'
+                            : 'bg-surface-elevated'
                         }`}
                       />
                       {index < stages.length - 1 && (
@@ -117,7 +115,7 @@ export default function DealDetailPage() {
                           className={`h-0.5 w-8 ${
                             index < currentStageIndex
                               ? 'bg-primary'
-                              : 'bg-secondary'
+                              : 'bg-surface-elevated'
                           }`}
                         />
                       )}
@@ -125,7 +123,7 @@ export default function DealDetailPage() {
                   ))}
                 </div>
                 <div className="mt-2">
-                  <span className="rounded-full bg-secondary px-2 py-1 text-xs font-medium capitalize">
+                  <span className="rounded-full bg-surface-elevated border border-border px-2 py-1 text-xs font-medium capitalize text-foreground">
                     {deal.stage.replace('_', ' ')}
                   </span>
                 </div>
@@ -134,40 +132,40 @@ export default function DealDetailPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <div className="text-sm text-muted-foreground">Deal Value</div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-2xl font-bold text-foreground">
                     {deal.currency} {deal.value.toLocaleString()}
                   </div>
                 </div>
                 <div>
                   <div className="text-sm text-muted-foreground">Probability</div>
                   <div className="flex items-center gap-2">
-                    <div className="h-2 flex-1 rounded-full bg-secondary">
+                    <div className="h-2 flex-1 rounded-full bg-surface-elevated">
                       <div
                         className="h-2 rounded-full bg-primary"
                         style={{ width: `${deal.probability}%` }}
                       />
                     </div>
-                    <span className="text-sm font-semibold">{deal.probability}%</span>
+                    <span className="text-sm font-semibold text-foreground">{deal.probability}%</span>
                   </div>
                 </div>
               </div>
 
               {deal.expected_close_date && (
                 <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-muted-foreground" />
+                  <Calendar className="h-5 w-5 text-muted-foreground shrink-0" />
                   <div>
                     <div className="text-sm text-muted-foreground">Expected Close Date</div>
-                    <div>{new Date(deal.expected_close_date).toLocaleDateString()}</div>
+                    <div className="text-foreground">{new Date(deal.expected_close_date).toLocaleDateString()}</div>
                   </div>
                 </div>
               )}
 
               {deal.actual_close_date && (
                 <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-muted-foreground" />
+                  <Calendar className="h-5 w-5 text-muted-foreground shrink-0" />
                   <div>
                     <div className="text-sm text-muted-foreground">Actual Close Date</div>
-                    <div>{new Date(deal.actual_close_date).toLocaleDateString()}</div>
+                    <div className="text-foreground">{new Date(deal.actual_close_date).toLocaleDateString()}</div>
                   </div>
                 </div>
               )}
@@ -179,81 +177,70 @@ export default function DealDetailPage() {
                 </div>
               )}
             </div>
-          </div>
+          </Card>
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Related</h2>
+          <Card>
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Related</h2>
             <div className="space-y-4">
               {deal.account_id && (
                 <Link
                   href={`/portal/accounts/${deal.account_id}`}
-                  className="flex items-center gap-3 rounded-lg border p-3 hover:bg-secondary transition-colors"
+                  className="flex items-center gap-3 rounded-lg border border-border p-3 hover:bg-surface-elevated transition-colors"
                 >
-                  <Building2 className="h-5 w-5 text-muted-foreground" />
+                  <Building2 className="h-5 w-5 text-muted-foreground shrink-0" />
                   <div>
                     <div className="text-sm text-muted-foreground">Account</div>
-                    <div className="font-medium">{deal.account_name || 'View Account'}</div>
+                    <div className="font-medium text-foreground">{deal.account_name || 'View Account'}</div>
                   </div>
                 </Link>
               )}
               {deal.contact_id && (
                 <Link
                   href={`/portal/contacts/${deal.contact_id}`}
-                  className="flex items-center gap-3 rounded-lg border p-3 hover:bg-secondary transition-colors"
+                  className="flex items-center gap-3 rounded-lg border border-border p-3 hover:bg-surface-elevated transition-colors"
                 >
-                  <User className="h-5 w-5 text-muted-foreground" />
+                  <User className="h-5 w-5 text-muted-foreground shrink-0" />
                   <div>
                     <div className="text-sm text-muted-foreground">Contact</div>
-                    <div className="font-medium">{deal.contact_name || 'View Contact'}</div>
+                    <div className="font-medium text-foreground">{deal.contact_name || 'View Contact'}</div>
                   </div>
                 </Link>
               )}
             </div>
-          </div>
+          </Card>
 
-          <div className="rounded-xl border bg-card p-6 shadow-sm space-y-3">
+          <Card className="space-y-3">
             <Link
               href={`/portal/deals/${deal.id}/edit`}
-              className="flex items-center justify-center gap-2 w-full rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+              className="inline-flex items-center justify-center gap-2 w-full rounded-lg font-semibold bg-gradient-tech text-white hover:opacity-90 shadow-lg hover:shadow-xl btn-tech px-4 py-2 text-sm transition-all"
             >
               <Edit className="h-4 w-4" />
               Edit Deal
             </Link>
-            <button
-              onClick={() => setShowDeleteConfirm(true)}
-              className="flex items-center justify-center gap-2 w-full rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-2 font-medium text-destructive hover:bg-destructive/20 transition-colors"
-            >
+            <Button variant="danger" className="w-full gap-2" onClick={() => setShowDeleteConfirm(true)}>
               <Trash2 className="h-4 w-4" />
               Delete Deal
-            </button>
-          </div>
+            </Button>
+          </Card>
 
           {showDeleteConfirm && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-              <div className="rounded-xl border bg-card p-6 shadow-xl max-w-md w-full mx-4">
-                <h3 className="text-lg font-semibold mb-2">Delete Deal</h3>
+              <Card className="max-w-md w-full mx-4 shadow-xl">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">Delete Deal</h3>
                 <p className="text-muted-foreground mb-6">
                   Are you sure you want to delete {deal?.name}? This action cannot be undone.
                 </p>
                 <div className="flex justify-end gap-3">
-                  <button
-                    onClick={() => setShowDeleteConfirm(false)}
-                    className="rounded-lg border px-4 py-2 font-medium hover:bg-secondary transition-colors"
-                    disabled={deleting}
-                  >
+                  <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)} disabled={deleting}>
                     Cancel
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    className="rounded-lg bg-destructive px-4 py-2 font-medium text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50 transition-colors"
-                  >
+                  </Button>
+                  <Button variant="danger" onClick={handleDelete} disabled={deleting}>
                     {deleting ? 'Deleting...' : 'Delete'}
-                  </button>
+                  </Button>
                 </div>
-              </div>
+              </Card>
             </div>
           )}
         </div>

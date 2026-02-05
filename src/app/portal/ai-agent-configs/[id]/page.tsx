@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Bot, Calendar, Trash2, Edit, Building2, Copy, Check, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import apiClient from '@/lib/api/client';
+import { Button, Card } from '@/components/ui';
 
 interface AgentConfig {
   id: string;
@@ -104,7 +105,7 @@ export default function AgentConfigDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-red-200/80">Loading agent configuration...</div>
+        <div className="text-muted-foreground">Loading agent configuration...</div>
       </div>
     );
   }
@@ -112,7 +113,7 @@ export default function AgentConfigDetailPage() {
   if (!config) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-red-200/80">Agent configuration not found</div>
+        <div className="text-muted-foreground">Agent configuration not found</div>
       </div>
     );
   }
@@ -120,106 +121,99 @@ export default function AgentConfigDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <button
-          onClick={() => router.back()}
-          className="rounded-lg border border-gray-200 bg-white p-2 hover:bg-gray-50 transition-colors text-gray-900"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </button>
+        <Button variant="outline" size="sm" onClick={() => router.back()} className="p-2">
+          <ArrowLeft className="h-4 w-4 text-foreground" />
+        </Button>
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
             {config.name}
           </h1>
-          <p className="text-gray-600">AI Agent Configuration Details</p>
+          <p className="text-muted-foreground">AI Agent Configuration Details</p>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Configuration Information</h2>
+          <Card>
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Configuration Information</h2>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <Bot className="h-5 w-5 text-gray-400" />
+                <Bot className="h-5 w-5 text-muted-foreground shrink-0" />
                 <div>
-                  <div className="text-sm text-gray-600">Agent ID</div>
-                  <div className="text-gray-900 font-mono text-sm">{config.agent_id}</div>
+                  <div className="text-sm text-muted-foreground">Agent ID</div>
+                  <div className="text-foreground font-mono text-sm">{config.agent_id}</div>
                 </div>
               </div>
               
               {config.description && (
                 <div>
-                  <div className="text-sm text-gray-600 mb-1">Description</div>
-                  <div className="text-gray-900">{config.description}</div>
+                  <div className="text-sm text-muted-foreground mb-1">Description</div>
+                  <div className="text-foreground">{config.description}</div>
                 </div>
               )}
 
               <div className="flex items-center gap-3">
-                <Building2 className="h-5 w-5 text-gray-400" />
+                <Building2 className="h-5 w-5 text-muted-foreground shrink-0" />
                 <div>
-                  <div className="text-sm text-gray-600">Company</div>
-                  <div className="text-gray-900">
+                  <div className="text-sm text-muted-foreground">Company</div>
+                  <div className="text-foreground">
                     {config.account_name ? (
                       <Link
                         href={`/portal/accounts/${config.account_id}`}
-                        className="hover:underline text-[#DC2626]"
+                        className="hover:underline text-primary"
                       >
                         {config.account_name}
                       </Link>
                     ) : (
-                      <span className="text-gray-500 italic">System-wide</span>
+                      <span className="text-muted-foreground italic">System-wide</span>
                     )}
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
-                <Calendar className="h-5 w-5 text-gray-400" />
-                <span className="text-sm text-gray-600">
+                <Calendar className="h-5 w-5 text-muted-foreground shrink-0" />
+                <span className="text-sm text-muted-foreground">
                   Created {new Date(config.created_at).toLocaleDateString()}
                 </span>
               </div>
               {config.updated_at && config.updated_at !== config.created_at && (
                 <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-gray-400" />
-                  <span className="text-sm text-gray-600">
+                  <Calendar className="h-5 w-5 text-muted-foreground shrink-0" />
+                  <span className="text-sm text-muted-foreground">
                     Updated {new Date(config.updated_at).toLocaleDateString()}
                   </span>
                 </div>
               )}
             </div>
-          </div>
+          </Card>
 
           {config.account_id && config.knowledge_base_urls && (
-            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <Card>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Knowledge Base URLs</h2>
-                <button
-                  onClick={handleRefreshKnowledgeBase}
-                  disabled={refreshing}
-                  className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
+                <h2 className="text-lg font-semibold text-foreground">Knowledge Base URLs</h2>
+                <Button variant="secondary" size="sm" onClick={handleRefreshKnowledgeBase} disabled={refreshing} className="gap-2">
                   <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
                   {refreshing ? 'Refreshing...' : 'Refresh KB'}
-                </button>
+                </Button>
               </div>
               {refreshMessage && (
                 <div
                   className={`mb-4 rounded-lg border p-3 text-sm ${
                     refreshMessage.type === 'success'
-                      ? 'bg-green-50 border-green-200 text-green-800'
-                      : 'bg-red-50 border-red-200 text-red-800'
+                      ? 'bg-green-500/20 border-green-500/50 text-green-400'
+                      : 'bg-error/20 border-error/50 text-error'
                   }`}
                 >
                   {refreshMessage.text}
                 </div>
               )}
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-muted-foreground mb-4">
                 Copy these URLs to configure in ElevenLabs agent settings as knowledge base sources.
               </p>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Campaigns Knowledge Base
                   </label>
                   <div className="flex items-center gap-2">
@@ -227,29 +221,15 @@ export default function AgentConfigDetailPage() {
                       type="text"
                       readOnly
                       value={config.knowledge_base_urls.campaigns}
-                      className="flex-1 rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm font-mono text-gray-900"
+                      className="flex-1 rounded-lg border border-border bg-surface-elevated px-3 py-2 text-sm font-mono text-foreground"
                     />
-                    <button
-                      onClick={() => copyToClipboard(config.knowledge_base_urls!.campaigns, 'campaigns')}
-                      className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
-                    >
-                      {copiedUrl === 'campaigns' ? (
-                        <>
-                          <Check className="h-4 w-4" />
-                          Copied!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-4 w-4" />
-                          Copy
-                        </>
-                      )}
-                    </button>
+                    <Button variant="secondary" size="sm" onClick={() => copyToClipboard(config.knowledge_base_urls!.campaigns, 'campaigns')} className="gap-2">
+                      {copiedUrl === 'campaigns' ? <><Check className="h-4 w-4" /> Copied!</> : <><Copy className="h-4 w-4" /> Copy</>}
+                    </Button>
                   </div>
                 </div>
-                
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Deals Knowledge Base
                   </label>
                   <div className="flex items-center gap-2">
@@ -257,43 +237,30 @@ export default function AgentConfigDetailPage() {
                       type="text"
                       readOnly
                       value={config.knowledge_base_urls.deals}
-                      className="flex-1 rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm font-mono text-gray-900"
+                      className="flex-1 rounded-lg border border-border bg-surface-elevated px-3 py-2 text-sm font-mono text-foreground"
                     />
-                    <button
-                      onClick={() => copyToClipboard(config.knowledge_base_urls!.deals, 'deals')}
-                      className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
-                    >
-                      {copiedUrl === 'deals' ? (
-                        <>
-                          <Check className="h-4 w-4" />
-                          Copied!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-4 w-4" />
-                          Copy
-                        </>
-                      )}
-                    </button>
+                    <Button variant="secondary" size="sm" onClick={() => copyToClipboard(config.knowledge_base_urls!.deals, 'deals')} className="gap-2">
+                      {copiedUrl === 'deals' ? <><Check className="h-4 w-4" /> Copied!</> : <><Copy className="h-4 w-4" /> Copy</>}
+                    </Button>
                   </div>
                 </div>
               </div>
-            </div>
+            </Card>
           )}
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Details</h2>
+          <Card>
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Details</h2>
             <div className="space-y-3">
               <div>
-                <div className="text-sm text-gray-600">Status</div>
+                <div className="text-sm text-muted-foreground">Status</div>
                 <div className="mt-1">
                   <span
                     className={`rounded-full px-2 py-1 text-xs font-medium ${
                       config.is_active
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-800'
+                        ? 'bg-green-500/20 border border-green-500/50 text-green-400'
+                        : 'bg-surface-elevated border border-border text-muted-foreground'
                     }`}
                   >
                     {config.is_active ? 'Active' : 'Inactive'}
@@ -301,65 +268,50 @@ export default function AgentConfigDetailPage() {
                 </div>
               </div>
               <div>
-                <div className="text-sm text-gray-600">Scope</div>
-                <div className="mt-1 text-gray-900">
+                <div className="text-sm text-muted-foreground">Scope</div>
+                <div className="mt-1 text-foreground">
                   {config.account_id ? 'Company' : 'System-wide'}
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm space-y-3">
+          <Card className="space-y-3">
             <Link
               href={`/portal/ai-agent-configs/${config.id}/edit`}
-              className="flex items-center justify-center gap-2 w-full rounded-lg bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl"
+              className="inline-flex items-center justify-center gap-2 w-full rounded-lg font-semibold bg-gradient-tech text-white hover:opacity-90 shadow-lg hover:shadow-xl btn-tech px-4 py-2 text-sm transition-all"
             >
               <Edit className="h-4 w-4" />
               Edit Configuration
             </Link>
             {(config.kb_campaigns_document_id || config.kb_deals_document_id) && (
-              <button
-                onClick={handleRefreshKnowledgeBase}
-                disabled={refreshing}
-                className="flex items-center justify-center gap-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+              <Button variant="secondary" className="w-full gap-2" onClick={handleRefreshKnowledgeBase} disabled={refreshing}>
                 <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
                 {refreshing ? 'Refreshing...' : 'Refresh Knowledge Base'}
-              </button>
+              </Button>
             )}
-            <button
-              onClick={() => setShowDeleteConfirm(true)}
-              className="flex items-center justify-center gap-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-            >
+            <Button variant="danger" className="w-full gap-2" onClick={() => setShowDeleteConfirm(true)}>
               <Trash2 className="h-4 w-4" />
               Delete Configuration
-            </button>
-          </div>
+            </Button>
+          </Card>
 
           {showDeleteConfirm && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-              <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-xl max-w-md w-full mx-4">
-                <h3 className="text-lg font-semibold mb-2 text-gray-900">Delete Agent Configuration</h3>
-                <p className="text-gray-600 mb-6">
+              <Card className="max-w-md w-full mx-4 shadow-xl">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">Delete Agent Configuration</h3>
+                <p className="text-muted-foreground mb-6">
                   Are you sure you want to delete &quot;{config.name}&quot;? This action cannot be undone.
                 </p>
                 <div className="flex justify-end gap-3">
-                  <button
-                    onClick={() => setShowDeleteConfirm(false)}
-                    className="rounded-lg border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                    disabled={deleting}
-                  >
+                  <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)} disabled={deleting}>
                     Cancel
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    className="rounded-lg bg-gradient-to-r from-[#DC2626] via-[#991B1B] to-[#F43F5E] px-4 py-2 font-medium text-white hover:opacity-90 disabled:opacity-50 transition-colors"
-                  >
+                  </Button>
+                  <Button variant="danger" onClick={handleDelete} disabled={deleting}>
                     {deleting ? 'Deleting...' : 'Delete'}
-                  </button>
+                  </Button>
                 </div>
-              </div>
+              </Card>
             </div>
           )}
         </div>

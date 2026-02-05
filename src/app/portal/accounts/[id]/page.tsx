@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Mail, Phone, Building2, Users, TrendingUp, DollarSign, Trash2, Edit } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, Building2, Users, TrendingUp, Trash2, Edit } from 'lucide-react';
 import Link from 'next/link';
 import apiClient from '@/lib/api/client';
+import { Button, Card } from '@/components/ui';
 
 interface Account {
   id: string;
@@ -65,7 +66,7 @@ export default function AccountDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-600">Loading company...</div>
+        <div className="text-muted-foreground">Loading company...</div>
       </div>
     );
   }
@@ -73,7 +74,7 @@ export default function AccountDetailPage() {
   if (!account) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-600">Company not found</div>
+        <div className="text-muted-foreground">Company not found</div>
       </div>
     );
   }
@@ -81,22 +82,19 @@ export default function AccountDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <button
-          onClick={() => router.back()}
-          className="rounded-lg border border-gray-200 bg-white p-2 hover:bg-gray-50"
-        >
-          <ArrowLeft className="h-4 w-4 text-gray-900" />
-        </button>
+        <Button variant="outline" size="sm" onClick={() => router.back()} className="p-2">
+          <ArrowLeft className="h-4 w-4 text-foreground" />
+        </Button>
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">{account.name}</h1>
-          <p className="text-gray-600">Company Details</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">{account.name}</h1>
+          <p className="text-muted-foreground">Company Details</p>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Company Information</h2>
+          <Card>
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Company Information</h2>
             <div className="space-y-4">
               {account.website && (
                 <div>
@@ -105,7 +103,7 @@ export default function AccountDetailPage() {
                     href={account.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary hover:underline"
+                    className="text-primary hover:underline text-foreground"
                   >
                     {account.website}
                   </a>
@@ -114,25 +112,25 @@ export default function AccountDetailPage() {
               {account.industry && (
                 <div>
                   <div className="text-sm text-muted-foreground">Industry</div>
-                  <div>{account.industry}</div>
+                  <div className="text-foreground">{account.industry}</div>
                 </div>
               )}
               {account.email && (
-                <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 text-muted-foreground" />
+                <div className="flex items-center gap-3 text-foreground">
+                  <Mail className="h-5 w-5 text-muted-foreground shrink-0" />
                   <span>{account.email}</span>
                 </div>
               )}
               {account.phone && (
-                <div className="flex items-center gap-3">
-                  <Phone className="h-5 w-5 text-muted-foreground" />
+                <div className="flex items-center gap-3 text-foreground">
+                  <Phone className="h-5 w-5 text-muted-foreground shrink-0" />
                   <span>{account.phone}</span>
                 </div>
               )}
               {(account.address || account.city || account.state || account.country) && (
                 <div>
                   <div className="text-sm text-muted-foreground">Address</div>
-                  <div>
+                  <div className="text-foreground">
                     {account.address && <div>{account.address}</div>}
                     {(account.city || account.state || account.postal_code) && (
                       <div>
@@ -146,93 +144,86 @@ export default function AccountDetailPage() {
                 </div>
               )}
             </div>
-          </div>
+          </Card>
 
           <div className="grid gap-4 md:grid-cols-2">
             <Link
               href={`/portal/contacts?account_id=${account.id}`}
-              className="rounded-xl border bg-card p-6 shadow-sm hover:bg-secondary transition-colors"
+              className="rounded-xl border border-border bg-card p-6 shadow-sm hover:bg-surface-elevated transition-colors block"
             >
               <div className="flex items-center gap-3 mb-2">
-                <Users className="h-5 w-5 text-blue-500" />
-                <h3 className="font-semibold">Customers</h3>
+                <Users className="h-5 w-5 text-primary shrink-0" />
+                <h3 className="font-semibold text-foreground">Customers</h3>
               </div>
-              <div className="text-3xl font-bold">{account.contact_count || 0}</div>
+              <div className="text-3xl font-bold text-foreground">{account.contact_count || 0}</div>
             </Link>
 
             <Link
               href={`/portal/deals?account_id=${account.id}`}
-              className="rounded-xl border bg-card p-6 shadow-sm hover:bg-secondary transition-colors"
+              className="rounded-xl border border-border bg-card p-6 shadow-sm hover:bg-surface-elevated transition-colors block"
             >
               <div className="flex items-center gap-3 mb-2">
-                <TrendingUp className="h-5 w-5 text-green-500" />
-                <h3 className="font-semibold">Deals</h3>
+                <TrendingUp className="h-5 w-5 text-primary shrink-0" />
+                <h3 className="font-semibold text-foreground">Deals</h3>
               </div>
-              <div className="text-3xl font-bold">{account.deal_count || 0}</div>
+              <div className="text-3xl font-bold text-foreground">{account.deal_count || 0}</div>
             </Link>
           </div>
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-xl border bg-card p-6 shadow-sm">
-            <h2 className="text-lg font-semibold mb-4">Metrics</h2>
+          <Card>
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Metrics</h2>
             <div className="space-y-4">
               <div>
                 <div className="text-sm text-muted-foreground">Total Revenue</div>
-                <div className="text-2xl font-bold">
+                <div className="text-2xl font-bold text-foreground">
                   ${((account.total_revenue || 0) / 1000).toFixed(1)}k
                 </div>
               </div>
               <div>
                 <div className="text-sm text-muted-foreground">Created</div>
-                <div className="text-sm">
+                <div className="text-sm text-foreground">
                   {new Date(account.created_at).toLocaleDateString()}
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="rounded-xl border bg-card p-6 shadow-sm space-y-3">
+          <Card className="space-y-3">
             <Link
               href={`/portal/accounts/${account.id}/edit`}
-              className="flex items-center justify-center gap-2 w-full rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+              className="inline-flex items-center justify-center gap-2 w-full rounded-lg font-semibold bg-gradient-tech text-white hover:opacity-90 shadow-lg hover:shadow-xl btn-tech px-4 py-2 text-sm transition-all"
             >
               <Edit className="h-4 w-4" />
               Edit Company
             </Link>
-            <button
+            <Button
+              variant="danger"
+              className="w-full gap-2"
               onClick={() => setShowDeleteConfirm(true)}
-              className="flex items-center justify-center gap-2 w-full rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-2 font-medium text-destructive hover:bg-destructive/20 transition-colors"
             >
               <Trash2 className="h-4 w-4" />
               Delete Company
-            </button>
-          </div>
+            </Button>
+          </Card>
 
           {showDeleteConfirm && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-              <div className="rounded-xl border bg-card p-6 shadow-xl max-w-md w-full mx-4">
-                <h3 className="text-lg font-semibold mb-2">Delete Company</h3>
+              <Card className="max-w-md w-full mx-4 shadow-xl">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">Delete Company</h3>
                 <p className="text-muted-foreground mb-6">
                   Are you sure you want to delete {account?.name}? This action cannot be undone and will also delete all associated deals.
                 </p>
                 <div className="flex justify-end gap-3">
-                  <button
-                    onClick={() => setShowDeleteConfirm(false)}
-                    className="rounded-lg border px-4 py-2 font-medium hover:bg-secondary transition-colors"
-                    disabled={deleting}
-                  >
+                  <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)} disabled={deleting}>
                     Cancel
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    className="rounded-lg bg-destructive px-4 py-2 font-medium text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50 transition-colors"
-                  >
+                  </Button>
+                  <Button variant="danger" onClick={handleDelete} disabled={deleting}>
                     {deleting ? 'Deleting...' : 'Delete'}
-                  </button>
+                  </Button>
                 </div>
-              </div>
+              </Card>
             </div>
           )}
         </div>

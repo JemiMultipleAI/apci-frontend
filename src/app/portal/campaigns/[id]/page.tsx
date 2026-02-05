@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, MessageSquare, Calendar, Trash2, Play, Pause, Users, FileText, Edit } from 'lucide-react';
+import { ArrowLeft, Calendar, Trash2, Play, Pause, Users, Edit } from 'lucide-react';
 import Link from 'next/link';
 import apiClient from '@/lib/api/client';
+import { Button, Card } from '@/components/ui';
 
 interface Campaign {
   id: string;
@@ -224,7 +225,7 @@ export default function CampaignDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-600">Loading campaign...</div>
+        <div className="text-muted-foreground">Loading campaign...</div>
       </div>
     );
   }
@@ -232,154 +233,123 @@ export default function CampaignDetailPage() {
   if (!campaign) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-600">Campaign not found</div>
+        <div className="text-muted-foreground">Campaign not found</div>
       </div>
     );
   }
 
   const statusColors: Record<string, string> = {
-    draft: 'bg-gray-100 text-gray-800',
-    scheduled: 'bg-blue-100 text-blue-800',
-    running: 'bg-green-100 text-green-800',
-    paused: 'bg-yellow-100 text-yellow-800',
-    completed: 'bg-purple-100 text-purple-800',
+    draft: 'bg-surface-elevated border border-border text-foreground',
+    scheduled: 'bg-primary/20 border border-primary/50 text-primary',
+    running: 'bg-green-500/20 border border-green-500/50 text-green-400',
+    paused: 'bg-yellow-500/20 border border-yellow-500/50 text-yellow-400',
+    completed: 'bg-purple-500/20 border border-purple-500/50 text-purple-400',
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <button
-          onClick={() => router.back()}
-          className="rounded-lg border border-gray-200 bg-white p-2 hover:bg-gray-50"
-        >
-          <ArrowLeft className="h-4 w-4 text-gray-900" />
-        </button>
-        <div className="flex-1">
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">{campaign.name}</h1>
-          <p className="text-gray-600 mt-1">
+      <div className="flex items-center gap-4 flex-wrap">
+        <Button variant="outline" size="sm" onClick={() => router.back()} className="p-2">
+          <ArrowLeft className="h-4 w-4 text-foreground" />
+        </Button>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">{campaign.name}</h1>
+          <p className="text-muted-foreground mt-1">
             {campaign.type} campaign via {campaign.channel}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <span
             className={`rounded-full px-3 py-1 text-sm font-medium ${
-              statusColors[campaign.status] || 'bg-gray-100 text-gray-800'
+              statusColors[campaign.status] || 'bg-surface-elevated border border-border text-foreground'
             }`}
           >
             {campaign.status}
           </span>
           {campaign.status === 'draft' && (
-          <button
-            onClick={handleActivate}
-            className="rounded-lg border border-green-300 bg-green-50 p-2 text-green-700 hover:bg-green-100 transition-colors"
-            title="Activate Campaign"
-          >
-            <Play className="h-4 w-4" />
-          </button>
+            <Button variant="outline" size="sm" onClick={handleActivate} className="p-2 text-green-400 border-green-500/50 hover:bg-green-500/20" title="Activate Campaign">
+              <Play className="h-4 w-4" />
+            </Button>
           )}
           {campaign.status === 'running' && (
-            <button
-              onClick={handlePause}
-              className="rounded-lg border border-yellow-300 bg-yellow-50 p-2 text-yellow-700 hover:bg-yellow-100 transition-colors"
-              title="Pause Campaign"
-            >
+            <Button variant="outline" size="sm" onClick={handlePause} className="p-2 text-yellow-400 border-yellow-500/50 hover:bg-yellow-500/20" title="Pause Campaign">
               <Pause className="h-4 w-4" />
-            </button>
+            </Button>
           )}
-          <button
-            onClick={handleExecute}
-            disabled={executing}
-            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
-          >
+          <Button variant="secondary" size="sm" onClick={handleExecute} disabled={executing}>
             {executing ? 'Executing...' : 'Execute'}
-          </button>
-          <Link
-            href={`/portal/campaigns/${campaign.id}/edit`}
-            className="rounded-lg border border-gray-300 bg-white p-2 text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            <Edit className="h-4 w-4" />
+          </Button>
+          <Link href={`/portal/campaigns/${campaign.id}/edit`}>
+            <Button variant="outline" size="sm" className="p-2">
+              <Edit className="h-4 w-4" />
+            </Button>
           </Link>
-          <button
-            onClick={() => setShowDeleteConfirm(true)}
-            className="rounded-lg border border-red-300 bg-red-50 p-2 text-red-700 hover:bg-red-100 transition-colors"
-            disabled={deleting}
-          >
+          <Button variant="danger" size="sm" className="p-2" onClick={() => setShowDeleteConfirm(true)} disabled={deleting}>
             <Trash2 className="h-4 w-4" />
-          </button>
+          </Button>
         </div>
       </div>
 
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 max-w-md w-full mx-4 shadow-xl">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900">Delete Campaign</h2>
-            <p className="text-gray-600 mb-6">Are you sure you want to delete this campaign? This action cannot be undone.</p>
+          <Card className="max-w-md w-full mx-4 shadow-xl">
+            <h2 className="text-xl font-semibold mb-4 text-foreground">Delete Campaign</h2>
+            <p className="text-muted-foreground mb-6">Are you sure you want to delete this campaign? This action cannot be undone.</p>
             <div className="flex gap-2 justify-end">
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
-              >
+              <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)}>Cancel</Button>
+              <Button variant="danger" onClick={handleDelete} disabled={deleting}>
                 {deleting ? 'Deleting...' : 'Delete'}
-              </button>
+              </Button>
             </div>
-          </div>
+          </Card>
         </div>
       )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Campaign Information</h2>
+          <Card>
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Campaign Information</h2>
             <div className="space-y-4">
               {campaign.description && (
                 <div>
-                  <div className="text-sm text-gray-600 mb-1">Description</div>
-                  <div className="text-gray-900 whitespace-pre-wrap">{campaign.description}</div>
+                  <div className="text-sm text-muted-foreground mb-1">Description</div>
+                  <div className="text-foreground whitespace-pre-wrap">{campaign.description}</div>
                 </div>
               )}
               <div>
-                <div className="text-sm text-gray-600 mb-1">Type</div>
-                <div className="text-gray-900 capitalize">{campaign.type}</div>
+                <div className="text-sm text-muted-foreground mb-1">Type</div>
+                <div className="text-foreground capitalize">{campaign.type}</div>
               </div>
               <div>
-                <div className="text-sm text-gray-600 mb-1">Channel</div>
-                <div className="text-gray-900 uppercase">{campaign.channel}</div>
+                <div className="text-sm text-muted-foreground mb-1">Channel</div>
+                <div className="text-foreground uppercase">{campaign.channel}</div>
               </div>
               {campaign.start_date && (
                 <div>
-                  <div className="text-sm text-gray-600 mb-1">Start Date</div>
-                  <div className="text-gray-900">
+                  <div className="text-sm text-muted-foreground mb-1">Start Date</div>
+                  <div className="text-foreground">
                     {new Date(campaign.start_date).toLocaleString()}
                   </div>
                 </div>
               )}
               {campaign.end_date && (
                 <div>
-                  <div className="text-sm text-gray-600 mb-1">End Date</div>
-                  <div className="text-gray-900">
+                  <div className="text-sm text-muted-foreground mb-1">End Date</div>
+                  <div className="text-foreground">
                     {new Date(campaign.end_date).toLocaleString()}
                   </div>
                 </div>
               )}
-              {/* Template section hidden - templates are deprecated */}
-              {/* Survey section hidden - under development */}
               {campaign.metadata?.days_inactive && (
                 <div>
-                  <div className="text-sm text-gray-600 mb-1">Days Inactive</div>
-                  <div className="text-gray-900">{campaign.metadata.days_inactive} days</div>
+                  <div className="text-sm text-muted-foreground mb-1">Days Inactive</div>
+                  <div className="text-foreground">{campaign.metadata.days_inactive} days</div>
                 </div>
               )}
               {campaign.metadata?.contact_ids && Array.isArray(campaign.metadata.contact_ids) && campaign.metadata.contact_ids.length > 0 && (
                 <div>
-                  <div className="text-sm text-gray-600 mb-1">Target Contacts</div>
-                  <div className="text-gray-900 flex items-center gap-2">
+                  <div className="text-sm text-muted-foreground mb-1">Target Contacts</div>
+                  <div className="text-foreground flex items-center gap-2">
                     <Users className="h-4 w-4" />
                     {campaign.metadata.contact_ids.length} contact{campaign.metadata.contact_ids.length !== 1 ? 's' : ''} selected
                   </div>
@@ -387,25 +357,25 @@ export default function CampaignDetailPage() {
               )}
               {campaign.type === 'reactivation' && !campaign.metadata?.contact_ids && (
                 <div>
-                  <div className="text-sm text-gray-600 mb-1">Target Contacts</div>
-                  <div className="text-gray-900 flex items-center gap-2">
+                  <div className="text-sm text-muted-foreground mb-1">Target Contacts</div>
+                  <div className="text-foreground flex items-center gap-2">
                     <Users className="h-4 w-4" />
                     Automatic (dormant contacts)
                   </div>
                 </div>
               )}
               {(campaign.webhook_urls?.email || campaign.webhook_urls?.email_provider || campaign.webhook_urls?.sms || campaign.webhook_urls?.sms_twilio) && (
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <div className="text-sm text-gray-600 mb-3 font-semibold">Webhook URLs for Inbound Replies</div>
+                <div className="mt-6 pt-6 border-t border-border">
+                  <div className="text-sm text-muted-foreground mb-3 font-semibold">Webhook URLs for Inbound Replies</div>
                   <div className="space-y-3">
                     {campaign.webhook_urls.email_provider && (
                       <div>
-                        <div className="text-xs text-gray-600 mb-1 flex items-center gap-2">
+                        <div className="text-xs text-muted-foreground mb-1 flex items-center gap-2">
                           <span>Email Webhook (Provider Dashboard)</span>
-                          <span className="px-1.5 py-0.5 bg-blue-100 border border-blue-300 rounded text-[10px] text-blue-800">Recommended</span>
+                          <span className="px-1.5 py-0.5 bg-primary/20 border border-primary/50 rounded text-[10px] text-primary">Recommended</span>
                         </div>
                         <div className="flex items-start gap-2">
-                          <code className="flex-1 text-xs bg-gray-50 border border-gray-300 rounded px-2 py-1.5 text-gray-900 break-all">
+                          <code className="flex-1 text-xs bg-surface-elevated border border-border rounded px-2 py-1.5 text-foreground break-all">
                             {campaign.webhook_urls.email_provider}
                           </code>
                           <button
@@ -413,21 +383,21 @@ export default function CampaignDetailPage() {
                               navigator.clipboard.writeText(campaign.webhook_urls!.email_provider!);
                               alert('Email provider webhook URL copied to clipboard!');
                             }}
-                            className="text-xs text-gray-600 hover:text-gray-900 underline"
+                            className="text-xs text-muted-foreground hover:text-foreground underline"
                           >
                             Copy
                           </button>
                         </div>
                         {campaign.webhook_urls.email_provider_note && (
-                          <div className="text-xs text-gray-500 mt-1">{campaign.webhook_urls.email_provider_note}</div>
+                          <div className="text-xs text-muted-foreground mt-1">{campaign.webhook_urls.email_provider_note}</div>
                         )}
                       </div>
                     )}
                     {campaign.webhook_urls.email && (
                       <div>
-                        <div className="text-xs text-gray-600 mb-1">Email Webhook (Token-based)</div>
+                        <div className="text-xs text-muted-foreground mb-1">Email Webhook (Token-based)</div>
                         <div className="flex items-start gap-2">
-                          <code className="flex-1 text-xs bg-gray-50 border border-gray-300 rounded px-2 py-1.5 text-gray-900 break-all">
+                          <code className="flex-1 text-xs bg-surface-elevated border border-border rounded px-2 py-1.5 text-foreground break-all">
                             {campaign.webhook_urls.email}
                           </code>
                           <button
@@ -435,24 +405,24 @@ export default function CampaignDetailPage() {
                               navigator.clipboard.writeText(campaign.webhook_urls!.email!);
                               alert('Webhook URL copied to clipboard!');
                             }}
-                            className="text-xs text-gray-600 hover:text-gray-900 underline"
+                            className="text-xs text-muted-foreground hover:text-foreground underline"
                           >
                             Copy
                           </button>
                         </div>
                         {campaign.webhook_urls.email_note && (
-                          <div className="text-xs text-gray-500 mt-1">{campaign.webhook_urls.email_note}</div>
+                          <div className="text-xs text-muted-foreground mt-1">{campaign.webhook_urls.email_note}</div>
                         )}
                       </div>
                     )}
                     {campaign.webhook_urls.sms_twilio && (
                       <div>
-                        <div className="text-xs text-gray-600 mb-1 flex items-center gap-2">
+                        <div className="text-xs text-muted-foreground mb-1 flex items-center gap-2">
                           <span>SMS Webhook (Twilio)</span>
-                          <span className="px-1.5 py-0.5 bg-blue-100 border border-blue-300 rounded text-[10px] text-blue-800">Recommended</span>
+                          <span className="px-1.5 py-0.5 bg-primary/20 border border-primary/50 rounded text-[10px] text-primary">Recommended</span>
                         </div>
                         <div className="flex items-start gap-2">
-                          <code className="flex-1 text-xs bg-gray-50 border border-gray-300 rounded px-2 py-1.5 text-gray-900 break-all">
+                          <code className="flex-1 text-xs bg-surface-elevated border border-border rounded px-2 py-1.5 text-foreground break-all">
                             {campaign.webhook_urls.sms_twilio}
                           </code>
                           <button
@@ -460,21 +430,21 @@ export default function CampaignDetailPage() {
                               navigator.clipboard.writeText(campaign.webhook_urls!.sms_twilio!);
                               alert('Twilio webhook URL copied to clipboard!');
                             }}
-                            className="text-xs text-gray-600 hover:text-gray-900 underline"
+                            className="text-xs text-muted-foreground hover:text-foreground underline"
                           >
                             Copy
                           </button>
                         </div>
                         {campaign.webhook_urls.sms_twilio_note && (
-                          <div className="text-xs text-gray-500 mt-1">{campaign.webhook_urls.sms_twilio_note}</div>
+                          <div className="text-xs text-muted-foreground mt-1">{campaign.webhook_urls.sms_twilio_note}</div>
                         )}
                       </div>
                     )}
                     {campaign.webhook_urls.sms && (
                       <div>
-                        <div className="text-xs text-gray-600 mb-1">SMS Webhook (Token-based)</div>
+                        <div className="text-xs text-muted-foreground mb-1">SMS Webhook (Token-based)</div>
                         <div className="flex items-start gap-2">
-                          <code className="flex-1 text-xs bg-gray-50 border border-gray-300 rounded px-2 py-1.5 text-gray-900 break-all">
+                          <code className="flex-1 text-xs bg-surface-elevated border border-border rounded px-2 py-1.5 text-foreground break-all">
                             {campaign.webhook_urls.sms}
                           </code>
                           <button
@@ -482,13 +452,13 @@ export default function CampaignDetailPage() {
                               navigator.clipboard.writeText(campaign.webhook_urls!.sms!);
                               alert('Token-based webhook URL copied to clipboard!');
                             }}
-                            className="text-xs text-gray-600 hover:text-gray-900 underline"
+                            className="text-xs text-muted-foreground hover:text-foreground underline"
                           >
                             Copy
                           </button>
                         </div>
                         {campaign.webhook_urls.sms_note && (
-                          <div className="text-xs text-gray-500 mt-1">{campaign.webhook_urls.sms_note}</div>
+                          <div className="text-xs text-muted-foreground mt-1">{campaign.webhook_urls.sms_note}</div>
                         )}
                       </div>
                     )}
@@ -496,19 +466,19 @@ export default function CampaignDetailPage() {
                 </div>
               )}
             </div>
-          </div>
+          </Card>
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Details</h2>
+          <Card>
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Details</h2>
             <div className="space-y-3">
               <div>
-                <div className="text-sm text-gray-600">Status</div>
+                <div className="text-sm text-muted-foreground">Status</div>
                 <div className="mt-1">
                   <span
                     className={`rounded-full px-2 py-1 text-xs font-medium ${
-                      statusColors[campaign.status] || 'bg-gray-100 text-gray-800'
+                      statusColors[campaign.status] || 'bg-surface-elevated border border-border text-foreground'
                     }`}
                   >
                     {campaign.status}
@@ -517,68 +487,68 @@ export default function CampaignDetailPage() {
               </div>
               {campaign.created_by_name && (
                 <div>
-                  <div className="text-sm text-gray-600">Created By</div>
-                  <div className="mt-1 text-gray-900">{campaign.created_by_name}</div>
+                  <div className="text-sm text-muted-foreground">Created By</div>
+                  <div className="mt-1 text-foreground">{campaign.created_by_name}</div>
                 </div>
               )}
               <div>
-                <div className="text-sm text-gray-600">Created</div>
-                <div className="mt-1 text-gray-900">
+                <div className="text-sm text-muted-foreground">Created</div>
+                <div className="mt-1 text-foreground">
                   {new Date(campaign.created_at).toLocaleDateString()}
                 </div>
               </div>
               <div>
-                <div className="text-sm text-gray-600">Last Updated</div>
-                <div className="mt-1 text-gray-900">
+                <div className="text-sm text-muted-foreground">Last Updated</div>
+                <div className="mt-1 text-foreground">
                   {new Date(campaign.updated_at).toLocaleDateString()}
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
 
       {/* Execute Modal */}
       {showExecuteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-gradient-to-br from-red-900/95 to-rose-900/95 backdrop-blur-md rounded-2xl border border-red-800/50 p-6 max-w-2xl w-full mx-4 max-h-[80vh] flex flex-col">
-            <h2 className="text-xl font-semibold mb-4 text-white">Select Contacts to Target</h2>
+          <Card className="max-w-2xl w-full mx-4 max-h-[80vh] flex flex-col shadow-xl">
+            <h2 className="text-xl font-semibold mb-4 text-foreground">Select Contacts to Target</h2>
             
             <div className="flex-1 overflow-y-auto mb-4">
               <div className="flex items-center justify-between mb-3">
-                <p className="text-sm text-red-200/70">
+                <p className="text-sm text-muted-foreground">
                   Select contacts to send this campaign to
                 </p>
                 <button
                   type="button"
                   onClick={handleSelectAllContacts}
-                  className="text-xs text-red-200/70 hover:text-red-200 underline"
+                  className="text-xs text-primary hover:underline"
                 >
                   {selectedContactIds.size === contacts.length ? 'Deselect All' : 'Select All'}
                 </button>
               </div>
               
-              <div className="rounded-lg border border-red-800/50 bg-white/5 max-h-96 overflow-y-auto p-3">
+              <div className="rounded-lg border border-border bg-surface-elevated max-h-96 overflow-y-auto p-3">
                 {loadingContacts ? (
-                  <div className="text-center text-red-200/70 py-4">Loading contacts...</div>
+                  <div className="text-center text-muted-foreground py-4">Loading contacts...</div>
                 ) : contacts.length === 0 ? (
-                  <div className="text-center text-red-200/70 py-4">No contacts found</div>
+                  <div className="text-center text-muted-foreground py-4">No contacts found</div>
                 ) : (
                   <div className="space-y-2">
                     {contacts.map((contact) => (
                       <label
                         key={contact.id}
-                        className="flex items-center gap-2 p-2 rounded hover:bg-white/5 cursor-pointer"
+                        className="flex items-center gap-2 p-2 rounded hover:bg-surface cursor-pointer"
                       >
                         <input
                           type="checkbox"
                           checked={selectedContactIds.has(contact.id)}
                           onChange={() => handleContactToggle(contact.id)}
-                          className="rounded border-red-800/50 bg-white/10 text-red-500 focus:ring-red-500/50"
+                          className="rounded border-border bg-background text-primary focus:ring-primary/50"
                         />
-                        <span className="text-sm text-white">
+                        <span className="text-sm text-foreground">
                           {contact.first_name} {contact.last_name}
-                          {contact.email && <span className="text-red-200/70 ml-2">({contact.email})</span>}
+                          {contact.email && <span className="text-muted-foreground ml-2">({contact.email})</span>}
                         </span>
                       </label>
                     ))}
@@ -586,33 +556,33 @@ export default function CampaignDetailPage() {
                 )}
               </div>
               
-              <p className="mt-3 text-sm text-red-200/70">
+              <p className="mt-3 text-sm text-muted-foreground">
                 {selectedContactIds.size} contact{selectedContactIds.size !== 1 ? 's' : ''} selected
               </p>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-red-800/50">
-              <button
+            <div className="flex justify-end gap-3 pt-4 border-t border-border">
+              <Button
                 type="button"
+                variant="secondary"
                 onClick={() => {
                   setShowExecuteModal(false);
                   setSelectedContactIds(new Set());
                 }}
-                className="rounded-lg border border-red-800/50 bg-red-900/30 px-4 py-2 text-white hover:bg-red-900/50 transition-colors"
                 disabled={executing}
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="primary"
                 onClick={handleConfirmExecute}
                 disabled={executing || selectedContactIds.size === 0}
-                className="rounded-lg bg-white text-red-700 px-4 py-2 font-semibold hover:bg-red-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {executing ? 'Executing...' : `Execute (${selectedContactIds.size})`}
-              </button>
+              </Button>
             </div>
-          </div>
+          </Card>
         </div>
       )}
     </div>

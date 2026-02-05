@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Mail, Phone, Building2, Calendar, Trash2, Edit } from 'lucide-react';
 import Link from 'next/link';
 import apiClient from '@/lib/api/client';
+import { Button, Card, PageHeader } from '@/components/ui';
 
 interface Contact {
   id: string;
@@ -84,7 +85,7 @@ export default function ContactDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-600">Loading customer...</div>
+        <div className="text-muted-foreground">Loading customer...</div>
       </div>
     );
   }
@@ -92,7 +93,7 @@ export default function ContactDetailPage() {
   if (!contact) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-600">Customer not found</div>
+        <div className="text-muted-foreground">Customer not found</div>
       </div>
     );
   }
@@ -100,62 +101,59 @@ export default function ContactDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <button
-          onClick={() => router.back()}
-          className="rounded-lg border border-gray-200 bg-white p-2 hover:bg-gray-50"
-        >
-          <ArrowLeft className="h-4 w-4 text-gray-900" />
-        </button>
+        <Button variant="outline" size="sm" onClick={() => router.back()} className="p-2">
+          <ArrowLeft className="h-4 w-4 text-foreground" />
+        </Button>
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
             {contact.first_name} {contact.last_name}
           </h1>
-          <p className="text-gray-600">Customer Details</p>
+          <p className="text-muted-foreground">Customer Details</p>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Customer Information</h2>
+          <Card>
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Customer Information</h2>
             <div className="space-y-4">
               {contact.email && (
-                <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 text-muted-foreground" />
+                <div className="flex items-center gap-3 text-foreground">
+                  <Mail className="h-5 w-5 text-muted-foreground shrink-0" />
                   <span>{contact.email}</span>
                 </div>
               )}
               {contact.mobile && (
-                <div className="flex items-center gap-3">
-                  <Phone className="h-5 w-5 text-muted-foreground" />
+                <div className="flex items-center gap-3 text-foreground">
+                  <Phone className="h-5 w-5 text-muted-foreground shrink-0" />
                   <span>{contact.mobile}</span>
                 </div>
               )}
               {contact.job_title && (
-                <div className="flex items-center gap-3">
-                  <Building2 className="h-5 w-5 text-muted-foreground" />
+                <div className="flex items-center gap-3 text-foreground">
+                  <Building2 className="h-5 w-5 text-muted-foreground shrink-0" />
                   <span>{contact.job_title}</span>
                   {contact.department && <span className="text-muted-foreground">- {contact.department}</span>}
                 </div>
               )}
               <div className="flex items-center gap-3">
-                <Calendar className="h-5 w-5 text-muted-foreground" />
+                <Calendar className="h-5 w-5 text-muted-foreground shrink-0" />
                 <span className="text-sm text-muted-foreground">
                   Created {new Date(contact.created_at).toLocaleDateString()}
                 </span>
               </div>
             </div>
-          </div>
+          </Card>
 
           {contact.notes && (
-            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold mb-4 text-gray-900">Notes</h2>
+            <Card>
+              <h2 className="text-lg font-semibold mb-4 text-foreground">Notes</h2>
               <p className="text-muted-foreground whitespace-pre-wrap">{contact.notes}</p>
-            </div>
+            </Card>
           )}
 
-          <div className="rounded-xl border bg-card p-6 shadow-sm">
-            <h2 className="text-lg font-semibold mb-4">Activity Timeline</h2>
+          <Card>
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Activity Timeline</h2>
             {activities.length === 0 ? (
               <p className="text-muted-foreground">No activities yet</p>
             ) : (
@@ -163,7 +161,7 @@ export default function ContactDetailPage() {
                 {activities.map((activity) => (
                   <div key={activity.id} className="border-l-2 border-primary pl-4 pb-4">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium capitalize">{activity.type}</span>
+                      <span className="font-medium capitalize text-foreground">{activity.type}</span>
                       {activity.subject && (
                         <span className="text-muted-foreground">- {activity.subject}</span>
                       )}
@@ -179,17 +177,17 @@ export default function ContactDetailPage() {
                 ))}
               </div>
             )}
-          </div>
+          </Card>
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-xl border bg-card p-6 shadow-sm">
-            <h2 className="text-lg font-semibold mb-4">Details</h2>
+          <Card>
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Details</h2>
             <div className="space-y-3">
               <div>
                 <div className="text-sm text-muted-foreground">Lifecycle Stage</div>
                 <div className="mt-1">
-                  <span className="rounded-full bg-secondary px-2 py-1 text-xs font-medium capitalize">
+                  <span className="rounded-full bg-surface-elevated border border-border px-2 py-1 text-xs font-medium capitalize text-foreground">
                     {contact.lifecycle_stage}
                   </span>
                 </div>
@@ -215,7 +213,7 @@ export default function ContactDetailPage() {
                       <Link
                         key={group.id}
                         href={`/portal/contact-groups/${group.id}`}
-                        className="inline-flex items-center rounded-full bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground hover:bg-secondary/80"
+                        className="inline-flex items-center rounded-full bg-surface-elevated border border-border px-2 py-1 text-xs font-medium text-foreground hover:bg-surface transition-colors"
                       >
                         {group.name}
                       </Link>
@@ -224,49 +222,42 @@ export default function ContactDetailPage() {
                 )}
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="rounded-xl border bg-card p-6 shadow-sm space-y-3">
+          <Card className="space-y-3">
             <Link
               href={`/portal/contacts/${contact.id}/edit`}
-              className="flex items-center justify-center gap-2 w-full rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+              className="inline-flex items-center justify-center gap-2 w-full rounded-lg font-semibold bg-gradient-tech text-white hover:opacity-90 shadow-lg hover:shadow-xl btn-tech px-4 py-2 text-sm transition-all"
             >
               <Edit className="h-4 w-4" />
               Edit Customer
             </Link>
-            <button
+            <Button
+              variant="danger"
+              className="w-full gap-2"
               onClick={() => setShowDeleteConfirm(true)}
-              className="flex items-center justify-center gap-2 w-full rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-2 font-medium text-destructive hover:bg-destructive/20 transition-colors"
             >
               <Trash2 className="h-4 w-4" />
               Delete Customer
-            </button>
-          </div>
+            </Button>
+          </Card>
 
           {showDeleteConfirm && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-              <div className="rounded-xl border bg-card p-6 shadow-xl max-w-md w-full mx-4">
-                <h3 className="text-lg font-semibold mb-2">Delete Customer</h3>
+              <Card className="max-w-md w-full mx-4 shadow-xl">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">Delete Customer</h3>
                 <p className="text-muted-foreground mb-6">
                   Are you sure you want to delete {contact?.first_name} {contact?.last_name}? This action cannot be undone.
                 </p>
                 <div className="flex justify-end gap-3">
-                  <button
-                    onClick={() => setShowDeleteConfirm(false)}
-                    className="rounded-lg border px-4 py-2 font-medium hover:bg-secondary transition-colors"
-                    disabled={deleting}
-                  >
+                  <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)} disabled={deleting}>
                     Cancel
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    className="rounded-lg bg-destructive px-4 py-2 font-medium text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50 transition-colors"
-                  >
+                  </Button>
+                  <Button variant="danger" onClick={handleDelete} disabled={deleting}>
                     {deleting ? 'Deleting...' : 'Delete'}
-                  </button>
+                  </Button>
                 </div>
-              </div>
+              </Card>
             </div>
           )}
         </div>
