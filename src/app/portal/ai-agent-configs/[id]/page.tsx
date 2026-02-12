@@ -11,6 +11,7 @@ interface AgentConfig {
   id: string;
   account_id: string | null;
   agent_id: string;
+  agent_phone_number_id?: string | null;
   name: string;
   description: string | null;
   is_active: boolean;
@@ -142,6 +143,20 @@ export default function AgentConfigDetailPage() {
                 <div>
                   <div className="text-sm text-muted-foreground">Agent ID</div>
                   <div className="text-foreground font-mono text-sm">{config.agent_id}</div>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <Bot className="h-5 w-5 text-muted-foreground shrink-0" />
+                <div>
+                  <div className="text-sm text-muted-foreground">Phone Number ID</div>
+                  <div className="text-foreground font-mono text-sm">
+                    {config.agent_phone_number_id ? (
+                      config.agent_phone_number_id
+                    ) : (
+                      <span className="text-muted-foreground italic">Not configured</span>
+                    )}
+                  </div>
                 </div>
               </div>
               

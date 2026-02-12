@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { Plus, FileText, Search } from 'lucide-react';
 import Link from 'next/link';
 import apiClient from '@/lib/api/client';
+import { useUser } from '@/hooks/useUser';
+import { hasPermission } from '@/utils/rolePermissions';
 
 interface Survey {
   id: string;
@@ -15,6 +17,7 @@ interface Survey {
 }
 
 export default function SurveysPage() {
+  const { role } = useUser();
   const [surveys, setSurveys] = useState<Survey[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -53,13 +56,15 @@ export default function SurveysPage() {
             Create and manage customer feedback surveys
           </p>
         </div>
-        <Link
-          href="/portal/surveys/new"
-          className="flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"
-        >
-          <Plus className="h-4 w-4" />
-          New Survey
-        </Link>
+        {hasPermission(role, 'canManageSurveys') && (
+          <Link
+            href="/portal/surveys/new"
+            className="flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"
+          >
+            <Plus className="h-4 w-4" />
+            New Survey
+          </Link>
+        )}
       </div>
 
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
@@ -89,7 +94,7 @@ export default function SurveysPage() {
             <p className="text-muted-foreground mb-4">
               {searchTerm ? 'Try adjusting your search terms' : 'Create your first survey to collect customer feedback'}
             </p>
-            {!searchTerm && (
+            {!searchTerm && hasPermission(role, 'canManageSurveys') && (
               <Link
                 href="/portal/surveys/new"
                 className="inline-flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"

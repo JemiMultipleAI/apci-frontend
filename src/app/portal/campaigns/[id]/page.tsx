@@ -6,6 +6,8 @@ import { ArrowLeft, Calendar, Trash2, Play, Pause, Users, Edit } from 'lucide-re
 import Link from 'next/link';
 import apiClient from '@/lib/api/client';
 import { Button, Card } from '@/components/ui';
+import { useUser } from '@/hooks/useUser';
+import { hasPermission, canUpdate, canDelete } from '@/utils/rolePermissions';
 
 interface Campaign {
   id: string;
@@ -40,6 +42,7 @@ interface Contact {
 }
 
 export default function CampaignDetailPage() {
+  const { role } = useUser();
   const params = useParams();
   const router = useRouter();
   const [campaign, setCampaign] = useState<Campaign | null>(null);
@@ -266,27 +269,33 @@ export default function CampaignDetailPage() {
           >
             {campaign.status}
           </span>
-          {campaign.status === 'draft' && (
+          {hasPermission(role, 'canManageCampaigns') && campaign.status === 'draft' && (
             <Button variant="outline" size="sm" onClick={handleActivate} className="p-2 text-green-400 border-green-500/50 hover:bg-green-500/20" title="Activate Campaign">
               <Play className="h-4 w-4" />
             </Button>
           )}
-          {campaign.status === 'running' && (
+          {hasPermission(role, 'canManageCampaigns') && campaign.status === 'running' && (
             <Button variant="outline" size="sm" onClick={handlePause} className="p-2 text-yellow-400 border-yellow-500/50 hover:bg-yellow-500/20" title="Pause Campaign">
               <Pause className="h-4 w-4" />
             </Button>
           )}
-          <Button variant="secondary" size="sm" onClick={handleExecute} disabled={executing}>
-            {executing ? 'Executing...' : 'Execute'}
-          </Button>
-          <Link href={`/portal/campaigns/${campaign.id}/edit`}>
-            <Button variant="outline" size="sm" className="p-2">
-              <Edit className="h-4 w-4" />
+          {hasPermission(role, 'canExecuteCampaigns') && (
+            <Button variant="secondary" size="sm" onClick={handleExecute} disabled={executing}>
+              {executing ? 'Executing...' : 'Execute'}
             </Button>
-          </Link>
-          <Button variant="danger" size="sm" className="p-2" onClick={() => setShowDeleteConfirm(true)} disabled={deleting}>
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          )}
+          {canUpdate(role) && (
+            <Link href={`/portal/campaigns/${campaign.id}/edit`}>
+              <Button variant="outline" size="sm" className="p-2">
+                <Edit className="h-4 w-4" />
+              </Button>
+            </Link>
+          )}
+          {canDelete(role) && (
+            <Button variant="danger" size="sm" className="p-2" onClick={() => setShowDeleteConfirm(true)} disabled={deleting}>
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </div>
 

@@ -23,7 +23,7 @@ export default function NewEmployeePage() {
     password: '',
     first_name: '',
     last_name: '',
-    role: 'viewer' as 'super_admin' | 'admin' | 'manager' | 'sales_rep' | 'viewer',
+    role: 'viewer' as 'super_admin' | 'admin' | 'manager' | 'viewer',
     is_active: true,
     account_id: null as string | null,
   });
@@ -34,7 +34,14 @@ export default function NewEmployeePage() {
         // Fetch current user to check role
         const userResponse = await apiClient.get('/auth/me');
         if (userResponse.data.success) {
+          const userRole = userResponse.data.data.role;
           setCurrentUser(userResponse.data.data);
+          
+          // Redirect non-super_admin users
+          if (userRole !== 'super_admin') {
+            router.push('/portal/employees');
+            return;
+          }
         }
 
         // Fetch accounts for company dropdown
@@ -58,7 +65,7 @@ export default function NewEmployeePage() {
     };
 
     fetchData();
-  }, []);
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -174,7 +181,6 @@ export default function NewEmployeePage() {
                 <option value="super_admin">Super Admin</option>
               )}
               <option value="viewer">Viewer</option>
-              <option value="sales_rep">Sales Rep</option>
               <option value="manager">Manager</option>
               <option value="admin">Admin</option>
               </Select>

@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { Plus, TrendingUp, Search } from 'lucide-react';
 import Link from 'next/link';
 import apiClient from '@/lib/api/client';
+import { useUser } from '@/hooks/useUser';
+import { canCreate } from '@/utils/rolePermissions';
 
 interface Deal {
   id: string;
@@ -16,6 +18,7 @@ interface Deal {
 }
 
 export default function DealsPage() {
+  const { role } = useUser();
   const [deals, setDeals] = useState<Deal[]>([]);
   const [pipeline, setPipeline] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -55,13 +58,15 @@ export default function DealsPage() {
             Manage your sales pipeline
           </p>
         </div>
-        <Link
-          href="/portal/deals/new"
-          className="flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"
-        >
-          <Plus className="h-4 w-4" />
-          New Deal
-        </Link>
+        {role && canCreate(role) && (
+          <Link
+            href="/portal/deals/new"
+            className="flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"
+          >
+            <Plus className="h-4 w-4" />
+            New Deal
+          </Link>
+        )}
       </div>
 
       {pipeline && (
@@ -113,7 +118,7 @@ export default function DealsPage() {
             <p className="text-muted-foreground mb-4">
               {searchTerm ? 'Try adjusting your search terms' : 'Start tracking your sales opportunities'}
             </p>
-            {!searchTerm && (
+            {!searchTerm && role && canCreate(role) && (
               <Link
                 href="/portal/deals/new"
                 className="inline-flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"
@@ -180,3 +185,4 @@ export default function DealsPage() {
     </div>
   );
 }
+

@@ -11,6 +11,7 @@ interface AgentConfig {
   name: string;
   description: string | null;
   is_active: boolean;
+  agent_phone_number_id?: string | null;
   created_at: string;
   account_name: string | null;
 }
@@ -113,6 +114,7 @@ export default function AgentConfigsPage() {
                   <th className="px-4 py-3 text-left text-sm font-medium text-foreground">Name</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-foreground">Company</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-foreground">Description</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-foreground">Phone Number ID</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-foreground">Status</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-foreground">Created</th>
                 </tr>
@@ -146,6 +148,13 @@ export default function AgentConfigsPage() {
                     <td className="px-4 py-3 text-sm text-muted-foreground">
                       {config.description || (
                         <span className="text-muted-foreground italic">No description</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-muted-foreground font-mono">
+                      {config.agent_phone_number_id ? (
+                        <span className="text-xs">{config.agent_phone_number_id}</span>
+                      ) : (
+                        <span className="text-muted-foreground italic text-xs">Not configured</span>
                       )}
                     </td>
                     <td className="px-4 py-3">

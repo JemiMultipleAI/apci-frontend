@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { Plus, Users, Search } from 'lucide-react';
 import Link from 'next/link';
 import apiClient from '@/lib/api/client';
+import { useUser } from '@/hooks/useUser';
+import { canCreate } from '@/utils/rolePermissions';
 
 interface ContactGroup {
   id: string;
@@ -14,6 +16,7 @@ interface ContactGroup {
 }
 
 export default function ContactGroupsPage() {
+  const { role } = useUser();
   const [groups, setGroups] = useState<ContactGroup[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -52,13 +55,15 @@ export default function ContactGroupsPage() {
             Organize contacts into groups for campaign targeting
           </p>
         </div>
-        <Link
-          href="/portal/contact-groups/new"
-          className="flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"
-        >
-          <Plus className="h-4 w-4" />
-          New Group
-        </Link>
+        {canCreate(role) && (
+          <Link
+            href="/portal/contact-groups/new"
+            className="flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"
+          >
+            <Plus className="h-4 w-4" />
+            New Group
+          </Link>
+        )}
       </div>
 
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
@@ -88,7 +93,7 @@ export default function ContactGroupsPage() {
             <p className="text-muted-foreground mb-4">
               {searchTerm ? 'Try adjusting your search terms' : 'Create your first contact group to organize contacts for campaigns'}
             </p>
-            {!searchTerm && (
+            {!searchTerm && canCreate(role) && (
               <Link
                 href="/portal/contact-groups/new"
                 className="inline-flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"

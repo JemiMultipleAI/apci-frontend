@@ -24,6 +24,7 @@ interface Contact {
 }
 
 export default function ContactGroupDetailPage() {
+  const { role } = useUser();
   const params = useParams();
   const router = useRouter();
   const [group, setGroup] = useState<ContactGroup | null>(null);
@@ -111,23 +112,29 @@ export default function ContactGroupDetailPage() {
           </h1>
           <p className="text-muted-foreground">Contact Group Details</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Link
-            href={`/portal/contact-groups/${group.id}/edit`}
-            className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2 font-semibold text-text-secondary hover:bg-surface-elevated transition-all"
-          >
-            <Edit className="h-4 w-4" />
-            Edit
-          </Link>
-          <Button
-            variant="danger"
-            className="gap-2"
-            onClick={() => setShowDeleteConfirm(true)}
-          >
-            <Trash2 className="h-4 w-4" />
-            Delete
-          </Button>
-        </div>
+        {(canUpdate(role) || canDelete(role)) && (
+          <div className="flex items-center gap-2">
+            {canUpdate(role) && (
+              <Link
+                href={`/portal/contact-groups/${group.id}/edit`}
+                className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2 font-semibold text-text-secondary hover:bg-surface-elevated transition-all"
+              >
+                <Edit className="h-4 w-4" />
+                Edit
+              </Link>
+            )}
+            {canDelete(role) && (
+              <Button
+                variant="danger"
+                className="gap-2"
+                onClick={() => setShowDeleteConfirm(true)}
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

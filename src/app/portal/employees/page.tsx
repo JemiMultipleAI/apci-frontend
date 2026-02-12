@@ -20,10 +20,18 @@ export default function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchEmployees = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch current user role
+        const userResponse = await apiClient.get('/auth/me');
+        if (userResponse.data.success) {
+          setCurrentUserRole(userResponse.data.data.role);
+        }
+
+        // Fetch employees
         const response = await apiClient.get('/users', {
           params: { page: 1, limit: 50 },
         });
@@ -35,7 +43,7 @@ export default function EmployeesPage() {
       }
     };
 
-    fetchEmployees();
+    fetchData();
   }, []);
 
   const filteredEmployees = employees.filter((employee) => {
@@ -58,15 +66,17 @@ export default function EmployeesPage() {
             Manage your internal team members
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Link
-            href="/portal/employees/new"
-            className="flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"
-          >
-            <Plus className="h-4 w-4" />
-            Add Employee
-          </Link>
-        </div>
+        {currentUserRole === 'super_admin' && (
+          <div className="flex items-center gap-2">
+            <Link
+              href="/portal/employees/new"
+              className="flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"
+            >
+              <Plus className="h-4 w-4" />
+              Add Employee
+            </Link>
+          </div>
+        )}
       </div>
 
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
@@ -98,7 +108,7 @@ export default function EmployeesPage() {
                 ? 'Try adjusting your search terms'
                 : 'Start by adding your first team member'}
             </p>
-            {!searchTerm && (
+            {!searchTerm && currentUserRole === 'super_admin' && (
               <Link
                 href="/portal/employees/new"
                 className="inline-flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"

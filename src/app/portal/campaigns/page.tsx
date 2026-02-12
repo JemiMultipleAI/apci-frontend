@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { Plus, MessageSquare, Search } from 'lucide-react';
 import Link from 'next/link';
 import apiClient from '@/lib/api/client';
+import { useUser } from '@/hooks/useUser';
+import { hasPermission } from '@/utils/rolePermissions';
 
 interface Campaign {
   id: string;
@@ -15,6 +17,7 @@ interface Campaign {
 }
 
 export default function CampaignsPage() {
+  const { role } = useUser();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -58,13 +61,15 @@ export default function CampaignsPage() {
             Manage marketing and subscription reactivation campaigns
           </p>
         </div>
-        <Link
-          href="/portal/campaigns/new"
-          className="flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"
-        >
-          <Plus className="h-4 w-4" />
-          New Campaign
-        </Link>
+        {hasPermission(role, 'canManageCampaigns') && (
+          <Link
+            href="/portal/campaigns/new"
+            className="flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"
+          >
+            <Plus className="h-4 w-4" />
+            New Campaign
+          </Link>
+        )}
       </div>
 
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
@@ -94,7 +99,7 @@ export default function CampaignsPage() {
             <p className="text-muted-foreground mb-4">
               {searchTerm ? 'Try adjusting your search terms' : 'Create your first campaign to engage with customers'}
             </p>
-            {!searchTerm && (
+            {!searchTerm && hasPermission(role, 'canManageCampaigns') && (
               <Link
                 href="/portal/campaigns/new"
                 className="inline-flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"

@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { Plus, CheckSquare, Clock, AlertCircle, Search } from 'lucide-react';
 import Link from 'next/link';
 import apiClient from '@/lib/api/client';
+import { useUser } from '@/hooks/useUser';
+import { canCreate } from '@/utils/rolePermissions';
 
 interface Task {
   id: string;
@@ -17,6 +19,7 @@ interface Task {
 }
 
 export default function TasksPage() {
+  const { role } = useUser();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'pending' | 'in_progress' | 'completed'>('all');
@@ -82,13 +85,15 @@ export default function TasksPage() {
             Manage your tasks and follow-ups
           </p>
         </div>
-        <Link
-          href="/portal/tasks/new"
-          className="flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"
-        >
-          <Plus className="h-4 w-4" />
-          New Task
-        </Link>
+        {canCreate(role) && (
+          <Link
+            href="/portal/tasks/new"
+            className="flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"
+          >
+            <Plus className="h-4 w-4" />
+            New Task
+          </Link>
+        )}
       </div>
 
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
@@ -144,7 +149,7 @@ export default function TasksPage() {
             <p className="text-muted-foreground mb-4">
               {searchTerm ? 'Try adjusting your search terms' : 'Create your first task to get started'}
             </p>
-            {!searchTerm && (
+            {!searchTerm && canCreate(role) && (
               <Link
                 href="/portal/tasks/new"
                 className="inline-flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"

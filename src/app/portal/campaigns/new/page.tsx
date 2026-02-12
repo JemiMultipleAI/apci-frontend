@@ -63,6 +63,11 @@ export default function NewCampaignPage() {
     use_custom_introduction: false,
     filter_dormant: false,
     days_inactive: '90',
+    // Batch execution fields
+    batch_execution_enabled: false,
+    batch_size: '5',
+    batch_interval: 'daily',
+    batch_start_time: '09:00',
     // Channel checkboxes and schedules (absolute date/time)
     channels: {
       email: { enabled: true, send_now: true, scheduled_time: '' },
@@ -109,6 +114,16 @@ export default function NewCampaignPage() {
       // Add days_inactive if filtering by dormant contacts
       if (formData.filter_dormant) {
         metadata.days_inactive = parseInt(formData.days_inactive) || 90;
+      }
+
+      // Add batch execution config
+      if (formData.batch_execution_enabled) {
+        metadata.batch_execution = {
+          enabled: true,
+          batch_size: parseInt(formData.batch_size) || 5,
+          batch_interval: formData.batch_interval || 'daily',
+          start_time: formData.batch_start_time || '09:00',
+        };
       }
 
       // Add channel configuration with absolute scheduled times (convert to UTC)
@@ -559,6 +574,84 @@ export default function NewCampaignPage() {
                 <p className="mt-1 text-xs text-muted-foreground">
                 Only include contacts from selected groups that have been inactive for this many days
               </p>
+            </div>
+          )}
+          </Card>
+
+        {/* Batch Execution Option */}
+          <Card variant="elevated" className="p-4">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={formData.batch_execution_enabled}
+              onChange={(e) => setFormData({ ...formData, batch_execution_enabled: e.target.checked })}
+                className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary"
+            />
+              <span className="text-sm font-medium text-foreground">Enable Batch Execution</span>
+          </label>
+          <p className="mt-1 ml-7 text-xs text-muted-foreground">
+            Spread campaign execution over multiple batches to avoid overwhelming recipients
+          </p>
+          {formData.batch_execution_enabled && (
+            <div className="mt-4 ml-7 space-y-4">
+              <div>
+                <Label htmlFor="batch_size">Batch Size</Label>
+                <Input
+                  id="batch_size"
+                  name="batch_size"
+                  type="number"
+                  min="1"
+                  value={formData.batch_size}
+                  onChange={handleChange}
+                  placeholder="5"
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Number of contacts to process per batch
+                </p>
+              </div>
+              <div>
+                <Label htmlFor="batch_interval">Batch Interval</Label>
+                <Select
+                  id="batch_interval"
+                  name="batch_interval"
+                  value={formData.batch_interval}
+                  onChange={handleChange}
+                >
+                  <option value="hourly">Hourly</option>
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                </Select>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  How often to send each batch
+                </p>
+              </div>
+              <div>
+                <Label htmlFor="batch_start_time">Start Time (24-hour format)</Label>
+                <Input
+                  id="batch_start_time"
+                  name="batch_start_time"
+                  type="time"
+                  value={formData.batch_start_time}
+                  onChange={handleChange}
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Time of day to send each batch (e.g., 09:00 for 9 AM). Uses your local timezone.
+                </p>
+              </div>
+              {selectedGroupIds.size > 0 && (
+                <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 p-3">
+                  <p className="text-xs text-blue-900 dark:text-blue-100">
+                    <strong>Estimated Duration:</strong> With {contactGroups
+                      .filter(g => selectedGroupIds.has(g.id))
+                      .reduce((sum, g) => sum + g.member_count, 0)} contacts and batch size of {formData.batch_size}, 
+                    this campaign will take approximately {Math.ceil(
+                      contactGroups
+                        .filter(g => selectedGroupIds.has(g.id))
+                        .reduce((sum, g) => sum + g.member_count, 0) / parseInt(formData.batch_size || '5')
+                    )} {formData.batch_interval === 'hourly' ? 'hours' : formData.batch_interval === 'daily' ? 'days' : 'weeks'} to complete.
+                  </p>
+                </div>
+              )}
             </div>
           )}
           </Card>

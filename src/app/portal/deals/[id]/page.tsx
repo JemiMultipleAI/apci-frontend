@@ -6,6 +6,8 @@ import { ArrowLeft, Calendar, Building2, User, Trash2, Edit } from 'lucide-react
 import Link from 'next/link';
 import apiClient from '@/lib/api/client';
 import { Button, Card } from '@/components/ui';
+import { useUser } from '@/hooks/useUser';
+import { canUpdate, canDelete } from '@/utils/rolePermissions';
 
 interface Deal {
   id: string;
@@ -25,6 +27,7 @@ interface Deal {
 }
 
 export default function DealDetailPage() {
+  const { role } = useUser();
   const params = useParams();
   const router = useRouter();
   const [deal, setDeal] = useState<Deal | null>(null);
@@ -211,19 +214,25 @@ export default function DealDetailPage() {
             </div>
           </Card>
 
-          <Card className="space-y-3">
-            <Link
-              href={`/portal/deals/${deal.id}/edit`}
-              className="inline-flex items-center justify-center gap-2 w-full rounded-lg font-semibold bg-gradient-tech text-white hover:opacity-90 shadow-lg hover:shadow-xl btn-tech px-4 py-2 text-sm transition-all"
-            >
-              <Edit className="h-4 w-4" />
-              Edit Deal
-            </Link>
-            <Button variant="danger" className="w-full gap-2" onClick={() => setShowDeleteConfirm(true)}>
-              <Trash2 className="h-4 w-4" />
-              Delete Deal
-            </Button>
-          </Card>
+          {(canUpdate(role) || canDelete(role)) && (
+            <Card className="space-y-3">
+              {canUpdate(role) && (
+                <Link
+                  href={`/portal/deals/${deal.id}/edit`}
+                  className="inline-flex items-center justify-center gap-2 w-full rounded-lg font-semibold bg-gradient-tech text-white hover:opacity-90 shadow-lg hover:shadow-xl btn-tech px-4 py-2 text-sm transition-all"
+                >
+                  <Edit className="h-4 w-4" />
+                  Edit Deal
+                </Link>
+              )}
+              {canDelete(role) && (
+                <Button variant="danger" className="w-full gap-2" onClick={() => setShowDeleteConfirm(true)}>
+                  <Trash2 className="h-4 w-4" />
+                  Delete Deal
+                </Button>
+              )}
+            </Card>
+          )}
 
           {showDeleteConfirm && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">

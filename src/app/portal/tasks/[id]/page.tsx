@@ -6,6 +6,8 @@ import { ArrowLeft, CheckSquare, Clock, AlertCircle, Trash2 } from 'lucide-react
 import Link from 'next/link';
 import apiClient from '@/lib/api/client';
 import { Button, Card } from '@/components/ui';
+import { useUser } from '@/hooks/useUser';
+import { canDelete } from '@/utils/rolePermissions';
 
 interface Task {
   id: string;
@@ -23,6 +25,7 @@ interface Task {
 }
 
 export default function TaskDetailPage() {
+  const { role } = useUser();
   const params = useParams();
   const router = useRouter();
   const [task, setTask] = useState<Task | null>(null);
@@ -111,9 +114,11 @@ export default function TaskDetailPage() {
           <span className="rounded-full bg-surface-elevated border border-border px-3 py-1 text-sm font-medium capitalize text-foreground">
             {task.status.replace('_', ' ')}
           </span>
-          <Button variant="danger" size="sm" className="p-2" onClick={() => setShowDeleteConfirm(true)} disabled={deleting}>
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          {canDelete(role) && (
+            <Button variant="danger" size="sm" className="p-2" onClick={() => setShowDeleteConfirm(true)} disabled={deleting}>
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </div>
 

@@ -91,13 +91,13 @@ export const navigation: NavigationItem[] = [
     category: 'Marketing',
   },
   // Tools Section
-  {
-    title: 'Surveys',
-    description: 'Create and manage customer surveys',
-    href: '/portal/surveys',
-    icon: FileText,
-    category: 'Tools',
-  },
+  // {
+  //   title: 'Surveys',
+  //   description: 'Create and manage customer surveys',
+  //   href: '/portal/surveys',
+  //   icon: FileText,
+  //   category: 'Tools',
+  // },
   {
     title: 'Analytics',
     description: 'Reports and insights',
@@ -112,19 +112,20 @@ export const navigation: NavigationItem[] = [
     icon: Activity,
     category: 'Tools',
   },
-  {
-    title: 'AI Chat',
-    description: 'Test and interact with the AI agent',
-    href: '/portal/chat',
-    icon: MessageCircle,
-    category: 'Tools',
-  },
+  // {
+  //   title: 'AI Chat',
+  //   description: 'Test and interact with the AI agent',
+  //   href: '/portal/chat',
+  //   icon: MessageCircle,
+  //   category: 'Tools',
+  // },
   // Settings Section
   {
     title: 'Employees',
     description: 'Manage your internal team members',
     href: '/portal/employees',
     icon: UserCog,
+    requiredRole: 'super_admin',
     category: 'Settings',
   },
   {

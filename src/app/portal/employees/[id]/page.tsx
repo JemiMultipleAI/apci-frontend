@@ -65,8 +65,6 @@ export default function EmployeeDetailPage() {
         return 'bg-red-600/50 text-red-100';
       case 'manager':
         return 'bg-orange-600/50 text-orange-100';
-      case 'sales_rep':
-        return 'bg-blue-600/50 text-blue-100';
       case 'viewer':
         return 'bg-gray-600/50 text-gray-100';
       default:

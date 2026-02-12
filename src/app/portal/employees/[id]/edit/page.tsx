@@ -23,7 +23,7 @@ export default function EditEmployeePage() {
     email: '',
     first_name: '',
     last_name: '',
-    role: 'viewer' as 'super_admin' | 'admin' | 'manager' | 'sales_rep' | 'viewer',
+    role: 'viewer' as 'super_admin' | 'admin' | 'manager' | 'viewer',
     is_active: true,
     account_id: null as string | null,
   });
@@ -173,7 +173,6 @@ export default function EditEmployeePage() {
                   <option value="super_admin">Super Admin</option>
                 )}
                 <option value="viewer">Viewer</option>
-                <option value="sales_rep">Sales Rep</option>
                 <option value="manager">Manager</option>
                 <option value="admin">Admin</option>
               </Select>

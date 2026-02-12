@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import apiClient from '@/lib/api/client';
 import AdvancedFilters, { FilterState } from '@/components/filters/advanced-filters';
+import { useUser } from '@/hooks/useUser';
+import { canCreate, canUpdate, canDelete, canExportData } from '@/utils/rolePermissions';
 
 interface Contact {
   id: string;
@@ -18,6 +20,7 @@ interface Contact {
 }
 
 export default function ContactsPage() {
+  const { role } = useUser();
   const router = useRouter();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [accounts, setAccounts] = useState<Array<{ id: string; name: string }>>([]);
@@ -190,28 +193,34 @@ export default function ContactsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={handleExport}
-            disabled={exporting || contacts.length === 0}
-            className="flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2 text-text-secondary hover:bg-surface-elevated disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            <Download className="h-4 w-4" />
-            {exporting ? 'Exporting...' : 'Export'}
-          </button>
-          <Link
-            href="/portal/contacts/import"
-            className="flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2 text-text-secondary hover:bg-surface-elevated transition-colors"
-          >
-            <Upload className="h-4 w-4" />
-            Import
-          </Link>
-          <Link
-            href="/portal/contacts/new"
-            className="flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"
-          >
-            <Plus className="h-4 w-4" />
-            Add Customer
-          </Link>
+          {canExportData(role) && (
+            <button
+              onClick={handleExport}
+              disabled={exporting || contacts.length === 0}
+              className="flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2 text-text-secondary hover:bg-surface-elevated disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <Download className="h-4 w-4" />
+              {exporting ? 'Exporting...' : 'Export'}
+            </button>
+          )}
+          {canCreate(role) && (
+            <>
+              <Link
+                href="/portal/contacts/import"
+                className="flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2 text-text-secondary hover:bg-surface-elevated transition-colors"
+              >
+                <Upload className="h-4 w-4" />
+                Import
+              </Link>
+              <Link
+                href="/portal/contacts/new"
+                className="flex items-center gap-2 rounded-lg bg-gradient-tech text-white px-4 py-2 font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl btn-tech"
+              >
+                <Plus className="h-4 w-4" />
+                Add Customer
+              </Link>
+            </>
+          )}
         </div>
       </div>
 
@@ -221,20 +230,24 @@ export default function ContactsPage() {
             {selectedIds.size} customer{selectedIds.size !== 1 ? 's' : ''} selected
           </span>
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowBulkEdit(true)}
-              className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-text-secondary hover:bg-surface-elevated transition-colors"
-            >
-              <Edit className="h-4 w-4" />
-              Edit
-            </button>
-            <button
-              onClick={() => setShowDeleteConfirm(true)}
-              className="flex items-center gap-2 rounded-lg border border-error/50 bg-error/20 px-3 py-1.5 text-sm text-error hover:bg-error/30 transition-colors"
-            >
-              <Trash2 className="h-4 w-4" />
-              Delete
-            </button>
+            {canUpdate(role) && (
+              <button
+                onClick={() => setShowBulkEdit(true)}
+                className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-text-secondary hover:bg-surface-elevated transition-colors"
+              >
+                <Edit className="h-4 w-4" />
+                Edit
+              </button>
+            )}
+            {canDelete(role) && (
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="flex items-center gap-2 rounded-lg border border-error/50 bg-error/20 px-3 py-1.5 text-sm text-error hover:bg-error/30 transition-colors"
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </button>
+            )}
             <button
               onClick={() => setSelectedIds(new Set())}
               className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-text-secondary hover:bg-surface-elevated transition-colors"

@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
 import { env } from '../env';
-import { getAccessToken, clearTokens, getCompanyId } from '../cookies';
+import { getAccessToken, getRefreshToken, setAccessToken, clearTokens, getCompanyId } from '../cookies';
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
@@ -52,27 +52,71 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Response interceptor for error handling
+// Response interceptor for error handling and automatic token refresh
 apiClient.interceptors.response.use(
   (response) => {
     return response;
   },
   async (error: AxiosError) => {
+    const originalRequest = error.config as any;
+    
     // Handle 401 Unauthorized errors
-    if (error.response?.status === 401) {
-      const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
-      
-      // Only redirect if we're not already on the login page
-      if (typeof window !== 'undefined' && !currentPath.includes('/login')) {
-        // Clear tokens and company_id, then redirect to login
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      // Don't try to refresh if the request was to the refresh endpoint itself
+      const isRefreshEndpoint = originalRequest.url?.includes('/auth/refresh');
+      if (isRefreshEndpoint) {
+        // Refresh token is invalid, clear everything and redirect to login
         clearTokens();
-        
-        // Small delay to allow any error state to be displayed
+        const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+        if (typeof window !== 'undefined' && !currentPath.includes('/login')) {
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 100);
+        }
+        return Promise.reject(error);
+      }
+      
+      originalRequest._retry = true;
+      
+      try {
+        // Try to refresh the token
+        const refreshToken = getRefreshToken();
+        if (refreshToken) {
+          const response = await axios.post(`${env.API_BASE_URL}/api/auth/refresh`, {
+            refreshToken,
+          });
+          
+          if (response.data.success) {
+            // Update access token
+            setAccessToken(response.data.data.accessToken);
+            
+            // Retry original request with new token
+            originalRequest.headers.Authorization = `Bearer ${response.data.data.accessToken}`;
+            return apiClient(originalRequest);
+          }
+        }
+      } catch (refreshError) {
+        // Refresh failed, clear tokens and redirect to login
+        clearTokens();
+        const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+        if (typeof window !== 'undefined' && !currentPath.includes('/login')) {
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 100);
+        }
+        return Promise.reject(refreshError);
+      }
+      
+      // No refresh token available, redirect to login
+      clearTokens();
+      const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+      if (typeof window !== 'undefined' && !currentPath.includes('/login')) {
         setTimeout(() => {
           window.location.href = '/login';
         }, 100);
       }
     }
+    
     return Promise.reject(error);
   }
 );

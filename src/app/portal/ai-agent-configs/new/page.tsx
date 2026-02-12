@@ -131,6 +131,23 @@ export default function NewAgentConfigPage() {
               <p className="text-xs text-muted-foreground mt-1">The agent ID from your ElevenLabs dashboard</p>
             </div>
 
+            <div className="md:col-span-2">
+              <Label htmlFor="agent_phone_number_id">ElevenLabs Phone Number ID</Label>
+              <Input
+                id="agent_phone_number_id"
+                name="agent_phone_number_id"
+                type="text"
+                value={formData.agent_phone_number_id}
+                onChange={handleChange}
+                placeholder="Enter the phone number ID from ElevenLabs"
+                className="font-mono text-sm"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Required for native Twilio calls (better latency and interruption support). 
+                Get this from your ElevenLabs dashboard → Phone Numbers.
+              </p>
+            </div>
+
             <div>
               <Label htmlFor="account_id">Company</Label>
               <Select

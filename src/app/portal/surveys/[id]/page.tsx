@@ -6,6 +6,8 @@ import { ArrowLeft, FileText, Trash2, CheckCircle, XCircle } from 'lucide-react'
 import Link from 'next/link';
 import apiClient from '@/lib/api/client';
 import { Button, Card } from '@/components/ui';
+import { useUser } from '@/hooks/useUser';
+import { canUpdate, canDelete } from '@/utils/rolePermissions';
 
 interface Survey {
   id: string;
@@ -29,6 +31,7 @@ interface SurveyResponse {
 }
 
 export default function SurveyDetailPage() {
+  const { role } = useUser();
   const params = useParams();
   const router = useRouter();
   const [survey, setSurvey] = useState<Survey | null>(null);
@@ -114,9 +117,11 @@ export default function SurveyDetailPage() {
           >
             {survey.is_active ? 'Active' : 'Inactive'}
           </span>
-          <Button variant="danger" size="sm" className="p-2" onClick={() => setShowDeleteConfirm(true)} disabled={deleting}>
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          {canDelete(role) && (
+            <Button variant="danger" size="sm" className="p-2" onClick={() => setShowDeleteConfirm(true)} disabled={deleting}>
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </div>
 
