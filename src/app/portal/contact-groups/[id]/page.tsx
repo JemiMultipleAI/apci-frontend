@@ -6,6 +6,8 @@ import { ArrowLeft, Users, Trash2, Edit, Plus, X } from 'lucide-react';
 import Link from 'next/link';
 import apiClient from '@/lib/api/client';
 import { Button, Card } from '@/components/ui';
+import { useUser } from '@/hooks/useUser';
+import { canUpdate, canDelete } from '@/utils/rolePermissions';
 
 interface ContactGroup {
   id: string;
