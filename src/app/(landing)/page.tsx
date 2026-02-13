@@ -55,17 +55,31 @@ function AnimatedCounter({ end, suffix = '', duration = 2000 }: { end: number; s
 
 // Floating particles component
 function FloatingParticles() {
+  const [particles, setParticles] = useState<Array<{ left: number; top: number; duration: number; delay: number }>>([]);
+
+  useEffect(() => {
+    // Generate random values only on client side to avoid hydration mismatch
+    setParticles(
+      Array.from({ length: 20 }, () => ({
+        left: Math.random() * 100,
+        top: Math.random() * 100,
+        duration: 3 + Math.random() * 4,
+        delay: Math.random() * 2,
+      }))
+    );
+  }, []);
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(20)].map((_, i) => (
+      {particles.map((particle, i) => (
         <div
           key={i}
           className="absolute w-1 h-1 rounded-full bg-cyan-400/30"
           style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 2}s`,
+            left: `${particle.left}%`,
+            top: `${particle.top}%`,
+            animation: `float ${particle.duration}s ease-in-out infinite`,
+            animationDelay: `${particle.delay}s`,
           }}
         />
       ))}
@@ -232,47 +246,40 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-900 text-slate-50 overflow-x-hidden">
+    <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden">
       {/* Navigation */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
-        <div className="glass border-b border-cyan-500/10">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 via-purple-500 to-pink-500 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-white font-bold text-lg">C</span>
-                </div>
-                <div className="absolute inset-0 w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 via-purple-500 to-pink-500 blur-lg opacity-50 group-hover:opacity-80 transition-opacity" />
-            </div>
-              <span className="text-white font-bold text-xl tracking-tight">CRMatIQ</span>
+        <div className="bg-white/95 backdrop-blur-md border-b border-gray-200">
+        <div className="container mx-auto px-6 md:px-8 lg:px-12 py-4 flex items-center justify-between">
+            <Link href="/" className="flex items-center group">
+              <img 
+                src="/logo.png" 
+                alt="CRMatIQ Logo" 
+                className="h-14 w-auto"
+              />
           </Link>
             
           <div className="hidden md:flex items-center gap-8">
-              <Link href="#features" className="text-slate-200 hover:text-cyan-400 transition-colors font-medium text-sm relative group">
+              <Link href="#features" className="text-gray-700 hover:text-gray-900 transition-colors font-medium text-sm relative group">
                 Features
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-purple-500 group-hover:w-full transition-all duration-300" />
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#2563EB] group-hover:w-full transition-all duration-300" />
               </Link>
-              <Link href="#pricing" className="text-slate-200 hover:text-cyan-400 transition-colors font-medium text-sm relative group">
+              <Link href="#pricing" className="text-gray-700 hover:text-gray-900 transition-colors font-medium text-sm relative group">
                 Pricing
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-purple-500 group-hover:w-full transition-all duration-300" />
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#2563EB] group-hover:w-full transition-all duration-300" />
               </Link>
-              <Link href="#testimonials" className="text-slate-200 hover:text-cyan-400 transition-colors font-medium text-sm relative group">
+              <Link href="#testimonials" className="text-gray-700 hover:text-gray-900 transition-colors font-medium text-sm relative group">
                 Testimonials
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-purple-500 group-hover:w-full transition-all duration-300" />
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#2563EB] group-hover:w-full transition-all duration-300" />
               </Link>
           </div>
             
             <div className="flex items-center gap-4">
             <Link
               href="/login"
-                className="relative group px-6 py-2.5 rounded-lg font-semibold text-sm overflow-hidden"
+                className="px-6 py-2.5 rounded-lg font-semibold text-sm bg-[#2563EB] text-white hover:bg-[#1D4ED8] transition-all duration-300 shadow-md hover:shadow-lg"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 transition-all duration-300" />
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <span className="relative z-10 text-white">Get Started</span>
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 blur-xl" />
-                </div>
+                Get Started
             </Link>
             </div>
           </div>
@@ -280,7 +287,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+      <section className="relative min-h-screen flex items-center pt-24 pb-12 overflow-hidden">
         <GridBackground />
         <FloatingParticles />
         
@@ -289,51 +296,44 @@ export default function LandingPage() {
         <GlowingOrb className="w-96 h-96 -top-48 right-0" color="purple" />
         <GlowingOrb className="w-48 h-48 bottom-20 right-20" color="pink" />
         
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-6 md:px-8 lg:px-12 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center max-w-7xl mx-auto">
           {/* Left Column - Content */}
-          <div className="space-y-8">
+          <div className="space-y-6">
               {/* Animated badge */}
-              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-cyan-500/30 transition-all duration-700 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 shadow-sm transition-all duration-700 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
                 <div className="relative">
-                  <Sparkles className="h-4 w-4 text-cyan-400" />
-                  <Sparkles className="h-4 w-4 text-cyan-400 absolute inset-0 animate-ping opacity-50" />
+                  <Sparkles className="h-4 w-4 text-[#2563EB]" />
+                  <Sparkles className="h-4 w-4 text-[#2563EB] absolute inset-0 animate-ping opacity-50" />
                 </div>
-                <span className="text-cyan-400 text-sm font-medium">AI-Powered CRM Platform</span>
+                <span className="text-[#2563EB] text-sm font-medium">AI-Powered CRM Platform</span>
                 <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
             </div>
             
               {/* Main headline with staggered animation */}
               <h1 className={`text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight transition-all duration-700 delay-100 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                <span className="text-white">Run Your</span>
+                <span className="text-gray-900">Run Your</span>
                 <br />
-                <span className="text-white">Business </span>
+                <span className="text-gray-900">Business </span>
                 <span className="relative">
-                  <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-gradient">
+                  <span className="text-[#2563EB]">
                     On Auto-Pilot
                   </span>
                   <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 300 12" fill="none">
                     <path 
                       d="M2 10C50 2 100 2 150 6C200 10 250 4 298 8" 
-                      stroke="url(#gradient)" 
+                      stroke="#2563EB" 
                       strokeWidth="3" 
                       strokeLinecap="round"
                       className="animate-fade-in delay-500"
                       style={{ strokeDasharray: 300, strokeDashoffset: isLoaded ? 0 : 300, transition: 'stroke-dashoffset 1s ease-out 0.5s' }}
                     />
-                    <defs>
-                      <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#22D3EE" />
-                        <stop offset="50%" stopColor="#A855F7" />
-                        <stop offset="100%" stopColor="#EC4899" />
-                      </linearGradient>
-                    </defs>
                   </svg>
                 </span>
             </h1>
             
             {/* Description */}
-              <p className={`text-lg md:text-xl text-slate-200 leading-relaxed max-w-xl transition-all duration-700 delay-200 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+              <p className={`text-lg md:text-xl text-gray-600 leading-relaxed max-w-xl transition-all duration-700 delay-200 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                 Automate your CRM workflows, engage customers intelligently, and scale your business without the manual work. 
                 <span className="text-cyan-400"> AI-powered insights</span> at your fingertips.
             </p>
@@ -342,15 +342,10 @@ export default function LandingPage() {
               <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 delay-300 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                 <Link 
                   href="/login" 
-                  className="group relative px-8 py-4 rounded-xl font-semibold text-base overflow-hidden flex items-center justify-center gap-3"
+                  className="group px-8 py-4 rounded-xl font-semibold text-base bg-[#2563EB] text-white hover:bg-[#1D4ED8] transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 opacity-0 group-hover:opacity-100 transition-all duration-300" />
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="absolute inset-0 animate-shimmer" />
-                  </div>
-                  <span className="relative z-10 text-white">Start Free Trial</span>
-                  <ArrowRight className="relative z-10 h-5 w-5 text-white group-hover:translate-x-1 transition-transform" />
+                  <span>Start Free Trial</span>
+                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
             
@@ -364,15 +359,15 @@ export default function LandingPage() {
                       </div>
                     ))}
                   </div>
-                  <span className="text-sm text-slate-300">
-                    <span className="text-white font-semibold">10,000+</span> teams
+                  <span className="text-sm text-gray-600">
+                    <span className="text-gray-900 font-semibold">10,000+</span> teams
                   </span>
                 </div>
               <div className="flex items-center gap-1">
                 {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-5 w-5 text-yellow-400 fill-yellow-400" />
                 ))}
-                  <span className="text-sm text-slate-300 ml-2">4.9/5 rating</span>
+                  <span className="text-sm text-gray-600 ml-2">4.9/5 rating</span>
               </div>
             </div>
           </div>
@@ -381,7 +376,7 @@ export default function LandingPage() {
             <div className={`relative transition-all duration-1000 delay-300 ${isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'}`}>
               {/* Main dashboard card */}
           <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl blur-xl" />
+                <div className="absolute inset-0 bg-[#2563EB]/10 rounded-2xl blur-xl" />
                 <div className="relative glass rounded-2xl p-6 md:p-8 border border-cyan-500/20 animate-float-slow">
               {/* Dashboard Header */}
               <div className="flex items-center justify-between mb-6">
@@ -398,8 +393,8 @@ export default function LandingPage() {
               
                   {/* Revenue Display */}
               <div className="mb-6">
-                    <p className="text-slate-300 text-sm mb-1">Monthly Revenue</p>
-                    <p className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+                    <p className="text-gray-600 text-sm mb-1">Monthly Revenue</p>
+                    <p className="text-4xl md:text-5xl font-bold text-gray-900">
                       $<AnimatedCounter end={847} suffix=",320" />
                     </p>
               </div>
@@ -436,7 +431,7 @@ export default function LandingPage() {
                             y1={y} 
                             x2="280" 
                             y2={y} 
-                            stroke="#334155" 
+                            stroke="#E5E7EB" 
                             strokeWidth="0.5" 
                             strokeDasharray="4,4"
                           />
@@ -512,7 +507,7 @@ export default function LandingPage() {
                         {['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, i) => (
                           <span 
                             key={month} 
-                            className={`text-xs transition-all duration-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'} ${i === 6 ? 'text-cyan-400' : 'text-slate-300'}`}
+                            className={`text-xs transition-all duration-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'} ${i === 6 ? 'text-gray-900' : 'text-gray-600'}`}
                             style={{ transitionDelay: `${i * 50 + 1200}ms` }}
                           >
                             {month}
@@ -524,21 +519,21 @@ export default function LandingPage() {
               
               {/* Metrics Cards */}
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700 hover:border-cyan-500/30 transition-all duration-300 group">
+                    <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-gray-300 transition-all duration-300 group">
                       <div className="flex items-center gap-2 mb-2">
-                        <Briefcase className="h-4 w-4 text-cyan-400" />
-                        <span className="text-xs text-slate-300">Active Deals</span>
+                        <Briefcase className="h-4 w-4 text-gray-700" />
+                        <span className="text-xs text-gray-600">Active Deals</span>
                       </div>
-                      <p className="text-2xl font-bold text-white group-hover:text-cyan-400 transition-colors">
+                      <p className="text-2xl font-bold text-gray-900 group-hover:text-gray-700 transition-colors">
                         <AnimatedCounter end={248} />
                       </p>
                     </div>
-                    <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700 hover:border-purple-500/30 transition-all duration-300 group">
+                    <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-gray-300 transition-all duration-300 group">
                       <div className="flex items-center gap-2 mb-2">
-                        <TrendingUp className="h-4 w-4 text-purple-400" />
-                        <span className="text-xs text-slate-300">Pipeline</span>
+                        <TrendingUp className="h-4 w-4 text-gray-700" />
+                        <span className="text-xs text-gray-600">Pipeline</span>
                       </div>
-                      <p className="text-2xl font-bold text-white group-hover:text-purple-400 transition-colors">$2.4M</p>
+                      <p className="text-2xl font-bold text-gray-900 group-hover:text-gray-700 transition-colors">$2.4M</p>
                     </div>
                   </div>
                 </div>
@@ -547,12 +542,12 @@ export default function LandingPage() {
                 <div className="absolute -bottom-6 -left-6 md:-left-12 animate-float-delayed">
                   <div className="glass rounded-xl p-4 border border-purple-500/30 shadow-2xl max-w-[260px] glow-purple">
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                      <div className="w-10 h-10 rounded-lg bg-[#2563EB] flex items-center justify-center flex-shrink-0">
                         <Brain className="h-5 w-5 text-white" />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-white mb-1">AI Insight</p>
-                        <p className="text-xs text-slate-300">"Acme Corp is <span className="text-green-400 font-medium">87% likely</span> to close this week"</p>
+                        <p className="text-sm font-semibold text-gray-900 mb-1">AI Insight</p>
+                        <p className="text-xs text-gray-600">"Acme Corp is <span className="text-green-600 font-medium">87% likely</span> to close this week"</p>
                       </div>
                     </div>
                   </div>
@@ -562,12 +557,12 @@ export default function LandingPage() {
                 <div className="absolute -top-4 -right-4 md:-right-8 animate-float">
                   <div className="glass rounded-xl p-3 border border-cyan-500/30 shadow-2xl glow-cyan">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-cyan-500 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-[#2563EB] flex items-center justify-center">
                         <Check className="h-4 w-4 text-white" />
               </div>
                   <div>
-                        <p className="text-xs font-medium text-white">Deal Won!</p>
-                        <p className="text-xs text-slate-300">$45,000</p>
+                        <p className="text-xs font-medium text-gray-900">Deal Won!</p>
+                        <p className="text-xs text-gray-600">$45,000</p>
                       </div>
                     </div>
                   </div>
@@ -579,7 +574,7 @@ export default function LandingPage() {
         
         {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
-          <span className="text-xs text-slate-300">Scroll to explore</span>
+          <span className="text-xs text-gray-600">Scroll to explore</span>
           <ChevronDown className="h-5 w-5 text-cyan-400" />
         </div>
       </section>
@@ -592,10 +587,10 @@ export default function LandingPage() {
             <span className="inline-block px-4 py-1.5 rounded-full glass border border-cyan-500/30 text-cyan-400 text-sm font-medium mb-4">
               Trusted Worldwide
             </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Powering the best sales teams
             </h2>
-            <p className="text-slate-300 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               Join thousands of companies transforming their sales with AI
             </p>
           </div>
@@ -613,25 +608,25 @@ export default function LandingPage() {
                 className="text-center group"
               >
                 <div className="relative inline-block">
-                  <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+                  <div className="text-5xl md:text-6xl font-bold text-[#2563EB] mb-2">
                     <AnimatedCounter end={stat.value} suffix={stat.suffix} />
             </div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 blur-2xl opacity-30 group-hover:opacity-50 transition-opacity" />
+                  <div className="absolute inset-0 bg-[#2563EB]/20 blur-2xl opacity-30 group-hover:opacity-50 transition-opacity" />
             </div>
-                <div className="text-white font-semibold mb-1">{stat.label}</div>
-                <div className="text-slate-300 text-sm">{stat.sublabel}</div>
+                <div className="text-gray-900 font-semibold mb-1">{stat.label}</div>
+                <div className="text-gray-600 text-sm">{stat.sublabel}</div>
             </div>
             ))}
           </div>
           
           {/* Company Logos */}
           <div className="text-center">
-            <p className="text-slate-300 text-sm mb-8">Powering sales teams at</p>
+            <p className="text-gray-600 text-sm mb-8">Powering sales teams at</p>
             <div className="flex flex-wrap items-center justify-center gap-12 opacity-40 hover:opacity-60 transition-opacity">
               {['Stripe', 'Vercel', 'Linear', 'Notion', 'Figma', 'Slack'].map((company, index) => (
                 <div 
                   key={index} 
-                  className="text-slate-200 font-medium text-xl hover:text-cyan-400 transition-colors cursor-default"
+                  className="text-gray-700 font-medium text-xl hover:text-gray-900 transition-colors cursor-default"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   {company}
@@ -653,13 +648,13 @@ export default function LandingPage() {
             <span className="inline-block px-4 py-1.5 rounded-full glass border border-purple-500/30 text-purple-400 text-sm font-medium mb-4">
               Features
             </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Powerful Features That{' '}
-              <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+              <span className="text-[#2563EB]">
                 Drive Results
               </span>
           </h2>
-            <p className="text-slate-300 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             Discover powerful tools designed to streamline your workflow and boost productivity
           </p>
         </div>
@@ -672,8 +667,8 @@ export default function LandingPage() {
               onClick={() => setActiveTab(tab)}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
                 activeTab === tab
-                    ? 'bg-gradient-to-r from-cyan-500 to-purple-500 text-white shadow-lg glow-mixed'
-                    : 'glass text-slate-200 hover:text-white border border-slate-700 hover:border-cyan-500/50'
+                    ? 'bg-[#2563EB] text-white shadow-lg hover:bg-[#1D4ED8]'
+                    : 'bg-white text-gray-700 hover:text-gray-900 border border-gray-200 hover:border-gray-300'
               }`}
             >
               {tab}
@@ -682,7 +677,7 @@ export default function LandingPage() {
         </div>
           
           {/* Feature content */}
-          <div className="glass rounded-2xl p-8 md:p-12 border border-slate-700 hover:border-cyan-500/30 transition-all duration-500">
+          <div className="bg-white rounded-2xl p-8 md:p-12 border border-gray-200 hover:border-gray-300 transition-all duration-500 shadow-sm">
           {features[activeTab as keyof typeof features] && (() => {
             const feature = features[activeTab as keyof typeof features];
             const Icon = feature.icon;
@@ -691,21 +686,21 @@ export default function LandingPage() {
                   {/* Header */}
                   <div className="flex items-center gap-4 mb-8">
                     <div className="relative">
-                      <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-500 via-purple-500 to-pink-500 flex items-center justify-center">
+                      <div className="w-14 h-14 rounded-xl bg-[#2563EB] flex items-center justify-center">
                         <Icon className="h-7 w-7 text-white" />
                       </div>
-                      <div className="absolute inset-0 w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-500 via-purple-500 to-pink-500 blur-lg opacity-50" />
+                      <div className="absolute inset-0 w-14 h-14 rounded-xl bg-[#2563EB]/50 blur-lg opacity-50" />
                   </div>
                   <div>
-                      <h3 className="text-2xl md:text-3xl font-bold text-white">
+                      <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
                       {feature.title}
                     </h3>
-                      <p className="text-slate-300 text-sm mt-1">{activeTab}</p>
+                      <p className="text-gray-600 text-sm mt-1">{activeTab}</p>
                     </div>
                   </div>
                   
                   {/* Description */}
-                  <p className="text-slate-200 text-lg leading-relaxed mb-8">
+                  <p className="text-gray-700 text-lg leading-relaxed mb-8">
                   {feature.description}
                 </p>
                   
@@ -714,21 +709,21 @@ export default function LandingPage() {
                   {feature.details.map((detail, index) => (
                       <div 
                         key={index} 
-                        className="flex items-start gap-3 group p-4 rounded-xl bg-slate-800/60 border border-slate-700 hover:border-cyan-500/30 hover:bg-slate-700/80 transition-all duration-300"
+                        className="flex items-start gap-3 group p-4 rounded-xl bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 transition-all duration-300"
                       >
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
+                        <div className="w-6 h-6 rounded-full bg-[#2563EB] flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
                           <Check className="w-3.5 h-3.5 text-white" />
                       </div>
-                        <p className="text-slate-200 text-sm leading-relaxed group-hover:text-white transition-colors">{detail}</p>
+                        <p className="text-gray-700 text-sm leading-relaxed group-hover:text-gray-900 transition-colors">{detail}</p>
                     </div>
                   ))}
                 </div>
                   
                   {/* AI Powered badge - bottom right */}
                   <div className="flex justify-end">
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20">
-                      <Sparkles className="h-4 w-4 text-cyan-400" />
-                      <span className="text-cyan-400 text-sm font-medium">AI Powered</span>
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#2563EB]/10 border border-[#2563EB]/20">
+                      <Sparkles className="h-4 w-4 text-[#2563EB]" />
+                      <span className="text-[#2563EB] text-sm font-medium">AI Powered</span>
                     </div>
                   </div>
                 </div>
@@ -747,13 +742,13 @@ export default function LandingPage() {
             <span className="inline-block px-4 py-1.5 rounded-full glass border border-pink-500/30 text-pink-400 text-sm font-medium mb-4">
               Testimonials
             </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Loved by Teams{' '}
-              <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
+              <span className="text-[#2563EB]">
                 Worldwide
               </span>
             </h2>
-            <p className="text-slate-300 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               See what our customers have to say about their experience
             </p>
           </div>
@@ -762,19 +757,19 @@ export default function LandingPage() {
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="glass rounded-xl p-6 border border-slate-700 hover:border-cyan-500/30 transition-all duration-500 group hover:-translate-y-2"
+                className="bg-white rounded-xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-500 group hover:-translate-y-2 shadow-sm"
                 style={{ animationDelay: `${index * 150}ms` }}
               >
                 <div className="flex items-center gap-4 mb-4">
                   <div className="relative">
-                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg">
+                    <div className="w-14 h-14 rounded-full bg-[#2563EB] flex items-center justify-center text-white font-bold text-lg">
                     {testimonial.avatar}
                     </div>
-                    <div className="absolute inset-0 w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 via-purple-500 to-pink-500 blur-lg opacity-0 group-hover:opacity-50 transition-opacity" />
+                    <div className="absolute inset-0 w-14 h-14 rounded-full bg-[#2563EB]/50 blur-lg opacity-0 group-hover:opacity-50 transition-opacity" />
                   </div>
                   <div>
-                    <h4 className="text-white font-bold">{testimonial.name}</h4>
-                    <p className="text-slate-300 text-sm">{testimonial.role}</p>
+                    <h4 className="text-gray-900 font-bold">{testimonial.name}</h4>
+                    <p className="text-gray-600 text-sm">{testimonial.role}</p>
                     <div className="flex gap-1 mt-1">
                       {[...Array(testimonial.rating)].map((_, i) => (
                         <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400" />
@@ -782,7 +777,7 @@ export default function LandingPage() {
                     </div>
                   </div>
                 </div>
-                <p className="text-slate-200 text-sm leading-relaxed">{testimonial.quote}</p>
+                <p className="text-gray-700 text-sm leading-relaxed">{testimonial.quote}</p>
               </div>
             ))}
           </div>
@@ -799,13 +794,13 @@ export default function LandingPage() {
             <span className="inline-block px-4 py-1.5 rounded-full glass border border-cyan-500/30 text-cyan-400 text-sm font-medium mb-4">
               FAQ
             </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Frequently Asked{' '}
-              <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+              <span className="text-[#2563EB]">
                 Questions
               </span>
           </h2>
-            <p className="text-slate-300 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             Everything you need to know about CRMatIQ
           </p>
         </div>
@@ -814,22 +809,22 @@ export default function LandingPage() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-                className="glass rounded-xl border border-slate-700 overflow-hidden hover:border-cyan-500/30 transition-all duration-300"
+                className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-gray-300 transition-all duration-300 shadow-sm"
             >
               <button
                 onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                  className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-slate-800/60 transition-colors group"
+                  className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors group"
               >
-                  <span className="text-white font-semibold pr-4 group-hover:text-cyan-400 transition-colors">{faq.question}</span>
+                  <span className="text-gray-900 font-semibold pr-4 group-hover:text-gray-700 transition-colors">{faq.question}</span>
                 <ChevronDown
-                    className={`h-5 w-5 text-slate-300 transition-all duration-300 flex-shrink-0 group-hover:text-cyan-400 ${
-                      openFaq === index ? 'rotate-180 text-cyan-400' : ''
+                    className={`h-5 w-5 text-gray-600 transition-all duration-300 flex-shrink-0 group-hover:text-gray-900 ${
+                      openFaq === index ? 'rotate-180 text-gray-900' : ''
                   }`}
                 />
               </button>
                 <div className={`overflow-hidden transition-all duration-300 ${openFaq === index ? 'max-h-96' : 'max-h-0'}`}>
-                  <div className="px-6 pb-5 border-t border-slate-700">
-                    <p className="text-slate-300 text-sm leading-relaxed pt-4">{faq.answer}</p>
+                  <div className="px-6 pb-5 border-t border-gray-200">
+                    <p className="text-gray-600 text-sm leading-relaxed pt-4">{faq.answer}</p>
                   </div>
                 </div>
             </div>
@@ -842,7 +837,7 @@ export default function LandingPage() {
       <section className="relative py-24 overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
           <div className="relative rounded-3xl overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500" />
+            <div className="absolute inset-0 bg-[#2563EB]" />
             <div className="absolute inset-0 bg-gradient-mesh opacity-50" />
             <div className="absolute inset-0">
               <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-float" />
@@ -853,7 +848,7 @@ export default function LandingPage() {
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Ready to close more deals?
             </h2>
-              <p className="text-white/90 text-lg mb-10 max-w-2xl mx-auto">
+              <p className="text-white/95 text-lg mb-10 max-w-2xl mx-auto">
               Join 10,000+ sales teams already using CRMatIQ to hit their targets consistently.
             </p>
               <div className="flex justify-center">
@@ -871,20 +866,18 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="relative py-16 border-t border-slate-800">
+      <footer className="relative py-16 border-t border-gray-200 bg-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="relative">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 via-purple-500 to-pink-500 flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">C</span>
-                  </div>
-                  <div className="absolute inset-0 w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 via-purple-500 to-pink-500 blur-lg opacity-50" />
-                </div>
-                <span className="text-white font-bold text-xl tracking-tight">CRMatIQ</span>
+              <div className="flex items-center mb-6">
+                <img 
+                  src="/logo.png" 
+                  alt="CRMatIQ Logo" 
+                  className="h-14 w-auto"
+                />
               </div>
-              <p className="text-slate-300 text-sm leading-relaxed mb-6">
+              <p className="text-gray-600 text-sm leading-relaxed mb-6">
                 The AI-powered CRM that helps sales teams close more deals, faster.
               </p>
               <div className="flex items-center gap-4">
@@ -892,7 +885,7 @@ export default function LandingPage() {
                   <Link 
                     key={index}
                     href="#" 
-                    className="w-10 h-10 rounded-lg glass border border-slate-700 flex items-center justify-center text-slate-300 hover:text-cyan-400 hover:border-cyan-500/50 transition-all"
+                    className="w-10 h-10 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-all"
                   >
                     <Icon className="h-5 w-5" />
                 </Link>
@@ -906,11 +899,11 @@ export default function LandingPage() {
               { title: 'Support', links: ['Help Center', 'Contact', 'Status', 'Security'] },
             ].map((column, index) => (
               <div key={index}>
-                <h4 className="text-white font-semibold mb-4">{column.title}</h4>
+                <h4 className="text-gray-900 font-semibold mb-4">{column.title}</h4>
                 <ul className="space-y-3 text-sm">
                   {column.links.map((link, linkIndex) => (
                     <li key={linkIndex}>
-                      <Link href="#" className="text-slate-300 hover:text-cyan-400 transition-colors">
+                      <Link href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
                         {link}
                       </Link>
                     </li>
@@ -920,12 +913,12 @@ export default function LandingPage() {
             ))}
           </div>
           
-          <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-slate-300">© 2024 CRMatIQ. All rights reserved.</p>
-            <div className="flex gap-6 text-sm text-slate-300">
-              <Link href="/privacy" className="hover:text-cyan-400 transition-colors">Privacy Policy</Link>
-              <Link href="/terms" className="hover:text-cyan-400 transition-colors">Terms of Service</Link>
-              <Link href="/cookies" className="hover:text-cyan-400 transition-colors">Cookie Settings</Link>
+          <div className="pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-sm text-gray-600">© 2024 CRMatIQ. All rights reserved.</p>
+            <div className="flex gap-6 text-sm text-gray-600">
+              <Link href="/privacy" className="hover:text-gray-900 transition-colors">Privacy Policy</Link>
+              <Link href="/terms" className="hover:text-gray-900 transition-colors">Terms of Service</Link>
+              <Link href="/cookies" className="hover:text-gray-900 transition-colors">Cookie Settings</Link>
             </div>
           </div>
         </div>

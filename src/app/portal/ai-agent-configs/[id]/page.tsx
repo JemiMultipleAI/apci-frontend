@@ -224,7 +224,7 @@ export default function AgentConfigDetailPage() {
                 </div>
               )}
               <p className="text-sm text-muted-foreground mb-4">
-                Copy these URLs to configure in ElevenLabs agent settings as knowledge base sources.
+                Copy these URLs to configure in agent settings as knowledge base sources.
               </p>
               <div className="space-y-4">
                 <div>
@@ -312,7 +312,7 @@ export default function AgentConfigDetailPage() {
           </Card>
 
           {showDeleteConfirm && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/20 backdrop-blur-sm">
               <Card className="max-w-md w-full mx-4 shadow-xl">
                 <h3 className="text-lg font-semibold mb-2 text-foreground">Delete Agent Configuration</h3>
                 <p className="text-muted-foreground mb-6">

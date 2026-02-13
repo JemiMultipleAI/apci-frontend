@@ -147,7 +147,7 @@ export default function EditAgentConfigPage() {
 
           <div className="md:col-span-2">
             <label htmlFor="agent_id" className="block text-sm font-medium mb-2 text-foreground">
-              ElevenLabs Agent ID *
+              Agent ID *
             </label>
             <input
               id="agent_id"
@@ -162,7 +162,7 @@ export default function EditAgentConfigPage() {
 
           <div className="md:col-span-2">
             <label htmlFor="agent_phone_number_id" className="block text-sm font-medium mb-2 text-foreground">
-              ElevenLabs Phone Number ID
+              Agent Phone Number ID
             </label>
             <input
               id="agent_phone_number_id"
@@ -170,12 +170,12 @@ export default function EditAgentConfigPage() {
               type="text"
               value={formData.agent_phone_number_id}
               onChange={handleChange}
-              placeholder="Enter the phone number ID from ElevenLabs"
+              placeholder="Enter the agent phone number ID"
               className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground font-mono text-sm placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
             />
             <p className="text-xs text-muted-foreground mt-1">
               Required for native Twilio calls (better latency and interruption support). 
-              Get this from your ElevenLabs dashboard → Phone Numbers.
+              Get this from your agent dashboard → Phone Numbers.
             </p>
           </div>
 
@@ -203,10 +203,10 @@ export default function EditAgentConfigPage() {
               type="text"
               value={formData.kb_campaigns_document_id}
               onChange={handleChange}
-              placeholder="Enter ElevenLabs documentation_id for campaigns KB"
+              placeholder="Enter documentation ID for campaigns knowledge base"
               className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground font-mono text-sm placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
             />
-            <p className="text-xs text-muted-foreground mt-1">Enter the documentation_id from ElevenLabs after creating the knowledge base document from the campaigns URL</p>
+            <p className="text-xs text-muted-foreground mt-1">Enter the documentation ID after creating the knowledge base document from the campaigns URL</p>
           </div>
 
           <div className="md:col-span-2">
@@ -219,10 +219,10 @@ export default function EditAgentConfigPage() {
               type="text"
               value={formData.kb_deals_document_id}
               onChange={handleChange}
-              placeholder="Enter ElevenLabs documentation_id for deals KB"
+              placeholder="Enter documentation ID for deals knowledge base"
               className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground font-mono text-sm placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
             />
-            <p className="text-xs text-muted-foreground mt-1">Enter the documentation_id from ElevenLabs after creating the knowledge base document from the deals URL</p>
+            <p className="text-xs text-muted-foreground mt-1">Enter the documentation ID after creating the knowledge base document from the deals URL</p>
           </div>
 
           <div className="flex items-center gap-3 pt-8">

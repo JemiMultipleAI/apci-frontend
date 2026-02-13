@@ -130,7 +130,7 @@ export const navigation: NavigationItem[] = [
   },
   {
     title: 'AI Agent Configs',
-    description: 'Manage ElevenLabs agent configurations',
+    description: 'Manage AI agent configurations',
     href: '/portal/ai-agent-configs',
     icon: Bot,
     requiredRole: 'super_admin',

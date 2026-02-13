@@ -53,7 +53,7 @@ export default function AgentConfigsPage() {
         <div>
           <h1 className="text-3xl font-semibold tracking-tight text-foreground">AI Agent Configurations</h1>
           <p className="text-muted-foreground">
-            Manage ElevenLabs agent configurations for companies
+            Manage AI agent configurations for companies
           </p>
         </div>
         <div className="flex items-center gap-2">

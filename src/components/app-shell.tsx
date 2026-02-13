@@ -99,7 +99,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur-md supports-[backdrop-filter]:bg-surface/80">
+      <header className="sticky top-0 z-40 border-b border-border bg-white/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/80">
         <div className="w-full flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-6">
             <button
@@ -114,12 +114,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <Menu className="h-6 w-6" />
               )}
             </button>
-            <Link href="/portal" className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-tech flex items-center justify-center shadow-lg glow-cyan">
-                <span className="text-white font-bold text-sm">C</span>
-              </div>
-              <span className="text-xl font-bold text-foreground">CRMatIQ</span>
-              <span className="text-xs text-muted-foreground">CRM</span>
+            <Link href="/portal" className="flex items-center">
+              <img 
+                src="/logo.png" 
+                alt="CRMatIQ Logo" 
+                className="h-12 w-auto"
+              />
             </Link>
           </div>
           <div className="flex items-center gap-4">
@@ -189,7 +189,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* Sidebar */}
         <aside
           className={cn(
-            'fixed top-16 bottom-0 left-0 z-30 w-64 border-r border-border bg-surface transition-transform lg:translate-x-0 flex flex-col',
+            'fixed top-16 bottom-0 left-0 z-30 w-64 border-r border-border bg-white transition-transform lg:translate-x-0 flex flex-col',
             mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
           )}
         >
@@ -296,7 +296,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <button
             type="button"
             aria-label="Close navigation"
-            className="fixed inset-0 z-20 bg-black/20 backdrop-blur-sm lg:hidden"
+            className="fixed inset-0 z-20 bg-gray-900/10 backdrop-blur-sm lg:hidden"
             onClick={() => setMobileMenuOpen(false)}
           />
         )}

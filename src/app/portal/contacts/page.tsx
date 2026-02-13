@@ -367,7 +367,7 @@ export default function ContactsPage() {
       </div>
 
       {showBulkEdit && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-gray-900/20 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-card rounded-2xl border border-border p-6 max-w-md w-full mx-4 shadow-xl glass">
             <h2 className="text-xl font-semibold mb-4 text-foreground">Bulk Edit Customers</h2>
             <div className="space-y-4">
@@ -409,7 +409,7 @@ export default function ContactsPage() {
       )}
 
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-gray-900/20 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-card rounded-2xl border border-border p-6 max-w-md w-full mx-4 shadow-xl glass">
             <h2 className="text-xl font-semibold mb-4 text-foreground">Delete Customers</h2>
             <p className="text-muted-foreground mb-6">

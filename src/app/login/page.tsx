@@ -50,11 +50,12 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4 bg-gradient-mesh">
       <div className="w-full max-w-md space-y-8 rounded-2xl border border-border bg-card p-8 shadow-xl glass">
         <div className="text-center">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-tech flex items-center justify-center shadow-lg glow-cyan">
-              <span className="text-white font-bold text-xl">C</span>
-            </div>
-            <h1 className="text-3xl font-bold text-foreground">CRMatIQ</h1>
+          <div className="flex items-center justify-center mb-4">
+            <img 
+              src="/logo.png" 
+              alt="CRMatIQ Logo" 
+              className="h-20 w-auto"
+            />
           </div>
           <p className="mt-2 text-muted-foreground">Your CRM — On Auto-Pilot</p>
           <h2 className="mt-6 text-2xl font-semibold text-foreground">Welcome back</h2>

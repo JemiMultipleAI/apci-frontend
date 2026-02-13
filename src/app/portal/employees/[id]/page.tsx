@@ -199,7 +199,7 @@ export default function EmployeeDetailPage() {
           </Card>
 
           {showDeleteConfirm && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/20 backdrop-blur-sm">
               <Card className="max-w-md w-full mx-4 shadow-xl">
                 <h3 className="text-lg font-semibold mb-2 text-foreground">Delete Employee</h3>
                 <p className="text-muted-foreground mb-6">

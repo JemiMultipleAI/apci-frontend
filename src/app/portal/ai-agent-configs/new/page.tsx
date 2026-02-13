@@ -94,7 +94,7 @@ export default function NewAgentConfigPage() {
     <div className="space-y-6">
       <PageHeader
         title="Create New Agent Configuration"
-        description="Configure an ElevenLabs agent for a company"
+        description="Configure an AI agent for a company"
       />
 
       <Card>
@@ -117,7 +117,7 @@ export default function NewAgentConfigPage() {
             </div>
 
             <div className="md:col-span-2">
-              <Label htmlFor="agent_id" required>ElevenLabs Agent ID</Label>
+              <Label htmlFor="agent_id" required>Agent ID</Label>
               <Input
                 id="agent_id"
                 name="agent_id"
@@ -125,26 +125,26 @@ export default function NewAgentConfigPage() {
                 required
                 value={formData.agent_id}
                 onChange={handleChange}
-                placeholder="Enter the agent ID from ElevenLabs"
+                placeholder="Enter the agent ID"
                 className="font-mono text-sm"
               />
-              <p className="text-xs text-muted-foreground mt-1">The agent ID from your ElevenLabs dashboard</p>
+              <p className="text-xs text-muted-foreground mt-1">The agent ID from your agent dashboard</p>
             </div>
 
             <div className="md:col-span-2">
-              <Label htmlFor="agent_phone_number_id">ElevenLabs Phone Number ID</Label>
+              <Label htmlFor="agent_phone_number_id">Agent Phone Number ID</Label>
               <Input
                 id="agent_phone_number_id"
                 name="agent_phone_number_id"
                 type="text"
                 value={formData.agent_phone_number_id}
                 onChange={handleChange}
-                placeholder="Enter the phone number ID from ElevenLabs"
+                placeholder="Enter the agent phone number ID"
                 className="font-mono text-sm"
               />
               <p className="text-xs text-muted-foreground mt-1">
                 Required for native Twilio calls (better latency and interruption support). 
-                Get this from your ElevenLabs dashboard → Phone Numbers.
+                Get this from your agent dashboard → Phone Numbers.
               </p>
             </div>
 
@@ -192,10 +192,10 @@ export default function NewAgentConfigPage() {
                 type="text"
                 value={formData.kb_campaigns_document_id}
                 onChange={handleChange}
-                placeholder="Enter ElevenLabs documentation_id for campaigns KB"
+                placeholder="Enter documentation ID for campaigns knowledge base"
                 className="font-mono text-sm"
               />
-              <p className="text-xs text-muted-foreground mt-1">Enter the documentation_id from ElevenLabs after creating the knowledge base document from the campaigns URL</p>
+              <p className="text-xs text-muted-foreground mt-1">Enter the documentation ID after creating the knowledge base document from the campaigns URL</p>
             </div>
 
             <div className="md:col-span-2">
@@ -206,10 +206,10 @@ export default function NewAgentConfigPage() {
                 type="text"
                 value={formData.kb_deals_document_id}
                 onChange={handleChange}
-                placeholder="Enter ElevenLabs documentation_id for deals KB"
+                placeholder="Enter documentation ID for deals knowledge base"
                 className="font-mono text-sm"
               />
-              <p className="text-xs text-muted-foreground mt-1">Enter the documentation_id from ElevenLabs after creating the knowledge base document from the deals URL</p>
+              <p className="text-xs text-muted-foreground mt-1">Enter the documentation ID after creating the knowledge base document from the deals URL</p>
             </div>
 
             <div className="flex items-center gap-3 pt-8">

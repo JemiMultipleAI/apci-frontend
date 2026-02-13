@@ -126,7 +126,7 @@ export default function SurveyDetailPage() {
       </div>
 
       {showDeleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/20 backdrop-blur-sm">
           <Card className="max-w-md w-full mx-4 shadow-xl">
             <p className="text-muted-foreground mb-4">Are you sure you want to delete this survey? This action cannot be undone.</p>
             <div className="flex gap-2 justify-end">

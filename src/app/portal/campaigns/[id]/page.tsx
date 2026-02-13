@@ -300,7 +300,7 @@ export default function CampaignDetailPage() {
       </div>
 
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-gray-900/20 backdrop-blur-sm flex items-center justify-center z-50">
           <Card className="max-w-md w-full mx-4 shadow-xl">
             <h2 className="text-xl font-semibold mb-4 text-foreground">Delete Campaign</h2>
             <p className="text-muted-foreground mb-6">Are you sure you want to delete this campaign? This action cannot be undone.</p>
@@ -519,7 +519,7 @@ export default function CampaignDetailPage() {
 
       {/* Execute Modal */}
       {showExecuteModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-gray-900/20 flex items-center justify-center z-50">
           <Card className="max-w-2xl w-full mx-4 max-h-[80vh] flex flex-col shadow-xl">
             <h2 className="text-xl font-semibold mb-4 text-foreground">Select Contacts to Target</h2>
             

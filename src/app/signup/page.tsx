@@ -51,11 +51,12 @@ export default function SignupPage() {
     <div className="flex min-h-screen items-center justify-center bg-white px-4 py-12">
       <div className="w-full max-w-md space-y-8 rounded-2xl border border-gray-200 bg-white p-8 shadow-xl">
         <div className="text-center">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#DC2626] via-[#991B1B] to-[#F43F5E] flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-xl">C</span>
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900">CRMatIQ</h1>
+          <div className="flex items-center justify-center mb-4">
+            <img 
+              src="/logo.png" 
+              alt="CRMatIQ Logo" 
+              className="h-20 w-auto"
+            />
           </div>
           <p className="mt-2 text-gray-600">Your CRM — On Auto-Pilot</p>
           <h2 className="mt-6 text-2xl font-semibold text-gray-900">Create your account</h2>
